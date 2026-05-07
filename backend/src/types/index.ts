@@ -12,3 +12,17 @@ export class ApiError extends Error {
     this.code = code;
   }
 }
+
+
+export type Plan = {
+  pricePerSeat: number | null; // null = custom/enterprise pricing
+  verifiedDate: string;
+};
+
+export type Vendor = {
+  name: string;
+  url: string;
+  plans: Record<string, Plan>;
+};
+
+export type PricingData = Record<string, Vendor>;
