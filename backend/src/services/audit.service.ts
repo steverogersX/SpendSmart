@@ -46,12 +46,7 @@ const auditTool = (input: ToolInput): AuditResult => {
     };
 };
 
-const auditService = (auditRequest: AuditRequest): AuditResult[] => {
-    try {
-        return auditRequest.tools.map(auditTool);
-    } catch (err: unknown) {
-        throw err;
-    }
-};
+const auditService = (auditRequest: AuditRequest): AuditResult[] =>
+    auditRequest.tools.map(auditTool);
 
 export default auditService;

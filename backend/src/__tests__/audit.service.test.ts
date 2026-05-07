@@ -27,7 +27,7 @@ const cases: CaseEntry[] = [
     description: 'case 1: recommends cheaper cross-vendor plan for cursor Teams 2 seats coding',
     input: { tool: 'cursor', plan: 'Teams', seats: 2, monthlySpend: 80, useCase: 'coding' },
     expected: { currentCost: 80, status: 'optimize', best: { tool: 'github_copilot', plan: 'Pro' } },
-    verify: (result) => {
+    verify: (result): void => {
       expect(result.bestRecommendation!.savings).toBeGreaterThan(0);
     },
   },
@@ -37,7 +37,7 @@ const cases: CaseEntry[] = [
     description: 'case 2: same-vendor cheaper plan appears in candidates for claude Max20x 1 seat writing',
     input: { tool: 'claude', plan: 'Max20x', seats: 1, monthlySpend: 200, useCase: 'writing' },
     expected: { currentCost: 200, status: 'optimize', best: { tool: 'gemini', plan: 'Plus' } },
-    verify: (result) => {
+    verify: (result): void => {
       const sameVendorPlan = allCandidates(result).find(
         (c) => c.tool === 'claude' && c.plan === 'Pro',
       );
@@ -53,7 +53,7 @@ const cases: CaseEntry[] = [
     description: 'case 3: gemini Plus 1 seat coding is already optimal — no cheaper plan exists',
     input: { tool: 'gemini', plan: 'Plus', seats: 1, monthlySpend: 7.99, useCase: 'coding' },
     expected: { currentCost: 7.99, status: 'optimal' },
-    verify: (result) => {
+    verify: (result): void => {
       expect(result.bestRecommendation).toBeNull();
       expect(result.otherOptions).toHaveLength(0);
     },
@@ -64,7 +64,7 @@ const cases: CaseEntry[] = [
     description: 'case 4: enterprise (null pricePerSeat) plans never appear as recommendations',
     input: { tool: 'cursor', plan: 'Ultra', seats: 1, monthlySpend: 200, useCase: 'coding' },
     expected: { currentCost: 200, status: 'optimize', best: { tool: 'github_copilot', plan: 'Pro' } },
-    verify: (result) => {
+    verify: (result): void => {
       for (const candidate of allCandidates(result)) {
         const planData = pricingData[candidate.tool]?.plans[candidate.plan];
         expect(planData?.pricePerSeat).not.toBeNull();
@@ -79,7 +79,7 @@ const cases: CaseEntry[] = [
     description: 'case 5: coding use case surfaces coding-specific tools, all candidates support coding',
     input: { tool: 'claude', plan: 'Pro', seats: 1, monthlySpend: 20, useCase: 'coding' },
     expected: { currentCost: 20, status: 'optimize', best: { tool: 'github_copilot', plan: 'Pro' } },
-    verify: (result) => {
+    verify: (result): void => {
       const candidateTools = allCandidates(result).map((c) => c.tool);
       expect(candidateTools).toContain('github_copilot');
       for (const candidate of allCandidates(result)) {
@@ -93,7 +93,7 @@ const cases: CaseEntry[] = [
     description: 'case 6: claude Enterprise falls back to monthlySpend ($500) and finds cheaper alternatives',
     input: { tool: 'claude', plan: 'Enterprise', seats: 2, monthlySpend: 500, useCase: 'mixed' },
     expected: { currentCost: 500, status: 'optimize', best: { tool: 'gemini', plan: 'Plus' } },
-    verify: (result) => {
+    verify: (result): void => {
       expect(result.bestRecommendation!.savings).toBeGreaterThan(0);
     },
   },
@@ -103,7 +103,7 @@ const cases: CaseEntry[] = [
     description: 'case 9: otherOptions are sorted descending by savings and bestRecommendation leads',
     input: { tool: 'cursor', plan: 'Ultra', seats: 1, monthlySpend: 200, useCase: 'coding' },
     expected: { currentCost: 200, status: 'optimize', best: { tool: 'github_copilot', plan: 'Pro' } },
-    verify: (result) => {
+    verify: (result): void => {
       const { bestRecommendation, otherOptions } = result;
       for (let i = 0; i < otherOptions.length - 1; i++) {
         expect(otherOptions[i].savings).toBeGreaterThanOrEqual(otherOptions[i + 1].savings);
@@ -129,7 +129,7 @@ const cases: CaseEntry[] = [
     description: 'case 10 (5 seats): cursor Teams currentCost equals 5× pricePerSeat',
     input: { tool: 'cursor', plan: 'Teams', seats: 5, monthlySpend: 200, useCase: 'coding' },
     expected: { currentCost: 200, status: 'optimize', best: { tool: 'github_copilot', plan: 'Pro' } },
-    verify: (result) => {
+    verify: (result): void => {
       expect(result.bestRecommendation!.savings).toBeGreaterThan(0);
     },
   },
