@@ -10,7 +10,7 @@ export function errorHandler(
   _next: NextFunction
 ): void {
   const statusCode = err.code ?? status.INTERNAL_SERVER_ERROR;
-
+  
   if (statusCode >= 500) {
     logger.error({ err }, err.message);
   } else {
@@ -19,7 +19,7 @@ export function errorHandler(
 
   const response: ApiResponse<never> = {
     success: false,
-    error: err,
+    error: { ...err, message: err.message },
   };
 
   res.status(statusCode).json(response);
