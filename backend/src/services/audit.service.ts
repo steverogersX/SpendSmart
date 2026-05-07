@@ -13,12 +13,10 @@ const auditTool = (input: ToolInput): AuditResult => {
     const candidates: Recommendation[] = [];
 
     for (const [toolKey, vendor] of Object.entries(pricingData)) {
-        if (!vendor.useCases.includes(input.useCase as UseCase)) continue;
-
         for (const [planName, plan] of Object.entries(vendor.plans)) {
-            // TODO: This is wrong. Enterprise plans doesn't have pricePerSeat in priceData
-            if (plan.pricePerSeat === null) continue; 
-            // If we're in same plan as current input plan, we have to skip it.
+            if (!plan.useCases.includes(input.useCase as UseCase)) continue;
+            // TODO: Enterprise plans don't have pricePerSeat in pricingData
+            if (plan.pricePerSeat === null) continue;
             if (toolKey === input.tool && planName === input.plan) continue;
 
             const alternativeCost = plan.pricePerSeat * input.seats;
@@ -48,7 +46,7 @@ const auditTool = (input: ToolInput): AuditResult => {
     };
 };
 
-const auditService =  (auditRequest: AuditRequest): AuditResult[] => {
+const auditService = (auditRequest: AuditRequest): AuditResult[] => {
     try {
         return auditRequest.tools.map(auditTool);
     } catch (err: unknown) {

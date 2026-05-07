@@ -1,4 +1,4 @@
-import { UseCase, UseCases } from "./schemas";
+export type { Plan, Vendor, PricingData } from './schemas';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
@@ -14,21 +14,6 @@ export class ApiError extends Error {
     this.code = code;
   }
 }
-
-
-export type Plan = {
-  pricePerSeat: number | null; // null = custom/enterprise pricing
-  verifiedDate: string;
-};
-
-export type Vendor = {
-  name: string;
-  url: string;
-  plans: Record<string, Plan>;
-  useCases : UseCase[];
-};
-
-export type PricingData = Record<string, Vendor>;
 
 export type Recommendation = {
   tool: string;
