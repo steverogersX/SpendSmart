@@ -4,7 +4,11 @@ export interface ApiResponse<T> {
   error?: ApiError;
 }
 
-export interface ApiError extends Error {
+export class ApiError extends Error {
   code?: number;
-  details?: unknown;
+  constructor(message: string, code?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+  }
 }
