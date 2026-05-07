@@ -1,10 +1,33 @@
-export interface ApiResponse<T> {
+export type { Plan, Vendor, PricingData } from './schemas';
+
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: ApiError;
 }
 
-export interface ApiError extends Error {
+export class ApiError extends Error {
   code?: number;
-  details?: unknown;
+  constructor(message: string, code?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.code = code;
+  }
 }
+
+export type Recommendation = {
+  tool: string;
+  plan: string;
+  cost: number;
+  savings: number;
+  reason: string;
+};
+
+export type AuditResult = {
+  tool: string;
+  currentPlan: string;
+  currentCost: number;
+  status: 'optimal' | 'optimize';
+  bestRecommendation: Recommendation | null;
+  otherOptions: Recommendation[];
+};

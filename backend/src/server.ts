@@ -6,6 +6,7 @@ import { config } from './config/env';
 import { logger, httpLogger } from './config/logger';
 import { errorHandler } from './middleware/error.middleware';
 import { ApiError, ApiResponse } from './types';
+import auditController from './controllers/audit.controller';
 
 const app = express();
 
@@ -15,13 +16,19 @@ app.use(httpLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (_req: Request, res: Response) => {
+
+const PREFIX = '/api/v1';
+
+app.get(`${PREFIX}/health`, (_req: Request, res: Response) => {
   const response: ApiResponse<{ status: string }> = {
     success: true,
     data: { status: 'ok' },
   };
   res.status(status.OK).json(response);
 });
+
+app.post(`${PREFIX}/audit`, auditController);
+
 
 app.use((_req: Request, _res: Response, next: NextFunction) => {
   const error: ApiError = {

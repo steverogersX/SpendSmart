@@ -1,0 +1,78 @@
+{
+  "cursor": {
+    "name": "Cursor",
+    "url": "https://cursor.com/pricing",
+    "plans": {
+      "Pro":     { "pricePerSeat": 20,  "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "ProPlus": { "pricePerSeat": 60,  "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Ultra":   { "pricePerSeat": 200, "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Teams":   { "pricePerSeat": 40,  "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+    }
+  },
+  "github_copilot": {
+    "name": "GitHub Copilot",
+    "url": "https://github.com/features/copilot/plans",
+    "plans": {
+      "Pro":        { "pricePerSeat": 10,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "ProPlus":    { "pricePerSeat": 39,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Business":   { "pricePerSeat": 19,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+    }
+  },
+  "claude": {
+    "name": "Claude",
+    "url": "https://claude.com/pricing",
+    "plans": {
+      "Pro":        { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
+      "Max5x":      { "pricePerSeat": 100,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
+      "Max20x":     { "pricePerSeat": 200,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
+      "Team":       { "pricePerSeat": 30,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
+      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] }
+    }
+  },
+
+  "chatgpt": {
+    "name": "ChatGPT",
+    "url": "https://openai.com/chatgpt/pricing/",
+    "plans": {
+      "Go":         { "pricePerSeat": 8,    "verifiedDate": "2026-05-07", "useCases": ["writing", "data", "research", "mixed"] },
+      "Plus":       { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
+      "Pro100":     { "pricePerSeat": 100,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
+      "Pro200":     { "pricePerSeat": 200,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
+      "Business":   { "pricePerSeat": 25,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
+      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] }
+    }
+  },
+  "gemini": {
+    "name": "Gemini",
+    "url": "https://gemini.google/subscriptions/",
+    "plans": {
+      "Plus":  { "pricePerSeat": 7.99,   "verifiedDate": "2026-05-07", "useCases": [ "writing", "data", "research", "mixed"] },
+      "Pro":   { "pricePerSeat": 19.99,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
+      "Ultra": { "pricePerSeat": 249.99, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] }
+    }
+  },
+  "windsurf": {
+    "name": "Windsurf",
+    "url": "https://windsurf.com/pricing",
+    "plans": {
+      "Pro":        { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Teams":      { "pricePerSeat": 40,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
+      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+    }
+  },
+  "anthropic_api": {
+    "name": "Anthropic API",
+    "url": "https://www.anthropic.com/pricing",
+    "plans": {
+      "API": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "data"] }
+    }
+  },
+  "openai_api": {
+    "name": "OpenAI API",
+    "url": "https://openai.com/api/pricing/",
+    "plans": {
+      "API": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "data"] }
+    }
+  }
+}
