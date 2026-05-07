@@ -1,44 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-import { env } from '@/config/env';
-import { ApiError } from '@/types';
+import { status } from 'http-status';
+import { logger } from '../config/logger';
+import { ApiError, ApiResponse } from '../types';
 
-export class AppError extends Error {
-  constructor(
-    public readonly statusCode: number,
-    message: string,
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
-
-export function errorMiddleware(
-  err: unknown,
+export function errorHandler(
+  err: ApiError,
   _req: Request,
   res: Response,
-  _next: NextFunction,
+  _next: NextFunction
 ): void {
-  if (err instanceof ZodError) {
-    const body: ApiError = {
-      success: false,
-      error: 'Validation error',
-      details: err.flatten().fieldErrors,
-    };
-    res.status(400).json(body);
-    return;
+  const statusCode = err.code ?? status.INTERNAL_SERVER_ERROR;
+
+  if (statusCode >= 500) {
+    logger.error({ err }, err.message);
+  } else {
+    logger.warn({ err }, err.message);
   }
 
-  if (err instanceof AppError) {
-    const body: ApiError = { success: false, error: err.message };
-    res.status(err.statusCode).json(body);
-    return;
-  }
+  const response: ApiResponse<never> = {
+    success: false,
+    error: err,
+  };
 
-  if (env.NODE_ENV !== 'production') {
-    console.error(err);
-  }
-
-  const body: ApiError = { success: false, error: 'Internal server error' };
-  res.status(500).json(body);
+  res.status(statusCode).json(response);
 }
