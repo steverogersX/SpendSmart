@@ -1,3 +1,4 @@
+import auditService from '@/services/audit.service';
 import { ApiError, ApiResponse } from '@/types';
 import { auditRequestSchema } from '@/types/schemas';
 import { Request, Response, NextFunction } from 'express';
@@ -12,10 +13,17 @@ const auditController = async (req: Request, res: Response, next: NextFunction):
             throw new ApiError(errorMessage.message, status.BAD_REQUEST);
         }
 
+
+        const results = auditService(parsedAudit.data);
+
         const response: ApiResponse = {
             success: true,
-            data: { message: 'Audit data received successfully' },
+            data: results,
         };
+
+
+
+
         res.status(status.OK).json(response);
     }
     catch (err: unknown) {

@@ -1,3 +1,5 @@
+import { UseCase, UseCases } from "./schemas";
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -23,6 +25,24 @@ export type Vendor = {
   name: string;
   url: string;
   plans: Record<string, Plan>;
+  useCases : UseCase[];
 };
 
 export type PricingData = Record<string, Vendor>;
+
+export type Recommendation = {
+  tool: string;
+  plan: string;
+  cost: number;
+  savings: number;
+  reason: string;
+};
+
+export type AuditResult = {
+  tool: string;
+  currentPlan: string;
+  currentCost: number;
+  status: 'optimal' | 'optimize';
+  bestRecommendation: Recommendation | null;
+  otherOptions: Recommendation[];
+};
