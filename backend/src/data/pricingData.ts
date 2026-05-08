@@ -1,5 +1,5 @@
 import { PricingDataSchema, PricingData } from '../types/schemas';
-import rawData from './pricingData.json';
+import rawData from './vendor-pricing.json';
 
 const result = PricingDataSchema.safeParse(rawData);
 
