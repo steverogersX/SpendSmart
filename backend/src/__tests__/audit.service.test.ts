@@ -1,6 +1,7 @@
 import auditService from '@/services/audit.service';
 import { pricingData } from '@/data/pricingData';
 import { AuditResult, Recommendation } from '@/types';
+import { AnyToolInput } from '@/types/audit';
 
 function allCandidates(result: AuditResult): Recommendation[] {
   return [...result.otherOptions, result.bestRecommendation].filter(Boolean) as Recommendation[];
@@ -10,7 +11,7 @@ function allCandidates(result: AuditResult): Recommendation[] {
 
 type CaseEntry = {
   description: string;
-  input: { tool: string; plan: string; seats: number; monthlySpend: number; useCase: string };
+  input: AnyToolInput;
   expected: {
     currentCost: number;
     status: 'optimal' | 'optimize';

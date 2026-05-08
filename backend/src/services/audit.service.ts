@@ -1,4 +1,4 @@
-import { AuditRequest, ToolInput, UseCase } from "@/types/schemas";
+import { AuditRequest, ToolInput, UseCase } from "@/types/audit";
 import { AuditResult, Recommendation } from "@/types";
 import { pricingData } from "@/data/pricingData";
 
@@ -47,6 +47,6 @@ const auditTool = (input: ToolInput): AuditResult => {
 };
 
 const auditService = (auditRequest: AuditRequest): AuditResult[] =>
-    auditRequest.tools.map(auditTool);
+    auditRequest.tools.map(tool => auditTool(tool as ToolInput));
 
 export default auditService;

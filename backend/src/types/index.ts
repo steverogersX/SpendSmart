@@ -1,4 +1,4 @@
-export type { Plan, Vendor, PricingData } from './schemas';
+export type { Plan, Vendor, PricingData } from './audit';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
