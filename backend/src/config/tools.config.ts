@@ -108,3 +108,8 @@ export const ModelsByProvider = {
     [APIProviders.OpenAI]: Object.values(OpenAIModels),
     [APIProviders.Google]: Object.values(GoogleModels),
 } as const;
+
+export const ModelsByTool = {
+    [Tools.AnthropicAPI]: Object.values(AnthropicModels),
+    [Tools.OpenAIAPI]: Object.values(OpenAIModels),
+} as const;

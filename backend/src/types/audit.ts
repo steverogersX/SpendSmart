@@ -2,8 +2,7 @@ import { z } from 'zod';
 import {
     Tools,
     PlansByTool,
-    APIProviders,
-    ModelsByProvider,
+    ModelsByTool,
 } from '../config/tools.config';
 import { UseCaseSchema } from './pricing';
 
@@ -92,20 +91,20 @@ export type ToolInput = z.infer<typeof toolSchema>;
 
 export const apiToolSchema = z.object({
     tool:                   z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI]),
-    provider:               z.enum(Object.values(APIProviders) as [string, ...string[]]),
     primaryModel:           z.string().min(1),
     averageMonthlySpend:    z.number().min(0),
     useCase:                UseCaseSchema,
 
+    dropCapacityBy : z.number().positive().optional().default(5), // Percentage buffer to account for variability in API usage and pricing. For example, if the audit identifies a cheaper model that has 5% lower benchmark scores, we can recommend it with confidence that it will still meet the user's needs even if their usage patterns change slightly or if there are minor discrepancies between benchmark performance and real-world performance.
     okayWithChineseModals:  z.boolean().optional().default(false),
     contextWindow:       z.number().positive().optional(),
 
 }).superRefine((data, ctx) => {
-    const validModels = ModelsByProvider[data.provider as keyof typeof ModelsByProvider];
+    const validModels = ModelsByTool[data.tool as keyof typeof ModelsByTool];
     if (!validModels.includes(data.primaryModel as never)) {
         ctx.addIssue({
             code:    'custom',
-            message: `Invalid model "${data.primaryModel}" for provider "${data.provider}". Valid models are: ${validModels.join(', ')}`,
+            message: `Invalid model "${data.primaryModel}" for tool "${data.tool}". Valid models are: ${validModels.join(', ')}`,
             path:    ['primaryModel'],
         });
     }
