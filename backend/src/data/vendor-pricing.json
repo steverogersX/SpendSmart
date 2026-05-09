@@ -2,151 +2,453 @@
   "cursor": {
     "type": "subscription",
     "name": "Cursor",
-    "url": "https://cursor.com/pricing",
+    "sourceUrl": "https://www.cursor.com/pricing",
     "plans": {
-      "Pro":     { "pricePerSeat": 20,  "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "ProPlus": { "pricePerSeat": 60,  "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Ultra":   { "pricePerSeat": 200, "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Teams":   { "pricePerSeat": 40,  "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+      "pro": {
+        "pricePerSeat": 20,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "pro_plus": {
+        "pricePerSeat": 60,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "ultra": {
+        "pricePerSeat": 200,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "teams": {
+        "pricePerSeat": 40,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      }
     }
   },
   "github_copilot": {
     "type": "subscription",
     "name": "GitHub Copilot",
-    "url": "https://github.com/features/copilot/plans",
+    "sourceUrl": "https://github.com/features/copilot/plans",
     "plans": {
-      "Pro":        { "pricePerSeat": 10,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "ProPlus":    { "pricePerSeat": 39,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Business":   { "pricePerSeat": 19,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+      "pro": {
+        "pricePerSeat": 10,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "pro_plus": {
+        "pricePerSeat": 39,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "business": {
+        "pricePerSeat": 19,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "enterprise": {
+        "pricePerSeat": 39,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      }
     }
   },
   "claude": {
     "type": "subscription",
-    "name": "Claude",
-    "url": "https://claude.com/pricing",
+    "name": "Claude (claude.ai)",
+    "sourceUrl": "https://www.anthropic.com/pricing",
     "plans": {
-      "Pro":        { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
-      "Max5x":      { "pricePerSeat": 100,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
-      "Max20x":     { "pricePerSeat": 200,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
-      "Team":       { "pricePerSeat": 30,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] },
-      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "research", "mixed"] }
+      "pro": {
+        "pricePerSeat": 20,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "max_5x": {
+        "pricePerSeat": 100,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "max_20x": {
+        "pricePerSeat": 200,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "team_standard": {
+        "pricePerSeat": 25,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "team_premium": {
+        "pricePerSeat": 125,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      }
     }
   },
   "chatgpt": {
     "type": "subscription",
     "name": "ChatGPT",
-    "url": "https://openai.com/chatgpt/pricing/",
+    "sourceUrl": "https://openai.com/chatgpt/pricing",
     "plans": {
-      "Go":         { "pricePerSeat": 8,    "verifiedDate": "2026-05-07", "useCases": ["writing", "data", "research", "mixed"] },
-      "Plus":       { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
-      "Pro100":     { "pricePerSeat": 100,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
-      "Pro200":     { "pricePerSeat": 200,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
-      "Business":   { "pricePerSeat": 25,   "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
-      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] }
+      "go": {
+        "pricePerSeat": 8,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research"]
+      },
+      "plus": {
+        "pricePerSeat": 20,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "pro_100": {
+        "pricePerSeat": 100,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "pro_200": {
+        "pricePerSeat": 200,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "business": {
+        "pricePerSeat": 25,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      }
     }
   },
   "gemini": {
     "type": "subscription",
-    "name": "Gemini",
-    "url": "https://gemini.google/subscriptions/",
+    "name": "Gemini (Google AI)",
+    "sourceUrl": "https://one.google.com/about/google-ai-plans/",
     "plans": {
-      "Plus":  { "pricePerSeat": 7.99,   "verifiedDate": "2026-05-07", "useCases": ["writing", "data", "research", "mixed"] },
-      "Pro":   { "pricePerSeat": 19.99,  "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] },
-      "Ultra": { "pricePerSeat": 249.99, "verifiedDate": "2026-05-07", "useCases": ["coding", "writing", "data", "research", "mixed"] }
+      "ai_plus": {
+        "pricePerSeat": 10.99,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "research", "data"]
+      },
+      "ai_pro": {
+        "pricePerSeat": 26.99,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "ai_ultra": {
+        "pricePerSeat": 339.99,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      }
     }
   },
   "windsurf": {
     "type": "subscription",
     "name": "Windsurf",
-    "url": "https://windsurf.com/pricing",
+    "sourceUrl": "https://windsurf.com/pricing",
     "plans": {
-      "Pro":        { "pricePerSeat": 20,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Teams":      { "pricePerSeat": 40,   "verifiedDate": "2026-05-07", "useCases": ["coding"] },
-      "Enterprise": { "pricePerSeat": null, "verifiedDate": "2026-05-07", "useCases": ["coding"] }
+      "pro": {
+        "pricePerSeat": 20,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "max": {
+        "pricePerSeat": 200,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      },
+      "teams": {
+        "pricePerSeat": 40,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      }
     }
   },
   "anthropic_api": {
     "type": "api",
     "name": "Anthropic API",
-    "url": "https://www.anthropic.com/pricing",
+    "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
     "models": {
       "claude-haiku-4-5": {
         "displayName": "Claude Haiku 4.5",
-        "inputPricePer1MTokens": 1.00,
-        "outputPricePer1MTokens": 5.00,
+        "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+        "inputPricePer1MTokens": 1.0,
+        "outputPricePer1MTokens": 5.0,
         "contextWindow": 200000,
-        "supportsVision": true,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "SWE-bench Verified",
+            "benchmarkUrl": "https://www.swebench.com/#verified",
+            "score": 66.6,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/claude-haiku-4-6",
+            "score": 45.4,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
       },
       "claude-sonnet-4-6": {
         "displayName": "Claude Sonnet 4.6",
-        "inputPricePer1MTokens": 3.00,
-        "outputPricePer1MTokens": 15.00,
+        "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+        "inputPricePer1MTokens": 3.0,
+        "outputPricePer1MTokens": 15.0,
         "contextWindow": 1000000,
-        "supportsVision": true,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+            "score": 75.2,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+            "score": 66.1,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 87.3,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 1990.7,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          }
+        ]
       },
-      "claude-opus-4-7": {
-        "displayName": "Claude Opus 4.7",
-        "inputPricePer1MTokens": 5.00,
-        "outputPricePer1MTokens": 25.00,
+      "claude-opus-4-5": {
+        "displayName": "Claude Opus 4.5",
+        "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
+        "inputPricePer1MTokens": 5.0,
+        "outputPricePer1MTokens": 25.0,
         "contextWindow": 1000000,
-        "supportsVision": true,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "SWE-bench Verified",
+            "benchmarkUrl": "https://www.swebench.com/#verified",
+            "score": 76.8,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/claude-opus-4-5",
+            "score": 63.7,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 87.3,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 1769.4,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          }
+        ]
       }
     }
   },
   "openai_api": {
     "type": "api",
     "name": "OpenAI API",
-    "url": "https://openai.com/api/pricing/",
     "models": {
-      "gpt-5-4-nano": {
-        "displayName": "GPT-5.4 Nano",
-        "inputPricePer1MTokens": 0.20,
-        "outputPricePer1MTokens": 0.80,
-        "contextWindow": 128000,
-        "supportsVision": false,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
-      },
-      "gpt-5-4-mini": {
-        "displayName": "GPT-5.4 Mini",
-        "inputPricePer1MTokens": 0.75,
-        "outputPricePer1MTokens": 3.00,
-        "contextWindow": 128000,
-        "supportsVision": true,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+      "gpt-5-5": {
+        "displayName": "GPT-5.5",
+        "sourceUrl": "https://developers.openai.com/api/docs/models/gpt-5.5",
+        "inputPricePer1MTokens": 5.0,
+        "outputPricePer1MTokens": 30.0,
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "Epoch SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-5",
+            "score": 80.6,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-5",
+            "score": 83.9,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 2024.3,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          },
+
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 87.1,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
       },
       "gpt-5-4": {
         "displayName": "GPT-5.4",
-        "inputPricePer1MTokens": 2.50,
-        "outputPricePer1MTokens": 15.00,
-        "contextWindow": 272000,
-        "supportsVision": true,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+        "sourceUrl": "https://developers.openai.com/api/docs/models/gpt-5.4",
+        "inputPricePer1MTokens": 2.5,
+        "outputPricePer1MTokens": 15.0,
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "Epoch SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+            "score": 76.6,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+            "score": 77.7,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 2019.2,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          },
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 87.5,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
       },
-      "o3": {
-        "displayName": "o3",
-        "inputPricePer1MTokens": 2.00,
-        "outputPricePer1MTokens": 8.00,
-        "contextWindow": 200000,
-        "supportsVision": false,
-        "supportsFunctionCalling": true,
-        "verifiedDate": "2026-05-08",
-        "useCases": []
+      "gpt-5-4-nano": {
+        "displayName": "GPT-5.4",
+        "sourceUrl": "https://developers.openai.com/api/docs/models/gpt-5.4",
+        "inputPricePer1MTokens": 2.5,
+        "outputPricePer1MTokens": 15.0,
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-4-nano",
+            "score": 49.2,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
       }
     }
   }

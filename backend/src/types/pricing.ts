@@ -1,25 +1,26 @@
 import { z } from 'zod';
-import { UseCases } from '../config/tools.config';
+import { Tools, UseCases } from '../config/tools.config';
 
 export const ScoreTypeSchema = z.enum(['absolute', 'relative']);
 export const ScoreUnitSchema = z.enum(['percentage', 'Elo points']);
 export const UseCaseSchema   = z.enum(Object.values(UseCases) as [string, ...string[]]);
 
 export const ModelUseCaseSchema = z.object({
-    useCase:        z.array(UseCaseSchema),
+    useCase:        UseCaseSchema,
     benchmarkName:  z.string(),
-    benchmarkUrl:   z.string(),
-    score:          z.number().nullable(),
-    scoreFormat:    z.string(),
+    benchmarkUrl:   z.url(),
+    score:          z.number().nonnegative(),
+    scoreFormat:    z.string().describe('A human-readable description of the score format, e.g. "higher is better" or "lower is better"'),
     scoreUnit:      ScoreUnitSchema,
-    higherIsBetter: z.boolean(),
+    higherIsBetter: z.boolean().default(true),
     scoreType:      ScoreTypeSchema,
-    maxScore:       z.number().optional(),
-    notes:          z.string(),
+    maxScore:       z.number().optional().nullable(),
+    notes:          z.string().optional(),
 });
 
 export const ModelPricingSchema = z.object({
     displayName:             z.string(),
+    sourceUrl:               z.url(),
     inputPricePer1MTokens:   z.number(),
     outputPricePer1MTokens:  z.number(),
     contextWindow:           z.number().int().positive(),
@@ -36,19 +37,19 @@ export const PlanSchema = z.object({
 export const SubscriptionVendorSchema = z.object({
     type:  z.literal('subscription'),
     name:  z.string(),
-    url:   z.url(),
+    sourceUrl:   z.url(),
     plans: z.record(z.string(), PlanSchema),
 });
 
 export const APIVendorSchema = z.object({
-    type:   z.literal('api'),
-    name:   z.string(),
-    url:    z.url(),
-    models: z.record(z.string(), ModelPricingSchema),
+    type:      z.literal('api'),
+    name:      z.string(),
+    sourceUrl: z.url().optional(),
+    models:    z.record(z.string(), ModelPricingSchema),
 });
 
 export const AnyVendorSchema               = z.discriminatedUnion('type', [SubscriptionVendorSchema, APIVendorSchema]);
-export const PricingDataSchema             = z.record(z.string(), AnyVendorSchema);
+export const PricingDataSchema             = z.record(z.enum(Object.values(Tools) as [string, ...string[]]), AnyVendorSchema);
 export const SubscriptionPricingDataSchema = z.record(z.string(), SubscriptionVendorSchema);
 export const APIPricingDataSchema          = z.record(z.string(), APIVendorSchema);
 

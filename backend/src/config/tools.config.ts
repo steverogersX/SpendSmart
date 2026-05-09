@@ -14,50 +14,50 @@ export const UseCases = {
     Writing: 'writing',
     Data: 'data',
     Research: 'research',
+    Agentic: 'agentic',
     Mixed: 'mixed',
 } as const;
 
 export const CursorPlan = {
-    Pro: 'Pro',
-    ProPlus: 'ProPlus',
-    Ultra: 'Ultra',
-    Teams: 'Teams',
+    Pro: 'pro',
+    ProPlus: 'pro_plus',
+    Ultra: 'ultra',
+    Teams: 'teams',
 } as const;
 
 export const GithubCopilotPlan = {
-    Pro: 'Pro',
-    ProPlus: 'ProPlus',
-    Business: 'Business',
-    Enterprise: 'Enterprise',
+    Pro: 'pro',
+    ProPlus: 'pro_plus',
+    Business: 'business',
+    Enterprise: 'enterprise',
 } as const;
 
 export const ClaudePlan = {
-    Pro: 'Pro',
-    Max5x: 'Max5x',
-    Max20x: 'Max20x',
-    Team: 'Team',
-    Enterprise: 'Enterprise',
+    Pro: 'pro',
+    Max5x: 'max_5x',
+    Max20x: 'max_20x',
+    TeamStandard: 'team_standard',
+    TeamPremium: 'team_premium',
 } as const;
 
 export const ChatGPTPlan = {
-    Go: 'Go',
-    Plus: 'Plus',
-    Pro100: 'Pro100',
-    Pro200: 'Pro200',
-    Business: 'Business',
-    Enterprise: 'Enterprise',
+    Go: 'go',
+    Plus: 'plus',
+    Pro100: 'pro_100',
+    Pro200: 'pro_200',
+    Business: 'business',
 } as const;
 
 export const GeminiPlan = {
-    Plus: 'Plus',
-    Pro: 'Pro',
-    Ultra: 'Ultra',
+    AIPlus: 'ai_plus',
+    AIPro: 'ai_pro',
+    AIUltra: 'ai_ultra',
 } as const;
 
 export const WindsurfPlan = {
-    Pro: 'Pro',
-    Teams: 'Teams',
-    Enterprise: 'Enterprise',
+    Pro: 'pro',
+    Max: 'max',
+    Teams: 'teams',
 } as const;
 
 export const APIOnlyPlan = {
@@ -88,14 +88,13 @@ export const APIProviders = {
 export const AnthropicModels = {
     ClaudeHaiku45:  'claude-haiku-4-5',
     ClaudeSonnet46: 'claude-sonnet-4-6',
-    ClaudeOpus47:   'claude-opus-4-7',
+    ClaudeOpus45:   'claude-opus-4-5',
 } as const;
 
 export const OpenAIModels = {
-    GPT54Nano: 'gpt-5-4-nano',
-    GPT54Mini: 'gpt-5-4-mini',
+    GPT55:     'gpt-5-5',
     GPT54:     'gpt-5-4',
-    O3:        'o3',
+    GPT54Nano: 'gpt-5-4-nano',
 } as const;
 
 export const GoogleModels = {

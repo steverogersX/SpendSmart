@@ -94,13 +94,12 @@ export const apiToolSchema = z.object({
     tool:                   z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI]),
     provider:               z.enum(Object.values(APIProviders) as [string, ...string[]]),
     primaryModel:           z.string().min(1),
-    monthlySpend:           z.number().min(0),
+    averageMonthlySpend:    z.number().min(0),
     useCase:                UseCaseSchema,
-    needsBetterToolCalling: z.boolean().optional().default(false),
-    needsStructuredOutput:  z.boolean().optional().default(false),
-    okayWithChineseHosted:  z.boolean().optional().default(false),
-    needsLongContext:       z.boolean().optional().default(false),
-    isTimeSensitive:        z.boolean().optional().default(false),
+
+    okayWithChineseModals:  z.boolean().optional().default(false),
+    contextWindow:       z.number().positive().optional(),
+
 }).superRefine((data, ctx) => {
     const validModels = ModelsByProvider[data.provider as keyof typeof ModelsByProvider];
     if (!validModels.includes(data.primaryModel as never)) {
@@ -114,12 +113,9 @@ export const apiToolSchema = z.object({
 
 export type APIToolInput = z.infer<typeof apiToolSchema>;
 
-// ─── Combined union ───────────────────────────────────────────────────────────
 
 export const anyToolSchema = z.union([toolSchema, apiToolSchema]);
 export type AnyToolInput = z.infer<typeof anyToolSchema>;
-
-// ─── Request schemas ──────────────────────────────────────────────────────────
 
 export const auditRequestSchema = z.object({
     tools: z.array(anyToolSchema).min(1).max(8),
