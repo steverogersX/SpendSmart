@@ -11,7 +11,7 @@ import {
     MonthlySubscriptionAuditResult,
     ApiRecommendation,
     SubscriptionRecommendation,
-} from "@/types";
+} from "@shared/types/auditResult";
 import { pricingData, apiPricingData } from "@/data/pricingData";
 
 // API inputs carry `averageMonthlySpend`, subscription inputs carry

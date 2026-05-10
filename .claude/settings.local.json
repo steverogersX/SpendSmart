@@ -3,7 +3,10 @@
     "allow": [
       "Bash(npx jest *)",
       "Bash(npx tsc *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(Get-ChildItem -Recurse -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Select-String -Pattern \"package\\\\.json|\\\\.env|audit\" -ErrorAction SilentlyContinue)"
     ]
   }
 }
