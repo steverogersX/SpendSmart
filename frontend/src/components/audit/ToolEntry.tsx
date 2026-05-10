@@ -31,6 +31,8 @@ const SUBSCRIPTION_TOOLS = [
 const API_TOOLS = [
   { value: Tools.AnthropicAPI, label: "Anthropic API" },
   { value: Tools.OpenAIAPI, label: "OpenAI API" },
+  { value: Tools.KimiAPI, label: "Kimi API" },
+  { value: Tools.DeepseekAPI, label: "Deepseek API" },
 ];
 
 const USE_CASES = Object.entries(UseCases).map(([key, value]) => ({

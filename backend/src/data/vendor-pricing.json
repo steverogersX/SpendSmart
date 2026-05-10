@@ -164,6 +164,7 @@
   "anthropic_api": {
     "type": "api",
     "name": "Anthropic API",
+    "isChineseModel" : false,
     "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
     "models": {
       "claude-haiku-4-5": {
@@ -317,6 +318,7 @@
   "openai_api": {
     "type": "api",
     "name": "OpenAI API",
+    "isChineseModel" : false,
     "models": {
       "gpt-5-5": {
         "displayName": "GPT-5.5",
@@ -451,5 +453,193 @@
         ]
       }
     }
+  },
+
+
+  "kimi_api": {
+    "type": "api",
+    "name": "Kimi API",
+    "isChineseModel" : true,
+    "models": {
+      "kimi-k-2-6": {
+        "displayName": "Kimi K2.6",
+        "sourceUrl": "https://www.kimi.com/resources/kimi-k2-6-pricing",
+        "inputPricePer1MTokens": 0.95,
+        "outputPricePer1MTokens": 4.0,
+        "contextWindow": 262144,
+        "verifiedDate": "2026-05-09",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "Epoch SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/kimi-k2-6",
+            "score": 76.7,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-5",
+            "score": 55.9,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 1807.7,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          },
+
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 81.1,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
+      },
+      "kimi-k-2-5": {
+        "displayName": "Kimi K2.5",
+        "sourceUrl": "https://platform.kimi.ai/docs/pricing/chat-k25",
+        "inputPricePer1MTokens": 0.1,
+        "outputPricePer1MTokens": 3.0,
+        "contextWindow": 262144,
+        "verifiedDate": "2026-05-10",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "Epoch SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/kimi-k2-5",
+            "score": 73.8,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/kimi-k2-5",
+            "score": 45.6,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 1594.0,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          },
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 87.5,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
+      }
+    }
+  },
+  "deepseek_api": {
+    "type": "api",
+    "name": "DeepSeek API",
+    "isChineseModel" : true,
+    "models": {
+      "deepseek-v4-pro": {
+        "displayName": "DeepSeek V4 Pro",
+        "sourceUrl": "https://api-docs.deepseek.com/quick_start/pricing",
+        "inputPricePer1MTokens": 0.435,
+        "outputPricePer1MTokens": 0.87,
+        "contextWindow": 262144,
+        "verifiedDate": "2026-05-10",
+        "useCases": [
+          {
+            "useCase": "coding",
+            "benchmarkName": "Epoch SWE-bench Verified",
+            "benchmarkUrl": "https://epoch.ai/models/kimi-k2-6",
+            "score": 76.7,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "agentic",
+            "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+            "benchmarkUrl": "https://epoch.ai/models/gpt-5-5",
+            "score": 55.9,
+            "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          },
+
+          {
+            "useCase": "writing",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://eqbench.com/creative_writing.html",
+            "score": 1582.3,
+            "scoreFormat": "Elo rating against peer models on the EQ-Bench Creative Writing v3 leaderboard; higher is better. No fixed maximum.",
+            "scoreUnit": "Elo points",
+            "higherIsBetter": true,
+            "scoreType": "relative",
+            "maxScore": null
+          },
+
+          {
+            "useCase": "research",
+            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+            "score": 81.1,
+            "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
+            "scoreUnit": "percentage",
+            "higherIsBetter": true,
+            "scoreType": "absolute",
+            "maxScore": 100
+          }
+        ]
+      }
+     
+    }
   }
+
+
+
 }

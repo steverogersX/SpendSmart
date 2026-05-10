@@ -23,7 +23,7 @@ function isAPIInput(input: AnyToolInput): input is APIToolInput {
 
 // real usage skews input-heavy (prompts >> completions in most workloads)
 // 70/30 is a practical default; no per-request ratio field in the schema
-const INPUT_RATIO  = 0.7;
+const INPUT_RATIO = 0.7;
 const OUTPUT_RATIO = 0.3;
 
 // minimum % savings to surface a recommendation — candidates that
@@ -78,12 +78,12 @@ const auditSubscriptionTool = (input: ToolInput): MonthlySubscriptionAuditResult
 
 const auditApiTool = (input: APIToolInput): ApiAuditResult => {
     const currentVendor = apiPricingData[input.tool];
-    const currentModel  = currentVendor.models[input.primaryModel];
+    const currentModel = currentVendor.models[input.primaryModel];
 
     // weighted price per 1M tokens for the current model
     // current_weighted = (0.7 × inputPrice) + (0.3 × outputPrice)
     const currentWeighted =
-        INPUT_RATIO  * currentModel.inputPricePer1MTokens +
+        INPUT_RATIO * currentModel.inputPricePer1MTokens +
         OUTPUT_RATIO * currentModel.outputPricePer1MTokens;
 
     // back-solve monthly token volume from observed spend
@@ -95,7 +95,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
 
     // score of the current model for the requested use case (used as quality baseline)
     const currentUseCaseEntry = currentModel.useCases.find(uc => uc.useCase === input.useCase);
-    const currentScore        = currentUseCaseEntry?.score ?? null;
+    const currentScore = currentUseCaseEntry?.score ?? null;
 
     // quality floor: we tolerate up to dropCapacityBy% degradation
     // min_acceptable = currentScore × (1 − dropCapacityBy / 100)
@@ -114,6 +114,11 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             // Gate 0 — skip self
             if (vendorKey === input.tool && modelKey === input.primaryModel) continue;
 
+            // Gate Newly added one
+            // if user don't want chinese modals, we skip them
+            if (!input.okayWithChineseModals && vendor.isChineseModel) continue;
+
+
             // Gate 1 — use case support
             const candidateUCEntry = model.useCases.find(uc => uc.useCase === input.useCase);
             if (!candidateUCEntry) continue;
@@ -125,7 +130,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             // Gate 3 — must be cheaper (weighted price)
             // candidate_weighted = (0.7 × inPrice) + (0.3 × outPrice)
             const candidateWeighted =
-                INPUT_RATIO  * model.inputPricePer1MTokens +
+                INPUT_RATIO * model.inputPricePer1MTokens +
                 OUTPUT_RATIO * model.outputPricePer1MTokens;
             if (candidateWeighted >= currentWeighted) continue;
 
@@ -133,30 +138,30 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             // estimated_new_spend = (tokens / 1_000_000) × candidateWeighted
             // savings_pct         = (monthlySavings / averageMonthlySpend) × 100
             const estimatedNewSpend = (estimatedMonthlyTokens / 1_000_000) * candidateWeighted;
-            const monthlySavings    = input.averageMonthlySpend - estimatedNewSpend;
-            const savingsPct        = (monthlySavings / input.averageMonthlySpend) * 100;
+            const monthlySavings = input.averageMonthlySpend - estimatedNewSpend;
+            const savingsPct = (monthlySavings / input.averageMonthlySpend) * 100;
             if (savingsPct < SAVINGS_THRESHOLD_PCT) continue;
 
             // Gate 5 — context window (only checked when caller specifies a requirement)
             if (input.contextWindow && model.contextWindow < input.contextWindow) continue;
 
             candidates.push({
-                modelName:            modelKey,
-                modelDisplayName:     model.displayName,
-                contextWindow:        model.contextWindow,
-                verifiedDate:         model.verifiedDate,
-                benchmarkName:        candidateUCEntry.benchmarkName,
-                benchmarkUrl:         candidateUCEntry.benchmarkUrl,
-                pricingUrl:           model.sourceUrl,
-                savings:              monthlySavings,
-                savingsPercent:       savingsPct,
+                modelName: modelKey,
+                modelDisplayName: model.displayName,
+                contextWindow: model.contextWindow,
+                verifiedDate: model.verifiedDate,
+                benchmarkName: candidateUCEntry.benchmarkName,
+                benchmarkUrl: candidateUCEntry.benchmarkUrl,
+                pricingUrl: model.sourceUrl,
+                savings: monthlySavings,
+                savingsPercent: savingsPct,
                 estimatedMonthlyTokens,
                 reason: `${model.displayName} — $${model.inputPricePer1MTokens}/$${model.outputPricePer1MTokens} per 1M tokens (in/out)`,
-                score:                candidateUCEntry.score,
-                scoreType:            candidateUCEntry.scoreType,
-                scoreUnit:            candidateUCEntry.scoreUnit,
-                higherIsBetter:       candidateUCEntry.higherIsBetter,
-                maxScore:             candidateUCEntry.maxScore ?? null,
+                score: candidateUCEntry.score,
+                scoreType: candidateUCEntry.scoreType,
+                scoreUnit: candidateUCEntry.scoreUnit,
+                higherIsBetter: candidateUCEntry.higherIsBetter,
+                maxScore: candidateUCEntry.maxScore ?? null,
             });
         }
     }
@@ -171,7 +176,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             : `${Math.round(s)} Elo`;
 
     const benchName = currentUseCaseEntry?.benchmarkName ?? '';
-    const benchUrl  = currentUseCaseEntry?.benchmarkUrl  ?? '';
+    const benchUrl = currentUseCaseEntry?.benchmarkUrl ?? '';
 
     let summary: string;
     if (bestRecommendation) {
@@ -201,20 +206,20 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
     }
 
     return {
-        toolName:                   input.tool,
-        primaryModel:               input.primaryModel,
-        primaryUseCase:             input.useCase,
+        toolName: input.tool,
+        primaryModel: input.primaryModel,
+        primaryUseCase: input.useCase,
         currentAverageMonthlySpend: input.averageMonthlySpend,
-        currentModelScore:          currentScore,
-        scoreType:                  currentUseCaseEntry?.scoreType ?? 'absolute',
-        scoreUnit:                  currentUseCaseEntry?.scoreUnit ?? 'percentage',
-        higherIsBetter:             currentUseCaseEntry?.higherIsBetter ?? true,
-        maxScore:                   currentUseCaseEntry?.maxScore ?? null,
-        benchmarkName:              benchName,
-        benchmarkUrl:               benchUrl,
-        dropCapacityBy:             input.dropCapacityBy,
+        currentModelScore: currentScore,
+        scoreType: currentUseCaseEntry?.scoreType ?? 'absolute',
+        scoreUnit: currentUseCaseEntry?.scoreUnit ?? 'percentage',
+        higherIsBetter: currentUseCaseEntry?.higherIsBetter ?? true,
+        maxScore: currentUseCaseEntry?.maxScore ?? null,
+        benchmarkName: benchName,
+        benchmarkUrl: benchUrl,
+        dropCapacityBy: input.dropCapacityBy,
         summary,
-        status:                     candidates.length === 0 ? 'optimal' : 'optimize',
+        status: candidates.length === 0 ? 'optimal' : 'optimize',
         bestRecommendation,
         otherOptions,
     };
