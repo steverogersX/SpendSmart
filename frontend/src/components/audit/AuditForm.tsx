@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -32,6 +32,7 @@ export function AuditForm() {
   >("idle");
   const [result, setResult] = useState<AuditResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<FormValues, unknown, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +58,9 @@ export function AuditForm() {
       const data = await runAudit(values.tools);
       setResult(data);
       setStatus("success");
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Something went wrong");
       setStatus("error");
@@ -91,7 +95,11 @@ export function AuditForm() {
         </div>
       )}
 
-      {status === "success" && result && <AuditResults result={result} />}
+      {status === "success" && result && (
+        <div ref={resultsRef}>
+          <AuditResults result={result} />
+        </div>
+      )}
     </div>
   );
 }

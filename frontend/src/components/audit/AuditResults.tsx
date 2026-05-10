@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, TrendingDown, CheckCircle, ExternalLink, Share2 } from "lucide-react";
+import { ChevronDown, TrendingDown, CheckCircle, ExternalLink, Share2, Sparkles, Bell } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { isApiResult } from "@/lib/api";
 import {
@@ -498,15 +500,146 @@ function ResultCard({ item }: { item: AuditResultItem }) {
   );
 }
 
+// ─── Savings-tier CTAs ───────────────────────────────────────────────────────
+
+function HighSavingsCTA({ totalSavings }: { totalSavings: number }) {
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/40 p-5 space-y-4">
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+          <Sparkles className="size-4 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <div>
+          <p className="font-semibold text-emerald-900 dark:text-emerald-200">
+            {formatCurrency(totalSavings)}/mo in savings identified
+          </p>
+          <p className="mt-0.5 text-sm text-emerald-700/80 dark:text-emerald-400/80">
+            At this scale, a 30-minute Credex consultation could save you{" "}
+            <span className="font-medium">{formatCurrency(totalSavings * 12)}/year</span> — at no cost to you.
+          </p>
+        </div>
+      </div>
+      <a
+        href="/consult"
+        className="flex h-9 w-full items-center justify-center rounded-md bg-emerald-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700"
+      >
+        Book a free Credex consultation →
+      </a>
+      <p className="text-center text-[10px] text-emerald-600/60 dark:text-emerald-500/60">
+        Free · 30 min · No commitment
+      </p>
+    </div>
+  );
+}
+
+function MidSavingsCTA({ totalSavings }: { totalSavings: number }) {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <div className="rounded-xl border border-border bg-muted/30 p-5 space-y-4">
+      <div>
+        <p className="font-semibold">
+          {formatCurrency(totalSavings)}/mo in savings identified
+        </p>
+        <p className="mt-0.5 text-sm text-muted-foreground">
+          Get the full audit report with step-by-step migration guides sent to your inbox.
+        </p>
+      </div>
+      {submitted ? (
+        <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+          <CheckCircle className="size-4" />
+          Report on its way — check your inbox.
+        </div>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitted(true);
+          }}
+          className="flex gap-2"
+        >
+          <Input
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="flex-1"
+          />
+          <Button type="submit">Send report</Button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+function LowSavingsCTA() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <div className="rounded-xl border border-border bg-muted/20 p-5 space-y-4">
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
+          <Bell className="size-4 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="font-medium text-sm">You&apos;re already running lean</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            AI API prices are dropping fast. We&apos;ll notify you when a cheaper option hits your usage profile.
+          </p>
+        </div>
+      </div>
+      {submitted ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CheckCircle className="size-4 text-emerald-500" />
+          We&apos;ll let you know when prices shift.
+        </div>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitted(true);
+          }}
+          className="flex gap-2"
+        >
+          <Input
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="flex-1"
+          />
+          <Button type="submit" variant="outline">Notify me</Button>
+        </form>
+      )}
+    </div>
+  );
+}
+
 // ─── Root export ──────────────────────────────────────────────────────────────
 
 export function AuditResults({ result }: { result: AuditResult }) {
+  const totalSavings = result.results.reduce(
+    (sum, item) => sum + (item.bestRecommendation?.savings ?? 0),
+    0,
+  );
+
   return (
     <div className="space-y-4 pt-2">
       <h2 className="text-lg font-semibold tracking-tight">Audit Results</h2>
       {result.results.map((item, i) => (
         <ResultCard key={i} item={item} />
       ))}
+      {totalSavings > 500 ? (
+        <HighSavingsCTA totalSavings={totalSavings} />
+      ) : totalSavings >= 100 ? (
+        <MidSavingsCTA totalSavings={totalSavings} />
+      ) : (
+        <LowSavingsCTA />
+      )}
     </div>
   );
 }
