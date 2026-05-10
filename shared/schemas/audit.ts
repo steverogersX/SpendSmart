@@ -4,7 +4,7 @@ import {
     PlansByTool,
     ModelsByTool,
 } from '@shared/config/tools.config';
-import { UseCaseSchema } from './pricing';
+import { UseCaseSchema } from '../../backend/src/types/pricing';
 
 // ─── Re-exports: tools config ─────────────────────────────────────────────────
 
@@ -48,7 +48,7 @@ export {
     PricingDataSchema,
     SubscriptionPricingDataSchema,
     APIPricingDataSchema,
-} from './pricing';
+} from '../../backend/src/types/pricing';
 
 export type {
     ScoreType,
@@ -64,7 +64,7 @@ export type {
     SubscriptionPricingData,
     APIPricingData,
     Vendor,
-} from './pricing';
+} from '../../backend/src/types/pricing';
 
 // ─── Subscription tool schema ─────────────────────────────────────────────────
 

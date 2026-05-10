@@ -4,7 +4,7 @@ import {
     APIToolInput,
     AnyToolInput,
     UseCase,
-} from "@/types/audit";
+} from "@shared/schemas/audit";
 import {
     AuditResult,
     ApiAuditResult,

@@ -28,3 +28,4 @@ export type APIProviderType       = typeof APIProviders[keyof typeof APIProvider
 export type AnthropicModelType    = typeof AnthropicModels[keyof typeof AnthropicModels];
 export type OpenAIModelType       = typeof OpenAIModels[keyof typeof OpenAIModels];
 export type GoogleModelType       = typeof GoogleModels[keyof typeof GoogleModels];
+export type UseCaseType            = typeof UseCases[keyof typeof UseCases];
