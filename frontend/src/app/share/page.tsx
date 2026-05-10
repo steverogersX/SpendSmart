@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
@@ -65,12 +66,13 @@ export default async function SharePage({ searchParams }: Props) {
       <div className="w-full max-w-2xl space-y-8">
         {/* OG image preview */}
         <div className="rounded-2xl overflow-hidden shadow-2xl border border-border">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={ogImageUrl}
             alt="Audit result"
-            className="w-full"
-            style={{ aspectRatio: "1200/630" }}
+            width={1200}
+            height={630}
+            className="w-full h-auto"
+            unoptimized
           />
         </div>
 

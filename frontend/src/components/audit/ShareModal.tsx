@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { X, Copy, Check } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ShareModalProps {
@@ -99,12 +100,13 @@ export function ShareModal({ open, onClose, ogParams, title }: ShareModalProps) 
         {/* OG image preview */}
         <div className="px-5">
           <div className="rounded-xl overflow-hidden border border-border shadow-md">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={ogImageUrl}
-              alt="Preview"
-              className="w-full"
-              style={{ aspectRatio: "1200/630", display: "block" }}
+              alt="Share preview"
+              width={1200}
+              height={630}
+              className="w-full h-auto"
+              unoptimized
             />
           </div>
         </div>

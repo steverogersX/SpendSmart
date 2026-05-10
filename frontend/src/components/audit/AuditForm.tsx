@@ -6,8 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
 import { ToolEntry } from "./ToolEntry";
-import { AuditResults } from "./AuditResults";
+
+const AuditResults = dynamic(
+  () => import("./AuditResults").then((m) => ({ default: m.AuditResults })),
+  { ssr: false },
+);
 import { apiToolSchema, toolSchema } from "@shared/schemas/audit";
 import { runAudit } from "@/lib/api";
 import { AuditResult } from "@shared/types/auditResult";
