@@ -9,7 +9,8 @@
       "Bash(Select-String -Pattern \"package\\\\.json|\\\\.env|audit\" -ErrorAction SilentlyContinue)",
       "Bash(node -e \"try{const p=require\\('C:/Users/pavan/web/spendsmart/frontend/node_modules/@vercel/og/package.json'\\);console.log\\('@vercel/og:',p.version\\)}catch\\(e\\){console.log\\('not found'\\)}; try{const p=require\\('C:/Users/pavan/web/spendsmart/frontend/node_modules/satori/package.json'\\);console.log\\('satori:',p.version\\)}catch\\(e\\){console.log\\('satori not found directly'\\)}\")",
       "Bash(node -e \"const p=require\\('C:/Users/pavan/web/spendsmart/frontend/node_modules/next/package.json'\\); const d=p.dependencies||{}; const o=p.optionalDependencies||{}; console.log\\('@vercel/og:',d['@vercel/og']||o['@vercel/og']\\); console.log\\('satori:',d['satori']||o['satori']\\)\")",
-      "Bash(xargs -I{} node -e \"const p=require\\('{}'\\); console.log\\('satori:', p.version\\)\")"
+      "Bash(xargs -I{} node -e \"const p=require\\('{}'\\); console.log\\('satori:', p.version\\)\")",
+      "Bash(npm run *)"
     ]
   }
 }

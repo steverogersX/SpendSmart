@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -50,6 +50,14 @@ export function AuditForm() {
     },
   });
 
+  useEffect(() => {
+    if (status === "success") {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  }, [status]);
+
   async function onSubmit(values: z.output<typeof formSchema>) {
     setStatus("loading");
     setResult(null);
@@ -58,9 +66,6 @@ export function AuditForm() {
       const data = await runAudit(values.tools);
       setResult(data);
       setStatus("success");
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 50);
     } catch (e) {
       setErrorMsg(e instanceof Error ? e.message : "Something went wrong");
       setStatus("error");
@@ -68,12 +73,11 @@ export function AuditForm() {
   }
 
   const isLoading = status === "loading";
-  const onFormSubmit = methods.handleSubmit(onSubmit);
 
   return (
     <div className="space-y-6">
       <FormProvider {...methods}>
-        <form onSubmit={onFormSubmit} className="space-y-4">
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
           <ToolEntry />
 
           <div className="flex items-center gap-3 pt-2">
