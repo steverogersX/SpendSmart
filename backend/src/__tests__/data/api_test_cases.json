@@ -1,0 +1,206 @@
+[
+  {
+    "description": "Candidate passes all gates and becomes the recommendation — opus/research: weighted=11.0, tokens=90909091. minAcceptable=87.3×0.95=82.935. gpt-5-4 (research=87.5≥82.935, weighted=6.25<11.0, savings=43.18%≥30%, no ctx req). Sonnet (87.3≥82.935, weighted=6.6, savings=40%). gpt-5-5 drops at Gate 3 (weighted=12.5>11). haiku/nano drop at Gate 1 (no research). Sorted by savings: gpt-5-4 first.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "averageMonthlySpend": 1000,
+      "useCase": "research",
+      "dropCapacityBy": 5,
+      "okayWithChineseModals": false
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "primaryUseCase": "research",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimize",
+      "bestRecommendation": {
+        "modelName": "gpt-5-4",
+        "modelDisplayName": "GPT-5.4",
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "benchmarkName": "EQ-Bench Creative Writing",
+        "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+        "savings": 431.81818124999995,
+        "savingsPercent": 43.18181812499999,
+        "estimatedMonthlyTokens": 90909091,
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+      },
+      "otherOptions": [
+        {
+          "modelName": "claude-sonnet-4-6",
+          "modelDisplayName": "Claude Sonnet 4.6",
+          "contextWindow": 1000000,
+          "verifiedDate": "2026-05-09",
+          "benchmarkName": "EQ-Bench Creative Writing",
+          "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+          "savings": 399.9999994,
+          "savingsPercent": 39.999999939999995,
+          "estimatedMonthlyTokens": 90909091,
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+        }
+      ]
+    }
+  },
+  {
+    "description": "Quality gate excludes models below the score floor — opus/agentic with dropCapacityBy=5: currentScore=63.7, minAcceptable=60.515. haiku (agentic=45.4) and gpt-5-4-nano (agentic=49.2) both fall below threshold and are dropped at Gate 2. gpt-5-5 drops at Gate 3 (weighted=12.5>11.0). Surviving candidates are sonnet (agentic=66.1, savings=40%) and gpt-5-4 (agentic=77.7, savings=43.18%). Sorted by savings: gpt-5-4 first.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "averageMonthlySpend": 1000,
+      "useCase": "agentic",
+      "dropCapacityBy": 5,
+      "okayWithChineseModals": false
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "primaryUseCase": "agentic",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimize",
+      "bestRecommendation": {
+        "modelName": "gpt-5-4",
+        "modelDisplayName": "GPT-5.4",
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+        "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+        "savings": 431.81818124999995,
+        "savingsPercent": 43.18181812499999,
+        "estimatedMonthlyTokens": 90909091,
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+      },
+      "otherOptions": [
+        {
+          "modelName": "claude-sonnet-4-6",
+          "modelDisplayName": "Claude Sonnet 4.6",
+          "contextWindow": 1000000,
+          "verifiedDate": "2026-05-09",
+          "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+          "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+          "savings": 399.9999994,
+          "savingsPercent": 39.999999939999995,
+          "estimatedMonthlyTokens": 90909091,
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+        }
+      ]
+    }
+  },
+  {
+    "description": "Savings gate drops a marginally cheaper candidate — sonnet/coding with dropCapacityBy=20: currentWeighted=6.6, tokens=151515152, minAcceptable=75.2×0.8=60.16. gpt-5-4 (weighted=6.25) is cheaper but savingsPct=(1000−946.97)/1000×100≈5.3%<30% → dropped at Gate 4. haiku (weighted=2.2, coding=66.6≥60.16, savingsPct≈66.7%) is the only survivor.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-sonnet-4-6",
+      "averageMonthlySpend": 1000,
+      "useCase": "coding",
+      "dropCapacityBy": 20,
+      "okayWithChineseModals": false
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-sonnet-4-6",
+      "primaryUseCase": "coding",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimize",
+      "bestRecommendation": {
+        "modelName": "claude-haiku-4-5",
+        "modelDisplayName": "Claude Haiku 4.5",
+        "contextWindow": 200000,
+        "verifiedDate": "2026-05-09",
+        "benchmarkName": "SWE-bench Verified",
+        "benchmarkUrl": "https://www.swebench.com/#verified",
+        "savings": 666.6666656,
+        "savingsPercent": 66.66666656,
+        "estimatedMonthlyTokens": 151515152,
+        "reason": "Claude Haiku 4.5 — $1/$5 per 1M tokens (in/out)"
+      },
+      "otherOptions": []
+    }
+  },
+  {
+    "description": "No model in the pricing data supports the requested use case — sonnet/data: none of the API models list 'data' in their useCases, so every candidate drops at Gate 1. currentScore=null (sonnet has no data benchmark), minAcceptable=null. Status is optimal.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-sonnet-4-6",
+      "averageMonthlySpend": 1000,
+      "useCase": "data",
+      "dropCapacityBy": 5,
+      "okayWithChineseModals": false
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-sonnet-4-6",
+      "primaryUseCase": "data",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimal",
+      "bestRecommendation": null,
+      "otherOptions": []
+    }
+  },
+  {
+    "description": "Context window requirement drops the cheapest candidate — opus/coding with dropCapacityBy=20 and contextWindow=500000: minAcceptable=76.8×0.8=61.44. haiku (coding=66.6≥61.44, weighted=2.2<11.0, savings≈80%) would be the strongest candidate but its contextWindow=200000<500000 → dropped at Gate 5. sonnet (ctx=1000000) and gpt-5-4 (ctx=1050000) both satisfy the constraint and survive.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "averageMonthlySpend": 1000,
+      "useCase": "coding",
+      "dropCapacityBy": 20,
+      "okayWithChineseModals": false,
+      "contextWindow": 500000
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-opus-4-5",
+      "primaryUseCase": "coding",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimize",
+      "bestRecommendation": {
+        "modelName": "gpt-5-4",
+        "modelDisplayName": "GPT-5.4",
+        "contextWindow": 1050000,
+        "verifiedDate": "2026-05-09",
+        "benchmarkName": "Epoch SWE-bench Verified",
+        "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+        "savings": 431.81818124999995,
+        "savingsPercent": 43.18181812499999,
+        "estimatedMonthlyTokens": 90909091,
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+      },
+      "otherOptions": [
+        {
+          "modelName": "claude-sonnet-4-6",
+          "modelDisplayName": "Claude Sonnet 4.6",
+          "contextWindow": 1000000,
+          "verifiedDate": "2026-05-09",
+          "benchmarkName": "SWE-bench Verified",
+          "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+          "savings": 399.9999994,
+          "savingsPercent": 39.999999939999995,
+          "estimatedMonthlyTokens": 90909091,
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+        }
+      ]
+    }
+  },
+  {
+    "description": "Current model is already the cheapest weighted price — haiku/coding: currentWeighted=0.7×1+0.3×5=2.2 (lowest of all models). Every other model has weighted≥6.25 so all drop at Gate 3. tokens=round((1000/2.2)×1e6)=454545455. Status is optimal.",
+    "input": {
+      "tool": "anthropic_api",
+      "primaryModel": "claude-haiku-4-5",
+      "averageMonthlySpend": 1000,
+      "useCase": "coding",
+      "dropCapacityBy": 5,
+      "okayWithChineseModals": false
+    },
+    "expectedOutput": {
+      "toolName": "anthropic_api",
+      "primaryModel": "claude-haiku-4-5",
+      "primaryUseCase": "coding",
+      "currentAverageMonthlySpend": 1000,
+      "status": "optimal",
+      "bestRecommendation": null,
+      "otherOptions": []
+    }
+  }
+]
