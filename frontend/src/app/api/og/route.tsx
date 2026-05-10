@@ -408,7 +408,7 @@ export async function GET(req: NextRequest) {
                           background: "rgba(148,163,184,0.35)",
                         }}
                       />
-                      <span style={{ color: "#475569", fontSize: 11 }}>
+                      <span style={{ color: "#94a3b8", fontSize: 11 }}>
                         Current
                       </span>
                     </div>
@@ -423,11 +423,11 @@ export async function GET(req: NextRequest) {
                           background: "#10b981",
                         }}
                       />
-                      <span style={{ color: "#475569", fontSize: 11 }}>
+                      <span style={{ color: "#94a3b8", fontSize: 11 }}>
                         Recommended
                       </span>
                     </div>
-                    <span style={{ color: "#1e3a5f", fontSize: 11 }}>
+                    <span style={{ color: "#94a3b8", fontSize: 11 }}>
                       {hib ? "↑ Higher is better" : "↓ Lower is better"}
                     </span>
                   </div>
@@ -452,7 +452,7 @@ export async function GET(req: NextRequest) {
                     >
                       <span
                         style={{
-                          color: "#475569",
+                          color: "#94a3b8",
                           fontSize: 10,
                           fontWeight: 700,
                           letterSpacing: "0.1em",
@@ -473,7 +473,7 @@ export async function GET(req: NextRequest) {
                       </span>
                       <span
                         style={{
-                          color: "#475569",
+                          color: "#94a3b8",
                           fontSize: 13,
                           marginTop: 3,
                         }}
@@ -580,7 +580,7 @@ export async function GET(req: NextRequest) {
               />
               <span
                 style={{
-                  color: "#475569",
+                  color: "#94a3b8",
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: "0.12em",
@@ -643,10 +643,10 @@ export async function GET(req: NextRequest) {
             position: "relative",
           }}
         >
-          <span style={{ color: "#1e3a5f", fontSize: 13 }}>
+          <span style={{ color: "#94a3b8", fontSize: 13 }}>
             spendsmart.app
           </span>
-          <span style={{ color: "#1e3a5f", fontSize: 13 }}>
+          <span style={{ color: "#94a3b8", fontSize: 13 }}>
             Powered by real benchmark data
           </span>
         </div>

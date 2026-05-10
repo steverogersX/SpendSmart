@@ -4,19 +4,19 @@
 
 ## What I did
 
-I setup the project. Then I entirely focused on backend. I setup the HTTP server, config and logging.
+Set up the project. Backend only today. Got the HTTP server, config, and logging running.
 
-Then I worked on the input form, what fields to add and what could be the Zod schema, and how my pricingData.json should look like to evaluate the auditing.
+Then figured out the input form — what fields to collect, what the Zod schema looks like, how `pricingData.json` needs to be structured for the audit to work.
 
-Then I worked on audit logic. Most of the time was spent thinking about how to evaluate. I came up with one approach, implemented that approach and also added tests for that logic.
+Then the audit logic. Spent most of the time thinking before writing anything. Came up with an approach, implemented it, added tests.
 
 ## What I learned
 
-Initially I was stuck because if I set the `plan` field as open text, then the user could type anything or give typos, so it makes it hard to evaluate. The realization was that since we already have the `pricingData.json`, we know exactly which tools and plans we support. So I made `plan` a restricted dropdown instead of open text. This way invalid inputs are impossible.
+The `plan` field was open text at first. That's a problem because users can type anything or make typos and then evaluation breaks. Since we already have `pricingData.json` and know exactly what tools and plans exist, just make it a dropdown. Problem solved.
 
-In order to evaluate the records, we need a `useCases` field for each record in `pricingData.json`. Otherwise we cannot tell if a user says `useCase` is coding, which tools actually support that.
+Also — every record in `pricingData.json` needs a `useCases` field. Without it there's no way to know which tools support what when a user says their use case is coding.
 
-Another problem I faced was where to put the `useCases` field. I initially thought of putting it at the tool level like this:
+Then I made a mistake. I put `useCases` at the tool level:
 
 ```json
 "gemini": {
@@ -31,9 +31,7 @@ Another problem I faced was where to put the `useCases` field. I initially thoug
 }
 ```
 
-But this is wrong. Some plans within the same tool don't give coding as a feature. For example Gemini Plus has no Gemini CLI and no Antigravity IDE access. If we tag the entire Gemini tool as supporting coding, we might recommend Gemini Plus for a coding use case which is completely wrong. The realization was that `useCases` has to live at the plan level, not the tool level. Different plans within the same vendor support different capabilities.
-
-so, the I finally concluded json will be following like below one
+Wrong. Gemini Plus has no CLI, no IDE access. If I tag the whole Gemini tool as supporting coding, I might recommend Gemini Plus for a coding use case. That's completely wrong. `useCases` has to be at the plan level. So:
 
 ```json
 "gemini": {
@@ -59,7 +57,7 @@ so, the I finally concluded json will be following like below one
 }
 ```
 
-Another problem I faced was around how a user might add the same tool multiple times for different tasks. For example:
+Another thing — what if someone adds the same tool three times for different tasks:
 
 ```text
 claude pro $20 writing
@@ -67,29 +65,21 @@ claude pro $20 coding
 claude pro $20 design
 ```
 
-Here the same person adds Claude Pro three times because he uses it for three different tasks. But he only pays one `$20` subscription that covers all three.
+Same person. Same `$20` subscription. Just uses it for three things. My first instinct was to evaluate each row separately — find a cheaper writing tool, saves `$5`. Next row saves `$2`. Next saves `$0`. Total savings `$7`.
 
-My initial thought was to evaluate each record separately.
+That's completely wrong. He's paying one `$20` that covers all three. If he follows that advice and moves each use case to a separate cheaper tool he ends up paying `$15 + $18 + $20`. More than before. We'd be telling him to spend more money.
 
-- Claude pro `$20` writing → find a cheaper writing tool → saves `$5`
-- Next record saves `$2`
-- Next record saves `$0`
-
-Total savings = `$7`
-
-But this is entirely wrong. In a single subscription he gets all three use cases covered. If he follows our recommendation and switches each task to a separate cheaper tool, he would end up paying `$15 + $18 + $20` which is more than his original `$20` plan. We would be telling him to spend more money while claiming he saves `$7`.
-
-The realization was that the assessment already solves this with the `mixed` use case option. If a user uses the same subscription for multiple tasks, they should add it once and select `mixed` as the use case. That way we evaluate it as one record covering all tasks, not three separate records. This prevents the false savings calculation entirely.
+The fix is already there — the `mixed` use case option. If you use one subscription for multiple tasks, add it once and pick `mixed`. One record, covers everything. No fake savings.
 
 ## Blockers / what I'm stuck on
 
-API based evaluation is a blocker. API based tools work completely differently from monthly subscription tools. There are no seats, no fixed plans, and billing varies every month based on token consumption. I have to figure out what input fields make sense to ask the user and how the evaluation logic should work differently from the subscription based approach.
+API-based evaluation. API tools are totally different — no seats, no fixed plans, billing changes every month based on tokens. Don't know yet what to even ask the user or how the logic should work.
 
 ## Plan for tomorrow
 
-Have to figure out the API based evaluation approach. What fields to collect from the user and what recommendations are actually possible given limited information about their usage patterns.
+Figure out the API evaluation approach. What to collect from the user, what recommendations are even possible when usage data is so limited.
 
-Also have to test the monthly based tool evaluation logic more thoroughly and cover more edge cases before moving forward.
+Also need to stress-test the subscription logic more before moving on.
 
 ---
 
@@ -99,94 +89,47 @@ Also have to test the monthly based tool evaluation logic more thoroughly and co
 
 ## What I did
 
-I was spending most of the time thinking about how to evaluate the API based suggestions for user given inputs.
+Thinking day. Almost entirely about API evaluation.
 
-Then I got the idea that we cannot simply say okay this model is better at coding than the model the user currently uses. That would be completely wrong because we have no objective way to prove why model X is better than model Y for a specific use case.
+First thing I hit — can't just say "this model is better at coding than yours." There's no way to back that up. It's just an opinion.
 
-So I started thinking about how to justify recommendations properly.
+So the question became: how do you actually justify a recommendation?
 
-The realization was that we need some kind of scoring system that explains why we would choose model X over model Y for use case Z while also being cheaper.
+API users are mostly developers. They didn't pick their model randomly — they probably already know why they're using it. The real problem is they might not know there's another model that's nearly as capable for way less money. That's literally what this app is for.
 
-I am assuming users who use APIs are mostly developers or technical users. They probably already know why they are using their current model. The problem is not that they picked randomly. The real problem is they may not know if another model exists that gives almost the same capability for a much lower price.
+So: benchmark-based scoring. Compare capability using real data, not just price.
 
-That is the whole point of our application.
-
-So I concluded that we need a scoring system based on benchmark data instead of making recommendations purely from pricing.
-
-I also spent time researching what benchmarks are trusted for different use cases and how those scores can be normalized into a common scale for comparison.
+Spent the rest of the day looking at which benchmarks exist, which ones are trusted, and how to normalize scores across them so they're actually comparable.
 
 ## What I learned
 
-API based evaluation is completely different from subscription based evaluation.
-
-For subscription tools, price comparison is enough in many cases because plans are fixed.
-
-For APIs, capability matters much more because the user is directly paying for model quality and performance.
-
-A recommendation without capability validation is not defensible.
-
-Because of that, benchmark based scoring becomes necessary for API recommendations.
+API evaluation and subscription evaluation are completely different problems. For subscriptions, price comparison is usually enough. For APIs, you have to validate capability first — the user is paying directly for model quality. A recommendation that ignores that isn't really a recommendation.
 
 ## Blockers / what I'm stuck on
 
-Still need to validate whether the normalization and scoring logic actually makes sense with real benchmark data.
-
-Also need to figure out how strict the recommendation filtering should be when comparing models with different benchmark strengths.
+Haven't validated if the normalization idea actually works with real data yet. Also not sure how strict the capability filtering should be.
 
 ## Plan for tomorrow
 
-Have to implement my scoring and recommendation logic.
-
-Need to cross check the logic again with actual benchmark and pricing data to make sure the recommendations are reasonable before moving forward.
+Implement the scoring and recommendation logic. Check it against real benchmark and pricing data.
 
 ---
 
-
-# Day 3 — 2026-05-08
+# Day 3 — 2026-05-09
 
 **Hours worked:** 7
 
 ## What I did
 
-Spent the entire day thinking about how to evaluate API-based tool usage. No code written today — purely research, systems thinking, and problem solving.
+Whole day thinking. Zero code. Just research and trying to get the logic right in my head.
 
-The main problem today was realizing that API recommendation systems are fundamentally different from subscription recommendation systems.
+The problem with API recommendations is that two users paying the same amount every month can have totally different usage. One sends huge prompts with short outputs. Another sends tiny prompts with huge responses. Another uses reasoning models where hidden tokens cost a lot. Monthly spend alone tells you almost nothing about actual usage.
 
-For subscription products, recommendations are relatively simple because plans are discrete and human-readable:
+So the question that kept coming up was — what does a defensible recommendation even look like for an API user?
 
-* fixed monthly price
-* seat limits
-* feature limits
-* storage limits
-* predefined tiers
+Can't just find the cheapest model. If someone is using Claude Opus 4.7 and spending `$150/month`, recommending a `$20/month` model without checking if it can actually do the job is wrong. The cheaper model might completely fall apart on their actual work.
 
-You can compare two subscription tools directly because the pricing structure itself already contains the constraints.
-
-API products do not work like this.
-
-API pricing is continuous, usage-based, and model-dependent. Two users paying `$150/month` may have completely different usage patterns:
-
-* one may send massive prompts with low output
-* another may send tiny prompts with huge generations
-* another may heavily use reasoning models with high output-token costs
-
-This means monthly spend alone contains almost no direct information about actual usage volume or workload characteristics.
-
-The core challenge became:
-
-> "What is a defensible recommendation for an API user?"
-
-A recommendation cannot simply optimize for lower cost.
-
-If a user currently uses a high-capability model like Claude Opus 4.7 for writing tasks and spends `$150/month`, recommending a `$20/month` model without validating quality would be irresponsible. The cheaper model may completely fail the actual workload despite being cheaper.
-
-So the recommendation problem immediately became a constrained optimization problem:
-
-We are not minimizing cost alone.
-
-We are minimizing cost subject to a minimum acceptable capability threshold.
-
-Conceptually the problem became:
+So it's a constrained problem. Not just minimize cost — minimize cost while staying above some capability floor:
 
 $$\text{Minimize Cost}(m)$$
 
@@ -194,147 +137,52 @@ Subject to:
 
 $$\text{Capability}(m) \geq \text{Required Capability}$$
 
-Where:
+Where $m$ is the candidate model and capability comes from benchmark data.
 
-* $m$ = candidate model
-* capability is derived from benchmark performance
-* required capability is relative to the user's current model
+That pushed me into researching benchmarks. Needed to understand what each one measures, how scores are calculated, and whether scores from different benchmarks can even be compared.
 
-This led to researching benchmark ecosystems across LLM providers and evaluation communities.
+Looked at:
+- SWE-bench for coding
+- EQ-Bench for creative writing / emotional reasoning
+- MMLU-Pro for research and general reasoning
 
-Spent significant time understanding:
+Found a big problem. Benchmarks use completely different scoring systems. SWE-bench gives you a percentage. EQ-Bench gives you an Elo rating. You literally cannot compare `82.4%` and `2045 Elo` — they're on different scales. Elo has no ceiling. Percentages go from 0 to 100. Meaningless to put them side by side.
 
-* what each benchmark actually measures
-* what tasks the benchmark represents
-* how scores are computed
-* whether scores are comparable across benchmarks
-* whether benchmarks are trusted by developers
+So I had to design a normalization step. Bring everything to the same 0–1 scale.
 
-Benchmarks researched:
-
-* SWE-bench for coding capability
-* EQ-Bench for creative writing and emotional reasoning
-* MMLU-Pro for research/general reasoning
-* additional investigation into agentic and workflow benchmarks
-
-One major realization was that benchmarks are not standardized at all.
-
-Different benchmarks use entirely different scoring systems:
-
-* percentage accuracy
-* pass@k
-* Elo systems
-* pairwise voting systems
-* task completion metrics
-
-Examples:
-
-SWE-bench:
-
-$$\text{Score} = 82.4\%$$
-
-EQ-Bench:
-
-$$\text{Score} = 2045 \text{ Elo}$$
-
-These values cannot be compared directly because they exist on completely different mathematical scales.
-
-An Elo score is relative and open-ended.
-
-A percentage score is bounded:
-
-$$0 \leq p \leq 100$$
-
-Elo has no universal upper bound.
-
-So a major part of the day was spent designing a normalization strategy.
-
-The idea was to transform every benchmark into a common normalized capability space:
-
-$$0 \leq s_{\text{normalized}} \leq 1$$
-
-For percentage-based benchmarks:
+For percentages it's just:
 
 $$s_{\text{normalized}} = \frac{s}{100}$$
 
-Example:
+So `82%` becomes `0.82`.
 
-$$82\% \rightarrow 0.82$$
-
-For Elo-based systems:
+For Elo:
 
 $$s_{\text{normalized}} = \frac{s - s_{\min}}{s_{\max} - s_{\min}}$$
 
-Where:
+Take the model's score, subtract the lowest score in the dataset, divide by the full range. Maps everything into 0–1.
 
-* $s$ = model Elo
-* $s_{\min}$ = minimum Elo in dataset
-* $s_{\max}$ = maximum Elo in dataset
+One other decision — the system shouldn't be the one deciding what "good enough" means. That has to come from the user. So instead of the app deciding a model is acceptable, the user sets how much capability drop they're okay with.
 
-This converts all benchmarks into the same bounded range.
-
-The important realization was that the system should never decide "acceptable quality" itself.
-
-That threshold must come from the user.
-
-So instead of asking:
-
-> "Which model is best?"
-
-The system asks:
-
-> "How much capability degradation are you willing to tolerate for cost savings?"
-
-Default assumption explored today:
-
-$$\text{Allowed Drop} = 5\%$$
-
-If current model capability is $c_{\text{current}}$, then acceptable candidate models must satisfy:
+I'm defaulting to 5%. If the current model's capability score is $c_{\text{current}}$, a candidate has to satisfy:
 
 $$c_{\text{candidate}} \geq c_{\text{current}} \times (1 - 0.05)$$
 
-This transforms the recommendation system into a constrained filtering pipeline instead of subjective ranking.
+Then the pipeline is:
+1. score the current model
+2. score alternatives
+3. filter out anything below the threshold
+4. from what's left, pick the cheapest
 
-The recommendation then becomes:
+That feels honest. The recommendation is backed by data, the user controls the tradeoff, and you can actually explain why a specific model was recommended.
 
-1. estimate current model capability
-2. estimate alternative model capability
-3. filter alternatives below acceptable threshold
-4. among remaining candidates, minimize estimated monthly cost
+One more hard thing today — most users only know their monthly spend, their provider, and their model. They don't know their token counts. So I have to infer usage from just the cost.
 
-This felt significantly more defensible because recommendations are now:
-
-* benchmark-backed
-* mathematically explainable
-* user-controlled
-* not dependent on subjective opinions
-
-Also spent time researching API pricing structures across providers.
-
-Another difficult problem identified:
-
-Most users know:
-
-* monthly spend
-* current provider
-* current model
-
-But they do not know:
-
-* token volume
-* input token count
-* output token count
-* exact request distribution
-
-So token usage must be inferred indirectly.
-
-Initial approximation explored:
+My approach:
 
 $$\text{Estimated Tokens} = \frac{\text{Monthly Spend}}{\text{Weighted Average Token Price}}$$
 
-But weighted average token price itself depends on input/output distribution.
-
-Explored assuming $70\%$ input tokens and $30\%$ output tokens. So:
+For the weighted average I'm assuming 70% input, 30% output:
 
 $$p_{\text{avg}} = 0.7 \cdot p_{\text{input}} + 0.3 \cdot p_{\text{output}}$$
 
@@ -342,114 +190,64 @@ Then:
 
 $$\text{Estimated Monthly Tokens} = \frac{\text{Monthly Spend}}{p_{\text{avg}}}$$
 
-This approximation is obviously imperfect, but it may be sufficient for directional recommendations.
+Not perfect. But should be directionally right.
 
-A large part of today was spent validating whether the assumptions themselves are reasonable enough to produce recommendations that are useful instead of misleading.
-
-No implementation today because the conceptual model itself was still unstable and evolving throughout the day.
-
-The majority of the work was systems reasoning, benchmark analysis, mathematical normalization design, and defining recommendation constraints.
-
----
+Didn't write any code today because the logic was still shifting throughout the day. Didn't want to implement something I'd rip out tomorrow.
 
 ## What I learned
 
-The biggest realization today was that API evaluation is not primarily a pricing problem.
+API evaluation is not a pricing problem. It's a capability problem that also happens to involve pricing. If you skip the capability check, the recommendation is just noise.
 
-It is a capability-constrained optimization problem.
+Also — raw benchmark scores are useless for comparison without normalization. The whole point of the normalization step is to turn a bunch of incompatible scoring systems into one common scale you can actually reason about.
 
-Cost alone is meaningless without validating whether the replacement model can maintain acceptable task quality.
+And the system should never be opinionated about quality. It should just say: "this model is 4.2% below your current capability and would cut your monthly cost by 68%." Let the user decide if that tradeoff is worth it.
 
-A cheaper model is only useful if it remains above the user's acceptable capability threshold.
-
-Another important realization was that benchmark interpretation matters more than benchmark existence.
-
-A benchmark score without normalization is not directly usable in a recommendation engine because different benchmarks operate on incompatible scales.
-
-Normalization effectively converts heterogeneous evaluation systems into a unified comparison space.
-
-Mathematically, the normalization layer becomes a transformation function:
-
-$$f : S_{\text{raw}} \rightarrow [0,1]$$
-
-Where:
-
-* $S_{\text{raw}}$ is benchmark-specific score space
-* output becomes standardized capability space
-
-This creates a benchmark-agnostic recommendation pipeline.
-
-Also learned that recommendation systems become far more explainable when framed as constraints rather than opinions.
-
-Instead of:
-
-> "This model is better."
-
-The system can explain:
-
-> "This model is 4.2% below your current capability score while reducing projected monthly cost by 68%."
-
-That is objective and measurable.
-
-Another major insight:
-
-The quality of recommendations will depend heavily on benchmark selection per use case.
-
-Using SWE-bench for writing recommendations would produce nonsensical outputs.
-
-So use-case → benchmark mapping becomes critical.
-
-Conceptually:
+One more thing — the benchmark you pick has to match the use case. Using SWE-bench to recommend a writing model would give garbage results. The mapping has to be:
 
 $$\text{Use Case} \rightarrow \text{Relevant Benchmark} \rightarrow \text{Capability Score}$$
 
-The benchmark layer itself becomes domain-specific.
-
----
-
 ## Blockers / what I'm stuck on
 
-The normalization approach makes sense theoretically, but it has not yet been validated against real benchmark datasets.
+The normalization looks fine in theory but I haven't tested it on real data. One thing that worries me — two different benchmarks might have really different score distributions. One might cluster all the top models between `0.92–0.97`. Another might spread them across `0.40–0.95`. Same normalized difference, completely different real-world meaning. Might need percentile normalization or z-score instead of simple min-max. Not sure yet.
 
-Need to verify whether normalized scores preserve meaningful ranking relationships across models.
-
-Potential concern:
-
-Two benchmarks may have very different score distributions.
-
-Example:
-
-* one benchmark may cluster all strong models tightly between `0.92–0.97`
-* another may spread models across `0.40–0.95`
-
-This means equal normalized differences may not correspond to equal real-world quality differences.
-
-Need to investigate whether percentile normalization or z-score normalization would preserve relative capability better.
-
-Another unresolved issue:
-
-Current token estimation relies on assumed input/output ratios.
-
-But different workloads have dramatically different token shapes:
-
-* coding agents may generate huge outputs
-* retrieval workflows may have massive inputs
-* reasoning models may consume hidden reasoning tokens
-
-So the `70/30` assumption may fail badly for some workloads.
-
-Need to determine whether:
-
-* static assumptions are sufficient
-* workload-specific heuristics are needed
-* users should optionally provide workload profiles
-
-Still uncertain how reliable the inferred token estimation will be in production scenarios.
-
----
+The `70/30` token assumption also bothers me. Coding agents generate huge outputs. Retrieval workflows have massive inputs. Reasoning models have hidden tokens. The assumption might be way off for some workloads. Need to figure out if a static assumption is enough or if I need workload-specific heuristics.
 
 ## Plan for tomorrow
 
-* Have to add test cases for audit logic and cross check more.
-* if logic work as i expected and then we're ready to implement the UI.
-* have to create the ui design using google stich ai.
+- Add test cases for the audit logic and check it more thoroughly.
+- If it holds up, start on the UI.
+- Design in Google Stitch AI first before touching code.
+
+---
+
+# Day 4 — 2026-05-10
+
+**Hours worked:** 8
+
+## What I did
+
+Started with Google Stitch AI to explore designs for the audit form before writing any code. Wanted to have a clear picture in my head first. That helped — once I knew what I was building, implementation was straightforward.
+
+Built the audit form UI. Most of the structure was already settled from the backend work so it was mostly just putting things into components.
+
+Then moved the common types and Zod schemas into a `shared/` folder. Created the directory, pulled everything duplicated between frontend and backend into one place. Should've done this earlier.
+
+Then the audit result UI with the benchmark comparison graphs. Getting the graphs to actually read clearly took some back and forth but it came out decent.
+
+Also added open graph preview for shared audit URLs — so when someone shares a link you get a preview card. Works, but the preview image is rough and needs more work. Not done yet.
+
+## What I learned
+
+Honestly nothing today. Most of it was just executing on what I already had planned. Didn't hit anything unexpected. Felt more like placing lego pieces than solving problems.
+
+Not a bad thing though — when implementation goes this smoothly it usually means the thinking before it was solid.
+
+## Blockers
+
+None. Only thing not finished is the OG preview image but that's a polish issue, not a blocker.
+
+## Plan for tomorrow
+
+- Implement the mail system.
+- Add more cheap/Chinese models to the API options — need better coverage for cost-effective recommendations.
+- If there's time, work on the Entrepreneurial assessment files.

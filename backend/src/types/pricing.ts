@@ -46,6 +46,7 @@ export const APIVendorSchema = z.object({
     name:      z.string(),
     sourceUrl: z.url().optional(),
     models:    z.record(z.string(), ModelPricingSchema),
+    isChineseModel : z.boolean().default(false)
 });
 
 export const AnyVendorSchema               = z.discriminatedUnion('type', [SubscriptionVendorSchema, APIVendorSchema]);

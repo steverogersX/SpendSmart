@@ -7,6 +7,8 @@ export const Tools = {
     Windsurf: 'windsurf',
     AnthropicAPI: 'anthropic_api',
     OpenAIAPI: 'openai_api',
+    KimiAPI: "kimi_api",
+    DeepseekAPI: "deepseek_api"
 } as const;
 
 export const UseCases = {
@@ -73,6 +75,8 @@ export const PlansByTool = {
     [Tools.Windsurf]: Object.values(WindsurfPlan),
     [Tools.AnthropicAPI]: Object.values(APIOnlyPlan),
     [Tools.OpenAIAPI]: Object.values(APIOnlyPlan),
+    [Tools.KimiAPI] : Object.values(APIOnlyPlan),
+    [Tools.DeepseekAPI] : Object.values(APIOnlyPlan)
 } as const;
 
 // ─── API providers ────────────────────────────────────────────────────────────
@@ -86,14 +90,14 @@ export const APIProviders = {
 // ─── Per-provider model names ─────────────────────────────────────────────────
 
 export const AnthropicModels = {
-    ClaudeHaiku45:  'claude-haiku-4-5',
+    ClaudeHaiku45: 'claude-haiku-4-5',
     ClaudeSonnet46: 'claude-sonnet-4-6',
-    ClaudeOpus45:   'claude-opus-4-5',
+    ClaudeOpus45: 'claude-opus-4-5',
 } as const;
 
 export const OpenAIModels = {
-    GPT55:     'gpt-5-5',
-    GPT54:     'gpt-5-4',
+    GPT55: 'gpt-5-5',
+    GPT54: 'gpt-5-4',
     GPT54Nano: 'gpt-5-4-nano',
 } as const;
 
