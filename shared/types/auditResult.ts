@@ -17,10 +17,16 @@ export type ApiRecommendation = {
   verifiedDate: string;
   benchmarkName: string;
   benchmarkUrl: string;
+  pricingUrl: string;
   savings: number;
   savingsPercent: number;
   reason: string;
   estimatedMonthlyTokens: number;
+  score: number;
+  scoreType: 'absolute' | 'relative';
+  scoreUnit: 'percentage' | 'Elo points';
+  higherIsBetter: boolean;
+  maxScore: number | null;
 }
 
 export type Recommendation<T extends AuditRequestType> =
@@ -34,7 +40,15 @@ export type ApiAuditResult = {
   primaryModel: string;
   primaryUseCase: string;
   currentAverageMonthlySpend: number;
-
+  currentModelScore: number | null;
+  scoreType: 'absolute' | 'relative';
+  scoreUnit: 'percentage' | 'Elo points';
+  higherIsBetter: boolean;
+  maxScore: number | null;
+  benchmarkName: string;
+  benchmarkUrl: string;
+  dropCapacityBy: number;
+  summary: string;
   status: OptimizationStatus;
   bestRecommendation: ApiRecommendation | null;
   otherOptions: ApiRecommendation[]; // Top 3
