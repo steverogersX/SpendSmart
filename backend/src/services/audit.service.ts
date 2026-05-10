@@ -5,7 +5,13 @@ import {
     AnyToolInput,
     UseCase,
 } from "@/types/audit";
-import { AuditResult, Recommendation } from "@/types";
+import {
+    AuditResult,
+    ApiAuditResult,
+    MonthlySubscriptionAuditResult,
+    ApiRecommendation,
+    SubscriptionRecommendation,
+} from "@/types";
 import { pricingData, apiPricingData } from "@/data/pricingData";
 
 // API inputs carry `averageMonthlySpend`, subscription inputs carry
@@ -25,7 +31,7 @@ const OUTPUT_RATIO = 0.3;
 const SAVINGS_THRESHOLD_PCT = 30;
 
 
-const auditSubscriptionTool = (input: ToolInput): AuditResult => {
+const auditSubscriptionTool = (input: ToolInput): MonthlySubscriptionAuditResult => {
     const currentVendor = pricingData[input.tool];
     const currentPlanData = currentVendor?.plans?.[input.plan];
 
@@ -33,7 +39,7 @@ const auditSubscriptionTool = (input: ToolInput): AuditResult => {
         ? currentPlanData.pricePerSeat * input.seats
         : input.monthlySpend;
 
-    const candidates: Recommendation[] = [];
+    const candidates: SubscriptionRecommendation[] = [];
 
     for (const [toolKey, vendor] of Object.entries(pricingData)) {
         for (const [planName, plan] of Object.entries(vendor.plans)) {
@@ -44,12 +50,12 @@ const auditSubscriptionTool = (input: ToolInput): AuditResult => {
             const alternativeCost = plan.pricePerSeat * input.seats;
             if (alternativeCost >= currentTotalCost) continue;
 
+            const savings = currentTotalCost - alternativeCost;
             candidates.push({
-                type: 'subscription',
-                tool: toolKey,
-                plan: planName,
-                cost: alternativeCost,
-                savings: currentTotalCost - alternativeCost,
+                toolName: toolKey,
+                planName,
+                savings,
+                savingsPercent: (savings / currentTotalCost) * 100,
                 reason: `${vendor.name} ${planName} at $${plan.pricePerSeat}/seat`,
             });
         }
@@ -60,7 +66,7 @@ const auditSubscriptionTool = (input: ToolInput): AuditResult => {
 
     return {
         tool: input.tool,
-        flow: 'subscription',
+        usageType: 'subscription',
         currentPlan: input.plan,
         currentCost: currentTotalCost,
         status: candidates.length === 0 ? 'optimal' : 'optimize',
@@ -70,7 +76,7 @@ const auditSubscriptionTool = (input: ToolInput): AuditResult => {
 };
 
 
-const auditApiTool = (input: APIToolInput): AuditResult => {
+const auditApiTool = (input: APIToolInput): ApiAuditResult => {
     const currentVendor = apiPricingData[input.tool];
     const currentModel  = currentVendor.models[input.primaryModel];
 
@@ -100,7 +106,7 @@ const auditApiTool = (input: APIToolInput): AuditResult => {
 
     // search every API vendor so a user on anthropic_api can be recommended
     // an openai_api model and vice-versa (API → API only, per product scope)
-    const candidates: Recommendation[] = [];
+    const candidates: ApiRecommendation[] = [];
 
     for (const [vendorKey, vendor] of Object.entries(apiPricingData)) {
         for (const [modelKey, model] of Object.entries(vendor.models)) {
@@ -135,34 +141,18 @@ const auditApiTool = (input: APIToolInput): AuditResult => {
             if (input.contextWindow && model.contextWindow < input.contextWindow) continue;
 
             candidates.push({
-                type:             'api',
-                tool:             vendorKey,
-                plan:             modelKey,
-                modelDisplayName: model.displayName,
-                cost:             estimatedNewSpend,
-                savings:          monthlySavings,
-                savingsPercent:   savingsPct,
+                modelName:            modelKey,
+                modelDisplayName:     model.displayName,
+                contextWindow:        model.contextWindow,
+                verifiedDate:         model.verifiedDate,
+                benchmarkName:        candidateUCEntry.benchmarkName,
+                benchmarkUrl:         candidateUCEntry.benchmarkUrl,
+                savings:              monthlySavings,
+                savingsPercent:       savingsPct,
+                estimatedMonthlyTokens,
                 reason: `${model.displayName} — $${model.inputPricePer1MTokens}/$${model.outputPricePer1MTokens} per 1M tokens (in/out)`,
             });
         }
-    }
-
-    // normalize quality scores across the surviving candidate set
-    // qualityScore ∈ [0, 1]: 1 = best scorer in the set, 0 = lowest scorer
-    // min-max formula: (score − min) / (max − min)
-    // when all candidates share the same score the range is 0; set all to 1
-    if (candidates.length > 0) {
-        const useCaseScores = candidates.map(c => {
-            const m = apiPricingData[c.tool].models[c.plan];
-            return m.useCases.find(uc => uc.useCase === input.useCase)!.score;
-        });
-        const minScore   = Math.min(...useCaseScores);
-        const maxScore   = Math.max(...useCaseScores);
-        const scoreRange = maxScore - minScore;
-
-        candidates.forEach((c, i) => {
-            c.qualityScore = scoreRange === 0 ? 1 : (useCaseScores[i] - minScore) / scoreRange;
-        });
     }
 
     // rank by monthly savings (most dollars saved = best)
@@ -170,24 +160,21 @@ const auditApiTool = (input: APIToolInput): AuditResult => {
     const [bestRecommendation = null, ...otherOptions] = candidates;
 
     return {
-        tool:               input.tool,
-        flow:               'api',
-        currentPlan:        input.primaryModel,
-        currentCost:        input.averageMonthlySpend,
-        status:             candidates.length === 0 ? 'optimal' : 'optimize',
+        toolName:                   input.tool,
+        primaryModel:               input.primaryModel,
+        primaryUseCase:             input.useCase,
+        currentAverageMonthlySpend: input.averageMonthlySpend,
+        status:                     candidates.length === 0 ? 'optimal' : 'optimize',
         bestRecommendation,
         otherOptions,
-        estimatedMonthlyTokens,
-        message: candidates.length === 0
-            ? `${currentModel.displayName} is already the most cost-effective model for ${input.useCase} within your quality tolerance.`
-            : undefined,
     };
 };
 
 
-const auditService = (request: AuditRequest): AuditResult[] =>
-    request.tools.map(tool =>
+const auditService = (request: AuditRequest): AuditResult => ({
+    results: request.tools.map(tool =>
         isAPIInput(tool) ? auditApiTool(tool) : auditSubscriptionTool(tool),
-    );
+    ),
+});
 
 export default auditService;

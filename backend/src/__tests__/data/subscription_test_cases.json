@@ -1,0 +1,159 @@
+[
+  {
+    "description": "A cheaper plan exists for the same use case — cursor/ultra ($200/seat, agentic) with 1 seat: every plan across all vendors that supports 'agentic' and costs less than $200/seat surfaces as a candidate. currentTotalCost=200×1=200 (taken from JSON pricePerSeat). Sorted by savings desc: github_copilot/pro at $10 saves $190 and becomes bestRecommendation. otherOptions contains all remaining cheaper agentic plans in savings-desc order.",
+    "input": {
+      "tool": "cursor",
+      "plan": "ultra",
+      "seats": 1,
+      "monthlySpend": 200,
+      "useCase": "agentic"
+    },
+    "expectedOutput": {
+      "tool": "cursor",
+      "usageType": "subscription",
+      "currentPlan": "ultra",
+      "currentCost": 200,
+      "status": "optimize",
+      "bestRecommendation": {
+        "toolName": "github_copilot",
+        "planName": "pro",
+        "savings": 190,
+        "savingsPercent": 95,
+        "reason": "GitHub Copilot pro at $10/seat"
+      },
+      "otherOptions": [
+        {
+          "toolName": "github_copilot",
+          "planName": "business",
+          "savings": 181,
+          "savingsPercent": 90.5,
+          "reason": "GitHub Copilot business at $19/seat"
+        },
+        {
+          "toolName": "cursor",
+          "planName": "pro",
+          "savings": 180,
+          "savingsPercent": 90,
+          "reason": "Cursor pro at $20/seat"
+        },
+        {
+          "toolName": "claude",
+          "planName": "pro",
+          "savings": 180,
+          "savingsPercent": 90,
+          "reason": "Claude (claude.ai) pro at $20/seat"
+        },
+        {
+          "toolName": "chatgpt",
+          "planName": "plus",
+          "savings": 180,
+          "savingsPercent": 90,
+          "reason": "ChatGPT plus at $20/seat"
+        },
+        {
+          "toolName": "windsurf",
+          "planName": "pro",
+          "savings": 180,
+          "savingsPercent": 90,
+          "reason": "Windsurf pro at $20/seat"
+        },
+        {
+          "toolName": "claude",
+          "planName": "team_standard",
+          "savings": 175,
+          "savingsPercent": 87.5,
+          "reason": "Claude (claude.ai) team_standard at $25/seat"
+        },
+        {
+          "toolName": "chatgpt",
+          "planName": "business",
+          "savings": 175,
+          "savingsPercent": 87.5,
+          "reason": "ChatGPT business at $25/seat"
+        },
+        {
+          "toolName": "gemini",
+          "planName": "ai_pro",
+          "savings": 173.01,
+          "savingsPercent": 86.505,
+          "reason": "Gemini (Google AI) ai_pro at $26.99/seat"
+        },
+        {
+          "toolName": "github_copilot",
+          "planName": "pro_plus",
+          "savings": 161,
+          "savingsPercent": 80.5,
+          "reason": "GitHub Copilot pro_plus at $39/seat"
+        },
+        {
+          "toolName": "github_copilot",
+          "planName": "enterprise",
+          "savings": 161,
+          "savingsPercent": 80.5,
+          "reason": "GitHub Copilot enterprise at $39/seat"
+        },
+        {
+          "toolName": "cursor",
+          "planName": "teams",
+          "savings": 160,
+          "savingsPercent": 80,
+          "reason": "Cursor teams at $40/seat"
+        },
+        {
+          "toolName": "windsurf",
+          "planName": "teams",
+          "savings": 160,
+          "savingsPercent": 80,
+          "reason": "Windsurf teams at $40/seat"
+        },
+        {
+          "toolName": "cursor",
+          "planName": "pro_plus",
+          "savings": 140,
+          "savingsPercent": 70,
+          "reason": "Cursor pro_plus at $60/seat"
+        },
+        {
+          "toolName": "claude",
+          "planName": "max_5x",
+          "savings": 100,
+          "savingsPercent": 50,
+          "reason": "Claude (claude.ai) max_5x at $100/seat"
+        },
+        {
+          "toolName": "chatgpt",
+          "planName": "pro_100",
+          "savings": 100,
+          "savingsPercent": 50,
+          "reason": "ChatGPT pro_100 at $100/seat"
+        },
+        {
+          "toolName": "claude",
+          "planName": "team_premium",
+          "savings": 75,
+          "savingsPercent": 37.5,
+          "reason": "Claude (claude.ai) team_premium at $125/seat"
+        }
+      ]
+    }
+  },
+  {
+    "description": "Current plan is already the cheapest option — chatgpt/go ($8/seat, coding) with 1 seat: chatgpt/go at $8 is the lowest-priced plan that supports 'coding' across all vendors. No other plan with coding costs less than $8/seat, so no candidate clears the strictly-cheaper filter and status is optimal.",
+    "input": {
+      "tool": "chatgpt",
+      "plan": "go",
+      "seats": 1,
+      "monthlySpend": 8,
+      "useCase": "coding"
+    },
+    "expectedOutput": {
+      "tool": "chatgpt",
+      "usageType": "subscription",
+      "currentPlan": "go",
+      "currentCost": 8,
+      "status": "optimal",
+      "bestRecommendation": null,
+      "otherOptions": []
+    }
+  }
+]
