@@ -4,14 +4,14 @@ import {
     APIToolInput,
     AnyToolInput,
     UseCase,
-} from "@/types/audit";
+} from "@shared/schemas/audit";
 import {
     AuditResult,
     ApiAuditResult,
     MonthlySubscriptionAuditResult,
     ApiRecommendation,
     SubscriptionRecommendation,
-} from "@/types";
+} from "@shared/types/auditResult";
 import { pricingData, apiPricingData } from "@/data/pricingData";
 
 // API inputs carry `averageMonthlySpend`, subscription inputs carry
@@ -147,10 +147,16 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
                 verifiedDate:         model.verifiedDate,
                 benchmarkName:        candidateUCEntry.benchmarkName,
                 benchmarkUrl:         candidateUCEntry.benchmarkUrl,
+                pricingUrl:           model.sourceUrl,
                 savings:              monthlySavings,
                 savingsPercent:       savingsPct,
                 estimatedMonthlyTokens,
                 reason: `${model.displayName} — $${model.inputPricePer1MTokens}/$${model.outputPricePer1MTokens} per 1M tokens (in/out)`,
+                score:                candidateUCEntry.score,
+                scoreType:            candidateUCEntry.scoreType,
+                scoreUnit:            candidateUCEntry.scoreUnit,
+                higherIsBetter:       candidateUCEntry.higherIsBetter,
+                maxScore:             candidateUCEntry.maxScore ?? null,
             });
         }
     }
@@ -159,11 +165,55 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
     candidates.sort((a, b) => b.savings - a.savings);
     const [bestRecommendation = null, ...otherOptions] = candidates;
 
+    const scoreLabel = (s: number) =>
+        (currentUseCaseEntry?.scoreUnit ?? 'percentage') === 'percentage'
+            ? `${s.toFixed(1)}%`
+            : `${Math.round(s)} Elo`;
+
+    const benchName = currentUseCaseEntry?.benchmarkName ?? '';
+    const benchUrl  = currentUseCaseEntry?.benchmarkUrl  ?? '';
+
+    let summary: string;
+    if (bestRecommendation) {
+        const monthlyTokensM = (estimatedMonthlyTokens / 1_000_000).toFixed(1);
+        const ctxNote = input.contextWindow
+            ? `meets your ${input.contextWindow.toLocaleString('en-US')}-token context requirement`
+            : 'fits most workloads';
+        const chineseNote = input.okayWithChineseModals
+            ? 'Chinese AI models were included in this analysis.'
+            : 'Chinese AI models were excluded per your preferences.';
+        summary =
+            `Your ${currentModel.displayName} usage on ${input.useCase} tasks costs $${input.averageMonthlySpend.toFixed(0)}/month. ` +
+            `On [${benchName}](${benchUrl}), it scores ${currentScore !== null ? scoreLabel(currentScore) : 'N/A'}. ` +
+            `${bestRecommendation.modelDisplayName} achieves ${scoreLabel(bestRecommendation.score)} on the same benchmark — ` +
+            `within your ${input.dropCapacityBy}% quality buffer — at a lower price ` +
+            `([see pricing](${bestRecommendation.pricingUrl})). ` +
+            `Based on your estimated ${monthlyTokensM}M tokens/month, switching saves ` +
+            `$${bestRecommendation.savings.toFixed(0)}/month (${bestRecommendation.savingsPercent.toFixed(0)}% reduction). ` +
+            `Its ${bestRecommendation.contextWindow.toLocaleString('en-US')}-token context window ${ctxNote}. ` +
+            chineseNote;
+    } else {
+        summary =
+            `${currentModel.displayName} is already the most cost-effective option for ${input.useCase} workloads among tracked models. ` +
+            `It scores ${currentScore !== null ? scoreLabel(currentScore) : 'highly'} ` +
+            `on [${benchName}](${benchUrl}). ` +
+            `No cheaper alternative meets your quality requirements within your ${input.dropCapacityBy}% capacity buffer.`;
+    }
+
     return {
         toolName:                   input.tool,
         primaryModel:               input.primaryModel,
         primaryUseCase:             input.useCase,
         currentAverageMonthlySpend: input.averageMonthlySpend,
+        currentModelScore:          currentScore,
+        scoreType:                  currentUseCaseEntry?.scoreType ?? 'absolute',
+        scoreUnit:                  currentUseCaseEntry?.scoreUnit ?? 'percentage',
+        higherIsBetter:             currentUseCaseEntry?.higherIsBetter ?? true,
+        maxScore:                   currentUseCaseEntry?.maxScore ?? null,
+        benchmarkName:              benchName,
+        benchmarkUrl:               benchUrl,
+        dropCapacityBy:             input.dropCapacityBy,
+        summary,
         status:                     candidates.length === 0 ? 'optimal' : 'optimize',
         bestRecommendation,
         otherOptions,

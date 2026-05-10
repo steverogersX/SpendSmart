@@ -174,7 +174,7 @@ This means monthly spend alone contains almost no direct information about actua
 
 The core challenge became:
 
-> “What is a defensible recommendation for an API user?”
+> "What is a defensible recommendation for an API user?"
 
 A recommendation cannot simply optimize for lower cost.
 
@@ -188,21 +188,17 @@ We are minimizing cost subject to a minimum acceptable capability threshold.
 
 Conceptually the problem became:
 
-[
-\text{Minimize Cost}(m)
-]
+$$\text{Minimize Cost}(m)$$
 
 Subject to:
 
-[
-\text{Capability}(m) \geq \text{Required Capability}
-]
+$$\text{Capability}(m) \geq \text{Required Capability}$$
 
 Where:
 
-* (m) = candidate model
+* $m$ = candidate model
 * capability is derived from benchmark performance
-* required capability is relative to the user’s current model
+* required capability is relative to the user's current model
 
 This led to researching benchmark ecosystems across LLM providers and evaluation communities.
 
@@ -235,15 +231,11 @@ Examples:
 
 SWE-bench:
 
-[
-\text{Score} = 82.4%
-]
+$$\text{Score} = 82.4\%$$
 
 EQ-Bench:
 
-[
-\text{Score} = 2045 \text{ Elo}
-]
+$$\text{Score} = 2045 \text{ Elo}$$
 
 These values cannot be compared directly because they exist on completely different mathematical scales.
 
@@ -251,9 +243,7 @@ An Elo score is relative and open-ended.
 
 A percentage score is bounded:
 
-[
-0 \leq p \leq 100
-]
+$$0 \leq p \leq 100$$
 
 Elo has no universal upper bound.
 
@@ -261,69 +251,47 @@ So a major part of the day was spent designing a normalization strategy.
 
 The idea was to transform every benchmark into a common normalized capability space:
 
-[
-0 \leq s_{normalized} \leq 1
-]
+$$0 \leq s_{\text{normalized}} \leq 1$$
 
 For percentage-based benchmarks:
 
-[
-s_{normalized} = \frac{s}{100}
-]
+$$s_{\text{normalized}} = \frac{s}{100}$$
 
 Example:
 
-[
-82% \rightarrow 0.82
-]
+$$82\% \rightarrow 0.82$$
 
 For Elo-based systems:
 
-[
-s_{normalized} =
-\frac{s - s_{min}}
-{s_{max} - s_{min}}
-]
+$$s_{\text{normalized}} = \frac{s - s_{\min}}{s_{\max} - s_{\min}}$$
 
 Where:
 
-* (s) = model Elo
-* (s_{min}) = minimum Elo in dataset
-* (s_{max}) = maximum Elo in dataset
+* $s$ = model Elo
+* $s_{\min}$ = minimum Elo in dataset
+* $s_{\max}$ = maximum Elo in dataset
 
 This converts all benchmarks into the same bounded range.
 
-The important realization was that the system should never decide “acceptable quality” itself.
+The important realization was that the system should never decide "acceptable quality" itself.
 
 That threshold must come from the user.
 
 So instead of asking:
 
-> “Which model is best?”
+> "Which model is best?"
 
 The system asks:
 
-> “How much capability degradation are you willing to tolerate for cost savings?”
+> "How much capability degradation are you willing to tolerate for cost savings?"
 
 Default assumption explored today:
 
-[
-\text{Allowed Drop} = 5%
-]
+$$\text{Allowed Drop} = 5\%$$
 
-If current model capability is:
+If current model capability is $c_{\text{current}}$, then acceptable candidate models must satisfy:
 
-[
-c_{current}
-]
-
-Then acceptable candidate models must satisfy:
-
-[
-c_{candidate}
-\geq
-c_{current} \times (1 - 0.05)
-]
+$$c_{\text{candidate}} \geq c_{\text{current}} \times (1 - 0.05)$$
 
 This transforms the recommendation system into a constrained filtering pipeline instead of subjective ranking.
 
@@ -362,45 +330,17 @@ So token usage must be inferred indirectly.
 
 Initial approximation explored:
 
-[
-\text{Estimated Tokens}
-=======================
-
-\frac{\text{Monthly Spend}}
-{\text{Weighted Average Token Price}}
-]
+$$\text{Estimated Tokens} = \frac{\text{Monthly Spend}}{\text{Weighted Average Token Price}}$$
 
 But weighted average token price itself depends on input/output distribution.
 
-Explored assuming:
+Explored assuming $70\%$ input tokens and $30\%$ output tokens. So:
 
-[
-70% \text{ input tokens}
-]
-[
-30% \text{ output tokens}
-]
-
-So:
-
-[
-p_{avg}
-=======
-
-0.7 \cdot p_{input}
-+
-0.3 \cdot p_{output}
-]
+$$p_{\text{avg}} = 0.7 \cdot p_{\text{input}} + 0.3 \cdot p_{\text{output}}$$
 
 Then:
 
-[
-\text{Estimated Monthly Tokens}
-===============================
-
-\frac{\text{Monthly Spend}}
-{p_{avg}}
-]
+$$\text{Estimated Monthly Tokens} = \frac{\text{Monthly Spend}}{p_{\text{avg}}}$$
 
 This approximation is obviously imperfect, but it may be sufficient for directional recommendations.
 
@@ -420,7 +360,7 @@ It is a capability-constrained optimization problem.
 
 Cost alone is meaningless without validating whether the replacement model can maintain acceptable task quality.
 
-A cheaper model is only useful if it remains above the user’s acceptable capability threshold.
+A cheaper model is only useful if it remains above the user's acceptable capability threshold.
 
 Another important realization was that benchmark interpretation matters more than benchmark existence.
 
@@ -430,13 +370,11 @@ Normalization effectively converts heterogeneous evaluation systems into a unifi
 
 Mathematically, the normalization layer becomes a transformation function:
 
-[
-f : S_{raw} \rightarrow [0,1]
-]
+$$f : S_{\text{raw}} \rightarrow [0,1]$$
 
 Where:
 
-* (S_{raw}) is benchmark-specific score space
+* $S_{\text{raw}}$ is benchmark-specific score space
 * output becomes standardized capability space
 
 This creates a benchmark-agnostic recommendation pipeline.
@@ -445,11 +383,11 @@ Also learned that recommendation systems become far more explainable when framed
 
 Instead of:
 
-> “This model is better.”
+> "This model is better."
 
 The system can explain:
 
-> “This model is 4.2% below your current capability score while reducing projected monthly cost by 68%.”
+> "This model is 4.2% below your current capability score while reducing projected monthly cost by 68%."
 
 That is objective and measurable.
 
@@ -463,13 +401,7 @@ So use-case → benchmark mapping becomes critical.
 
 Conceptually:
 
-[
-\text{Use Case}
-\rightarrow
-\text{Relevant Benchmark}
-\rightarrow
-\text{Capability Score}
-]
+$$\text{Use Case} \rightarrow \text{Relevant Benchmark} \rightarrow \text{Capability Score}$$
 
 The benchmark layer itself becomes domain-specific.
 
@@ -521,4 +453,3 @@ Still uncertain how reliable the inferred token estimation will be in production
 * Have to add test cases for audit logic and cross check more.
 * if logic work as i expected and then we're ready to implement the UI.
 * have to create the ui design using google stich ai.
-

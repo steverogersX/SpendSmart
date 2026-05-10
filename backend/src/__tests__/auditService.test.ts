@@ -1,6 +1,6 @@
 import auditService from '../services/audit.service';
 import { AuditResult } from '../types';
-import { AnyToolInput } from '../types/audit';
+import { AnyToolInput } from '@shared/schemas/audit';
 import apiCases from './data/api_test_cases.json';
 import subCases from './data/subscription_test_cases.json';
 
