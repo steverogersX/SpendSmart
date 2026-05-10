@@ -1,4 +1,5 @@
 export type { Plan, Vendor, PricingData } from './pricing';
+export type { AuditResult, AuditResultItem, ApiAuditResult, MonthlySubscriptionAuditResult, ApiRecommendation, SubscriptionRecommendation } from '@shared/types/auditResult';
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
