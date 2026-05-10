@@ -12,6 +12,7 @@ interface SelectFieldProps {
   disabled?: boolean
   className?: string
   children: React.ReactNode
+  items?: { value: string; label: string }[]
 }
 
 function SelectField({
@@ -21,9 +22,10 @@ function SelectField({
   disabled,
   className,
   children,
+  items,
 }: SelectFieldProps) {
   return (
-    <Select.Root value={value ?? null} onValueChange={(v) => v !== null && onValueChange?.(v)} disabled={disabled}>
+    <Select.Root value={value ?? null} onValueChange={(v) => v !== null && onValueChange?.(v)} disabled={disabled} items={items}>
       <Select.Trigger
         className={cn(
           'flex h-10 w-full items-center justify-between rounded-lg border border-border bg-input/30 px-3 py-2 text-sm',
