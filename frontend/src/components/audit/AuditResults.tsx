@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, TrendingDown, CheckCircle, ExternalLink } from "lucide-react";
+import { ChevronDown, TrendingDown, CheckCircle, ExternalLink, Share2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { isApiResult } from "@/lib/api";
@@ -12,6 +12,7 @@ import {
   AuditResultItem,
   SubscriptionRecommendation,
 } from "@shared/types/auditResult";
+import { ShareModal } from "./ShareModal";
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat("en-US", {
@@ -282,10 +283,53 @@ function renderWithLinks(text: string) {
   });
 }
 
+// ─── Share helpers ────────────────────────────────────────────────────────────
+
+function buildOgParams(item: AuditResultItem): URLSearchParams {
+  const api = isApiResult(item);
+  const p = new URLSearchParams();
+  p.set("status", item.status);
+  p.set("tool", (api ? item.toolName : item.tool).replace(/_/g, " "));
+  p.set("spend", String(Math.round(api ? item.currentAverageMonthlySpend : item.currentCost)));
+  if (api) {
+    p.set("model", item.primaryModel.replace(/_/g, " "));
+    p.set("usecase", item.primaryUseCase);
+    if (item.currentModelScore !== null) {
+      p.set("cscore", String(item.currentModelScore));
+      p.set("stype", item.scoreType);
+      p.set("sunit", item.scoreUnit);
+      p.set("hib", item.higherIsBetter ? "1" : "0");
+    }
+  }
+  if (item.bestRecommendation) {
+    const rec = item.bestRecommendation;
+    p.set(
+      "rec",
+      api
+        ? (rec as ApiRecommendation).modelDisplayName
+        : `${(rec as SubscriptionRecommendation).toolName} ${(rec as SubscriptionRecommendation).planName}`,
+    );
+    p.set("savings", String(Math.round(rec.savings)));
+    p.set("pct", String(Math.round(rec.savingsPercent)));
+    if (api && item.currentModelScore !== null) {
+      p.set("rscore", String((rec as ApiRecommendation).score));
+    }
+  }
+  return p;
+}
+
+function buildShareTitle(item: AuditResultItem): string {
+  const tool = (isApiResult(item) ? item.toolName : item.tool).replace(/_/g, " ");
+  if (item.status === "optimal") return `${tool} is already cost-optimal`;
+  const savings = item.bestRecommendation?.savings ?? 0;
+  return `Save ${formatCurrency(savings)}/mo on ${tool}`;
+}
+
 // ─── Result card ──────────────────────────────────────────────────────────────
 
 function ResultCard({ item }: { item: AuditResultItem }) {
   const [showOthers, setShowOthers] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const api = isApiResult(item);
 
   // Which recommendation is currently shown in the chart (defaults to best)
@@ -300,6 +344,7 @@ function ResultCard({ item }: { item: AuditResultItem }) {
     : `${item.currentPlan}`;
 
   return (
+    <>
     <Card>
       <CardContent className="pt-5 space-y-4">
         {/* Header */}
@@ -310,7 +355,17 @@ function ResultCard({ item }: { item: AuditResultItem }) {
               {subtitle.replace(/_/g, " ")}
             </p>
           </div>
-          <StatusBadge status={item.status} />
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShareOpen(true)}
+              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+              title="Share this result"
+            >
+              <Share2 className="size-4" />
+            </button>
+            <StatusBadge status={item.status} />
+          </div>
         </div>
 
         {/* Current spend */}
@@ -433,6 +488,13 @@ function ResultCard({ item }: { item: AuditResultItem }) {
         )}
       </CardContent>
     </Card>
+    <ShareModal
+      open={shareOpen}
+      onClose={() => setShareOpen(false)}
+      ogParams={buildOgParams(item)}
+      title={buildShareTitle(item)}
+    />
+    </>
   );
 }
 
