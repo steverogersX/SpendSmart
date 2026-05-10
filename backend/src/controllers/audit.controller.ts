@@ -12,18 +12,12 @@ const auditController = async (req: Request, res: Response, next: NextFunction):
             const errorMessage = fromZodError(parsedAudit.error);
             throw new ApiError(errorMessage.message, status.BAD_REQUEST);
         }
-
-
         const results = auditService(parsedAudit.data);
 
         const response: ApiResponse = {
             success: true,
             data: results,
         };
-
-
-
-
         res.status(status.OK).json(response);
     }
     catch (err: unknown) {

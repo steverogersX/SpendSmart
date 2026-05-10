@@ -12,7 +12,7 @@ import {
     AnthropicModels,
     OpenAIModels,
     GoogleModels,
-} from '../config/tools.config';
+} from '@shared/config/tools.config';
 
 export type ToolName              = typeof Tools[keyof typeof Tools];
 

@@ -3,7 +3,7 @@ import {
     Tools,
     PlansByTool,
     ModelsByTool,
-} from '../config/tools.config';
+} from '@shared/config/tools.config';
 import { UseCaseSchema } from './pricing';
 
 // ─── Re-exports: tools config ─────────────────────────────────────────────────
@@ -24,7 +24,7 @@ export {
     OpenAIModels,
     GoogleModels,
     ModelsByProvider,
-} from '../config/tools.config';
+} from '@shared/config/tools.config';
 
 export type {
     ToolName,
@@ -39,7 +39,7 @@ export type {
     AnthropicModelType,
     OpenAIModelType,
     GoogleModelType,
-} from './tools';
+} from '@shared/types/tools';
 
 // ─── Re-exports: pricing ──────────────────────────────────────────────────────
 

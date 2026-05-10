@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Tools, UseCases } from '../config/tools.config';
+import { Tools, UseCases } from '@shared/config/tools.config';
 
 export const ScoreTypeSchema = z.enum(['absolute', 'relative']);
 export const ScoreUnitSchema = z.enum(['percentage', 'Elo points']);
