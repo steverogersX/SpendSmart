@@ -14,6 +14,15 @@
       "primaryModel": "claude-opus-4-5",
       "primaryUseCase": "research",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": 87.3,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": 100,
+      "benchmarkName": "EQ-Bench Creative Writing",
+      "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+      "dropCapacityBy": 5,
+      "summary": "Your Claude Opus 4.5 usage on research tasks costs $1000/month. On [EQ-Bench Creative Writing](https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro), it scores 87.3%. GPT-5.4 achieves 87.5% on the same benchmark — within your 5% quality buffer — at a lower price ([see pricing](https://developers.openai.com/api/docs/models/gpt-5.4)). Based on your estimated 90.9M tokens/month, switching saves $432/month (43% reduction). Its 10,50,000-token context window fits most workloads. Chinese AI models were excluded per your preferences.",
       "status": "optimize",
       "bestRecommendation": {
         "modelName": "gpt-5-4",
@@ -22,10 +31,16 @@
         "verifiedDate": "2026-05-09",
         "benchmarkName": "EQ-Bench Creative Writing",
         "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+        "pricingUrl": "https://developers.openai.com/api/docs/models/gpt-5.4",
         "savings": 431.81818124999995,
         "savingsPercent": 43.18181812499999,
         "estimatedMonthlyTokens": 90909091,
-        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)",
+        "score": 87.5,
+        "scoreType": "absolute",
+        "scoreUnit": "percentage",
+        "higherIsBetter": true,
+        "maxScore": 100
       },
       "otherOptions": [
         {
@@ -35,10 +50,16 @@
           "verifiedDate": "2026-05-09",
           "benchmarkName": "EQ-Bench Creative Writing",
           "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
+          "pricingUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
           "savings": 399.9999994,
           "savingsPercent": 39.999999939999995,
           "estimatedMonthlyTokens": 90909091,
-          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)",
+          "score": 87.3,
+          "scoreType": "absolute",
+          "scoreUnit": "percentage",
+          "higherIsBetter": true,
+          "maxScore": 100
         }
       ]
     }
@@ -58,6 +79,15 @@
       "primaryModel": "claude-opus-4-5",
       "primaryUseCase": "agentic",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": 63.7,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": 100,
+      "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
+      "benchmarkUrl": "https://epoch.ai/models/claude-opus-4-5",
+      "dropCapacityBy": 5,
+      "summary": "Your Claude Opus 4.5 usage on agentic tasks costs $1000/month. On [Epoch WeirdML (v2) Agentic Benchmark](https://epoch.ai/models/claude-opus-4-5), it scores 63.7%. GPT-5.4 achieves 77.7% on the same benchmark — within your 5% quality buffer — at a lower price ([see pricing](https://developers.openai.com/api/docs/models/gpt-5.4)). Based on your estimated 90.9M tokens/month, switching saves $432/month (43% reduction). Its 10,50,000-token context window fits most workloads. Chinese AI models were excluded per your preferences.",
       "status": "optimize",
       "bestRecommendation": {
         "modelName": "gpt-5-4",
@@ -66,10 +96,16 @@
         "verifiedDate": "2026-05-09",
         "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
         "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+        "pricingUrl": "https://developers.openai.com/api/docs/models/gpt-5.4",
         "savings": 431.81818124999995,
         "savingsPercent": 43.18181812499999,
         "estimatedMonthlyTokens": 90909091,
-        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)",
+        "score": 77.7,
+        "scoreType": "absolute",
+        "scoreUnit": "percentage",
+        "higherIsBetter": true,
+        "maxScore": 100
       },
       "otherOptions": [
         {
@@ -79,10 +115,16 @@
           "verifiedDate": "2026-05-09",
           "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
           "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+          "pricingUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
           "savings": 399.9999994,
           "savingsPercent": 39.999999939999995,
           "estimatedMonthlyTokens": 90909091,
-          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)",
+          "score": 66.1,
+          "scoreType": "absolute",
+          "scoreUnit": "percentage",
+          "higherIsBetter": true,
+          "maxScore": 100
         }
       ]
     }
@@ -102,6 +144,15 @@
       "primaryModel": "claude-sonnet-4-6",
       "primaryUseCase": "coding",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": 75.2,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": 100,
+      "benchmarkName": "SWE-bench Verified",
+      "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+      "dropCapacityBy": 20,
+      "summary": "Your Claude Sonnet 4.6 usage on coding tasks costs $1000/month. On [SWE-bench Verified](https://epoch.ai/models/claude-sonnet-4-6), it scores 75.2%. Claude Haiku 4.5 achieves 66.6% on the same benchmark — within your 20% quality buffer — at a lower price ([see pricing](https://docs.anthropic.com/en/docs/about-claude/pricing)). Based on your estimated 151.5M tokens/month, switching saves $667/month (67% reduction). Its 2,00,000-token context window fits most workloads. Chinese AI models were excluded per your preferences.",
       "status": "optimize",
       "bestRecommendation": {
         "modelName": "claude-haiku-4-5",
@@ -110,10 +161,16 @@
         "verifiedDate": "2026-05-09",
         "benchmarkName": "SWE-bench Verified",
         "benchmarkUrl": "https://www.swebench.com/#verified",
+        "pricingUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
         "savings": 666.6666656,
         "savingsPercent": 66.66666656,
         "estimatedMonthlyTokens": 151515152,
-        "reason": "Claude Haiku 4.5 — $1/$5 per 1M tokens (in/out)"
+        "reason": "Claude Haiku 4.5 — $1/$5 per 1M tokens (in/out)",
+        "score": 66.6,
+        "scoreType": "absolute",
+        "scoreUnit": "percentage",
+        "higherIsBetter": true,
+        "maxScore": 100
       },
       "otherOptions": []
     }
@@ -133,6 +190,15 @@
       "primaryModel": "claude-sonnet-4-6",
       "primaryUseCase": "data",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": null,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": null,
+      "benchmarkName": "",
+      "benchmarkUrl": "",
+      "dropCapacityBy": 5,
+      "summary": "Claude Sonnet 4.6 is already the most cost-effective option for data workloads among tracked models. It scores highly on [](). No cheaper alternative meets your quality requirements within your 5% capacity buffer.",
       "status": "optimal",
       "bestRecommendation": null,
       "otherOptions": []
@@ -154,6 +220,15 @@
       "primaryModel": "claude-opus-4-5",
       "primaryUseCase": "coding",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": 76.8,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": 100,
+      "benchmarkName": "SWE-bench Verified",
+      "benchmarkUrl": "https://www.swebench.com/#verified",
+      "dropCapacityBy": 20,
+      "summary": "Your Claude Opus 4.5 usage on coding tasks costs $1000/month. On [SWE-bench Verified](https://www.swebench.com/#verified), it scores 76.8%. GPT-5.4 achieves 76.6% on the same benchmark — within your 20% quality buffer — at a lower price ([see pricing](https://developers.openai.com/api/docs/models/gpt-5.4)). Based on your estimated 90.9M tokens/month, switching saves $432/month (43% reduction). Its 10,50,000-token context window meets your 5,00,000-token context requirement. Chinese AI models were excluded per your preferences.",
       "status": "optimize",
       "bestRecommendation": {
         "modelName": "gpt-5-4",
@@ -162,10 +237,16 @@
         "verifiedDate": "2026-05-09",
         "benchmarkName": "Epoch SWE-bench Verified",
         "benchmarkUrl": "https://epoch.ai/models/gpt-5-4",
+        "pricingUrl": "https://developers.openai.com/api/docs/models/gpt-5.4",
         "savings": 431.81818124999995,
         "savingsPercent": 43.18181812499999,
         "estimatedMonthlyTokens": 90909091,
-        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)"
+        "reason": "GPT-5.4 — $2.5/$15 per 1M tokens (in/out)",
+        "score": 76.6,
+        "scoreType": "absolute",
+        "scoreUnit": "percentage",
+        "higherIsBetter": true,
+        "maxScore": 100
       },
       "otherOptions": [
         {
@@ -175,10 +256,16 @@
           "verifiedDate": "2026-05-09",
           "benchmarkName": "SWE-bench Verified",
           "benchmarkUrl": "https://epoch.ai/models/claude-sonnet-4-6",
+          "pricingUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
           "savings": 399.9999994,
           "savingsPercent": 39.999999939999995,
           "estimatedMonthlyTokens": 90909091,
-          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)"
+          "reason": "Claude Sonnet 4.6 — $3/$15 per 1M tokens (in/out)",
+          "score": 75.2,
+          "scoreType": "absolute",
+          "scoreUnit": "percentage",
+          "higherIsBetter": true,
+          "maxScore": 100
         }
       ]
     }
@@ -198,6 +285,15 @@
       "primaryModel": "claude-haiku-4-5",
       "primaryUseCase": "coding",
       "currentAverageMonthlySpend": 1000,
+      "currentModelScore": 66.6,
+      "scoreType": "absolute",
+      "scoreUnit": "percentage",
+      "higherIsBetter": true,
+      "maxScore": 100,
+      "benchmarkName": "SWE-bench Verified",
+      "benchmarkUrl": "https://www.swebench.com/#verified",
+      "dropCapacityBy": 5,
+      "summary": "Claude Haiku 4.5 is already the most cost-effective option for coding workloads among tracked models. It scores 66.6% on [SWE-bench Verified](https://www.swebench.com/#verified). No cheaper alternative meets your quality requirements within your 5% capacity buffer.",
       "status": "optimal",
       "bestRecommendation": null,
       "otherOptions": []
