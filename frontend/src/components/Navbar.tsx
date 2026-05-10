@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
         {/* Logo */}
-        <a href="/" className="group flex items-center gap-2">
+        <Link href="/" className="group flex items-center gap-2">
           <div className="flex items-center gap-1">
             <span className="font-mono text-2xl font-bold text-emerald-500 transition-colors group-hover:text-emerald-400">
               $
@@ -23,7 +24,7 @@ export function Navbar() {
               </span>
             </span>
           </div>
-        </a>
+        </Link>
 
         {/* Dark mode toggle */}
         <Button

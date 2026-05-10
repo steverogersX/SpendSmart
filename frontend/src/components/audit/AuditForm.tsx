@@ -68,11 +68,12 @@ export function AuditForm() {
   }
 
   const isLoading = status === "loading";
+  const onFormSubmit = methods.handleSubmit(onSubmit);
 
   return (
     <div className="space-y-6">
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={onFormSubmit} className="space-y-4">
           <ToolEntry />
 
           <div className="flex items-center gap-3 pt-2">
