@@ -177,7 +177,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
     if (bestRecommendation) {
         const monthlyTokensM = (estimatedMonthlyTokens / 1_000_000).toFixed(1);
         const ctxNote = input.contextWindow
-            ? `meets your ${input.contextWindow.toLocaleString()}-token context requirement`
+            ? `meets your ${input.contextWindow.toLocaleString('en-US')}-token context requirement`
             : 'fits most workloads';
         const chineseNote = input.okayWithChineseModals
             ? 'Chinese AI models were included in this analysis.'
@@ -190,7 +190,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             `([see pricing](${bestRecommendation.pricingUrl})). ` +
             `Based on your estimated ${monthlyTokensM}M tokens/month, switching saves ` +
             `$${bestRecommendation.savings.toFixed(0)}/month (${bestRecommendation.savingsPercent.toFixed(0)}% reduction). ` +
-            `Its ${bestRecommendation.contextWindow.toLocaleString()}-token context window ${ctxNote}. ` +
+            `Its ${bestRecommendation.contextWindow.toLocaleString('en-US')}-token context window ${ctxNote}. ` +
             chineseNote;
     } else {
         summary =
