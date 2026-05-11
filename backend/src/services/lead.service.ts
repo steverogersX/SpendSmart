@@ -1,10 +1,10 @@
-import { sql } from 'drizzle-orm';
 import type { AuditResult } from '@shared/types/auditResult';
-import { db } from '../db/client';
-import { leads } from '../db/schema';
 import { logger } from '../config/logger';
 import { buildEmailHtml } from '../emails/email.templates';
 import { sendEmail } from '../emails/mailer';
+import { db } from '../db/client';
+import { leads } from '../db/schema';
+import { sql } from 'drizzle-orm';
 
 export interface CreateLeadInput {
   email: string;
@@ -19,27 +19,26 @@ export interface CreateLeadInput {
 export async function createLead(input: CreateLeadInput): Promise<void> {
   const { email, companyName, role, teamSize, totalSavingsMonthly, ipHash, auditResults } = input;
 
-  // await db
-  //   .insert(leads)
-  //   .values({
-  //     email,
-  //     companyName: companyName ?? null,
-  //     role: role ?? null,
-  //     teamSize: teamSize ?? null,
-  //     totalSavingsMonthly: String(totalSavingsMonthly),
-  //     ipHash,
-  //   })
-  //   .onConflictDoUpdate({
-  //     target: leads.email,
-  //     set: {
-  //       companyName: sql`COALESCE(EXCLUDED.company_name, ${leads.companyName})`,
-  //       role: sql`COALESCE(EXCLUDED.role, ${leads.role})`,
-  //       teamSize: sql`COALESCE(EXCLUDED.team_size, ${leads.teamSize})`,
-  //       tier,
-  //       totalSavingsMonthly: String(totalSavingsMonthly),
-  //       updatedAt: new Date(),
-  //     },
-  //   });
+  await db
+    .insert(leads)
+    .values({
+      email,
+      companyName: companyName ?? null,
+      role: role ?? null,
+      teamSize: teamSize ?? null,
+      totalSavingsMonthly: String(totalSavingsMonthly),
+      ipHash,
+    })
+    .onConflictDoUpdate({
+      target: leads.email,
+      set: {
+        companyName: sql`COALESCE(EXCLUDED.company_name, ${leads.companyName})`,
+        role: sql`COALESCE(EXCLUDED.role, ${leads.role})`,
+        teamSize: sql`COALESCE(EXCLUDED.team_size, ${leads.teamSize})`,
+        totalSavingsMonthly: String(totalSavingsMonthly),
+        updatedAt: new Date(),
+      },
+    });
 
   logger.info({ email, totalSavingsMonthly }, 'lead stored');
 

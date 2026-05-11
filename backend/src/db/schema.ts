@@ -6,7 +6,6 @@ export const leads = pgTable('leads', {
   companyName: text('company_name'),
   role: text('role'),
   teamSize: text('team_size'),
-  tier: text('tier', { enum: ['high', 'mid', 'low'] }).notNull(),
   totalSavingsMonthly: numeric('total_savings_monthly', { precision: 10, scale: 2 })
     .notNull()
     .default('0'),

@@ -55,7 +55,7 @@ app.get(`${PREFIX}/health`, (_req: Request, res: Response) => {
   res.status(status.OK).json(response);
 });
 
-app.post(`${PREFIX}/audit`, auditController);
+app.post(`${PREFIX}/audit`, auditLimiter, auditController);
 app.post(`${PREFIX}/leads`, leadsLimiter, leadController);
 
 app.use((_req: Request, _res: Response, next: NextFunction) => {
