@@ -67,10 +67,12 @@ export type {
 
 // ─── Subscription tool schema ─────────────────────────────────────────────────
 export const toolSchema = z.object({
-    tool: z.enum(Object.values(Tools) as [string, ...string[]]),
-    plan: z.string().min(1),
-    seats: z.number().int().min(1),
-    monthlySpend: z.number().min(0),
+    tool: z.enum(Object.values(Tools) as [string, ...string[]], {
+        error: "Please select the use case"
+    }),
+    plan: z.string().min(1, "Please select a plan"),
+    seats: z.number({ error: "Please enter a valid number of seats" }).int("Seats must be a whole number").min(1, "At least 1 seat is required"),
+    monthlySpend: z.number({ error: "Please enter a valid monthly spend" }).min(0, "Monthly spend cannot be negative"),
     useCase: UseCaseSchema,
     type: z.literal("subscription"),
 }).superRefine((data, ctx) => {
@@ -78,7 +80,7 @@ export const toolSchema = z.object({
     if (!validPlans.includes(data.plan as never)) {
         ctx.addIssue({
             code: 'custom',
-            message: `Invalid plan "${data.plan}" for tool "${data.tool}". Valid plans are: ${validPlans.join(', ')}`,
+            message: "The selected plan is not available for this tool",
             path: ['plan'],
         });
     }
@@ -88,23 +90,25 @@ export type ToolInput = z.infer<typeof toolSchema>;
 
 // ─── API tool schema ──────────────────────────────────────────────────────────
 export const apiToolSchema = z.object({
-    tool: z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI]),
-    primaryModel: z.string().min(1),
-    averageMonthlySpend: z.number().min(0),
+    tool: z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI], {
+        error: "Please select an API provider",
+    }),
+    primaryModel: z.string().min(1, "Please select a model"),
+    averageMonthlySpend: z.number({ error: "Please enter a valid monthly spend" }).min(0, "Monthly spend cannot be negative"),
     useCase: UseCaseSchema,
 
     type: z.literal("api"),
 
-    dropCapacityBy: z.number().positive().optional().default(5), // Percentage buffer to account for variability in API usage and pricing. For example, if the audit identifies a cheaper model that has 5% lower benchmark scores, we can recommend it with confidence that it will still meet the user's needs even if their usage patterns change slightly or if there are minor discrepancies between benchmark performance and real-world performance.
+    dropCapacityBy: z.number({ error: "Please enter a valid percentage" }).positive("Capacity buffer must be greater than 0").optional().default(5),
     okayWithChineseModals: z.boolean().optional().default(false),
-    contextWindow: z.number().positive().optional(),
+    contextWindow: z.number({ error: "Please enter a valid context window size" }).positive("Context window must be greater than 0").optional(),
 
 }).superRefine((data, ctx) => {
     const validModels = ModelsByTool[data.tool as keyof typeof ModelsByTool];
     if (!validModels.includes(data.primaryModel as never)) {
         ctx.addIssue({
             code: 'custom',
-            message: `Invalid model "${data.primaryModel}" for tool "${data.tool}". Valid models are: ${validModels.join(', ')}`,
+            message: "The selected model is not available for this provider",
             path: ['primaryModel'],
         });
     }

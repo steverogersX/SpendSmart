@@ -6,16 +6,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import dynamic from "next/dynamic";
 import { ToolEntry } from "./ToolEntry";
 
-const AuditResults = dynamic(
-  () => import("./AuditResults").then((m) => ({ default: m.AuditResults })),
-  { ssr: false },
-);
+
 import { apiToolSchema, toolSchema } from "@shared/schemas/auditRequest";
 import { runAudit } from "@/lib/api";
 import { AuditResult } from "@shared/types/auditResult";
+import { AuditResults } from "./AuditResults";
 
 const apiEntrySchema = apiToolSchema;
 const subscriptionEntrySchema = toolSchema;
@@ -26,7 +23,7 @@ export const entrySchema = z.discriminatedUnion("type", [
 ]);
 
 const formSchema = z.object({
-  tools: z.array(entrySchema).min(1).max(8),
+  tools: z.array(entrySchema).min(1, "Add at least one tool to audit").max(8, "You can audit up to 8 tools at once"),
 });
 
 export type FormValues = z.input<typeof formSchema>;

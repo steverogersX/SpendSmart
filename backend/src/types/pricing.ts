@@ -3,7 +3,9 @@ import { Tools, UseCases } from '@shared/config/tools.config';
 
 export const ScoreTypeSchema = z.enum(['absolute', 'relative']);
 export const ScoreUnitSchema = z.enum(['percentage', 'Elo points']);
-export const UseCaseSchema   = z.enum(Object.values(UseCases) as [string, ...string[]]);
+export const UseCaseSchema   = z.enum(Object.values(UseCases) as [string, ...string[]], {
+     error: "Please select a use case" ,
+});
 
 export const ModelUseCaseSchema = z.object({
     useCase:        UseCaseSchema,
