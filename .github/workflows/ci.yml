@@ -67,6 +67,9 @@ jobs:
 
       - name: Test
         run: npm test
+        env:
+          DB_HOST: localhost
+          DB_PASSWORD: test
 
   deploy-frontend:
     name: Deploy Frontend → Vercel

@@ -13,8 +13,8 @@ type TestCase = {
 describe('auditService — API audit', () => {
     for (const tc of apiCases as TestCase[]) {
         describe(tc.description, () => {
-            it('produces the expected audit result', () => {
-                const result = auditService({ tools: [tc.input] });
+            it('produces the expected audit result', async () => {
+                const result = await auditService({ tools: [tc.input] });
                 expect(result.tools).toEqual([tc.expectedOutput]);
             });
         });
@@ -24,8 +24,8 @@ describe('auditService — API audit', () => {
 describe('auditService — Subscription audit', () => {
     for (const tc of subCases as TestCase[]) {
         describe(tc.description, () => {
-            it('produces the expected audit result', () => {
-                const result = auditService({ tools: [tc.input] });
+            it('produces the expected audit result', async () => {
+                const result = await auditService({ tools: [tc.input] });
                 expect(result.tools).toEqual([tc.expectedOutput]);
             });
         });
