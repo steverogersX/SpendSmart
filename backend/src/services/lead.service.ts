@@ -11,13 +11,14 @@ export interface CreateLeadInput {
   companyName?: string;
   role?: string;
   teamSize?: string;
+  tier?: string;
   totalSavingsMonthly: number;
   ipHash: string;
   auditResults: AuditResult;
 }
 
 export async function createLead(input: CreateLeadInput): Promise<void> {
-  const { email, companyName, role, teamSize, totalSavingsMonthly, ipHash, auditResults } = input;
+  const { email, companyName, role, teamSize, tier, totalSavingsMonthly, ipHash, auditResults } = input;
 
   await db
     .insert(leads)
@@ -26,6 +27,7 @@ export async function createLead(input: CreateLeadInput): Promise<void> {
       companyName: companyName ?? null,
       role: role ?? null,
       teamSize: teamSize ?? null,
+      tier: tier ?? null,
       totalSavingsMonthly: String(totalSavingsMonthly),
       ipHash,
     })
@@ -35,6 +37,7 @@ export async function createLead(input: CreateLeadInput): Promise<void> {
         companyName: sql`COALESCE(EXCLUDED.company_name, ${leads.companyName})`,
         role: sql`COALESCE(EXCLUDED.role, ${leads.role})`,
         teamSize: sql`COALESCE(EXCLUDED.team_size, ${leads.teamSize})`,
+        tier: sql`COALESCE(EXCLUDED.tier, ${leads.tier})`,
         totalSavingsMonthly: String(totalSavingsMonthly),
         updatedAt: new Date(),
       },

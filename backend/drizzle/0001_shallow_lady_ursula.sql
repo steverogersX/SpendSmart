@@ -1,0 +1,1 @@
+ALTER TABLE "leads" ALTER COLUMN "tier" DROP NOT NULL;
