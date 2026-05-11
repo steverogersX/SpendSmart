@@ -44,13 +44,6 @@
           "reason": "Claude (claude.ai) pro at $20/seat"
         },
         {
-          "toolName": "chatgpt",
-          "planName": "plus",
-          "savings": 180,
-          "savingsPercent": 90,
-          "reason": "ChatGPT plus at $20/seat"
-        },
-        {
           "toolName": "windsurf",
           "planName": "pro",
           "savings": 180,
@@ -63,13 +56,6 @@
           "savings": 175,
           "savingsPercent": 87.5,
           "reason": "Claude (claude.ai) team_standard at $25/seat"
-        },
-        {
-          "toolName": "chatgpt",
-          "planName": "business",
-          "savings": 175,
-          "savingsPercent": 87.5,
-          "reason": "ChatGPT business at $25/seat"
         },
         {
           "toolName": "gemini",
@@ -100,6 +86,13 @@
           "reason": "Cursor teams at $40/seat"
         },
         {
+          "toolName": "codex",
+          "planName": "business",
+          "savings": 160,
+          "savingsPercent": 80,
+          "reason": "Codex business at $40/seat"
+        },
+        {
           "toolName": "windsurf",
           "planName": "teams",
           "savings": 160,
@@ -114,18 +107,18 @@
           "reason": "Cursor pro_plus at $60/seat"
         },
         {
+          "toolName": "codex",
+          "planName": "plus",
+          "savings": 140,
+          "savingsPercent": 70,
+          "reason": "Codex plus at $60/seat"
+        },
+        {
           "toolName": "claude",
           "planName": "max_5x",
           "savings": 100,
           "savingsPercent": 50,
           "reason": "Claude (claude.ai) max_5x at $100/seat"
-        },
-        {
-          "toolName": "chatgpt",
-          "planName": "pro_100",
-          "savings": 100,
-          "savingsPercent": 50,
-          "reason": "ChatGPT pro_100 at $100/seat"
         },
         {
           "toolName": "claude",
