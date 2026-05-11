@@ -18,8 +18,9 @@
       "@shared/*": ["../shared/*"],
       "zod": ["./node_modules/zod"]
     },
+    "jsx": "react-jsx",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "drizzle.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

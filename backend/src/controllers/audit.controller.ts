@@ -1,6 +1,6 @@
 import auditService from '@/services/audit.service';
 import { ApiError, ApiResponse } from '@/types';
-import { auditRequestSchema } from '@shared/schemas/audit';
+import { auditRequestSchema } from '@shared/schemas/auditRequest';
 import { Request, Response, NextFunction } from 'express';
 import status from 'http-status';
 import { fromZodError } from 'zod-validation-error';

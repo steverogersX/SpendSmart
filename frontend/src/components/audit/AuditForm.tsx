@@ -13,7 +13,7 @@ const AuditResults = dynamic(
   () => import("./AuditResults").then((m) => ({ default: m.AuditResults })),
   { ssr: false },
 );
-import { apiToolSchema, toolSchema } from "@shared/schemas/audit";
+import { apiToolSchema, toolSchema } from "@shared/schemas/auditRequest";
 import { runAudit } from "@/lib/api";
 import { AuditResult } from "@shared/types/auditResult";
 
@@ -31,7 +31,7 @@ const formSchema = z.object({
 
 export type FormValues = z.input<typeof formSchema>;
 
-export function AuditForm() {
+function AuditForm() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "error" | "success"
   >("idle");
@@ -113,3 +113,6 @@ export function AuditForm() {
     </div>
   );
 }
+
+
+export default AuditForm

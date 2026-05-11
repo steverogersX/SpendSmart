@@ -41,7 +41,6 @@ export type {
     GoogleModelType,
 } from '@shared/types/tools';
 
-// ─── Re-exports: pricing ──────────────────────────────────────────────────────
 
 export {
     UseCaseSchema,
@@ -67,7 +66,6 @@ export type {
 } from '../../backend/src/types/pricing';
 
 // ─── Subscription tool schema ─────────────────────────────────────────────────
-
 export const toolSchema = z.object({
     tool: z.enum(Object.values(Tools) as [string, ...string[]]),
     plan: z.string().min(1),
@@ -89,7 +87,6 @@ export const toolSchema = z.object({
 export type ToolInput = z.infer<typeof toolSchema>;
 
 // ─── API tool schema ──────────────────────────────────────────────────────────
-
 export const apiToolSchema = z.object({
     tool: z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI]),
     primaryModel: z.string().min(1),
