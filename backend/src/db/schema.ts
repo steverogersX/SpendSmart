@@ -9,6 +9,7 @@ export const leads = pgTable('leads', {
   totalSavingsMonthly: numeric('total_savings_monthly', { precision: 10, scale: 2 })
     .notNull()
     .default('0'),
+  tier: text('tier'),
   ipHash: text('ip_hash'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),

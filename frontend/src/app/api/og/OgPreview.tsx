@@ -79,58 +79,44 @@ export const OgPreview = ({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 14,
+              gap: 8,
             }}
           >
-            {/* logo */}
-            <div
+            {/* $ — font-mono bold emerald, matching Navbar */}
+            <span
               style={{
-                width: 52,
-                height: 52,
-                borderRadius: 16,
-                background:
-                  "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: 26,
+                fontFamily: "monospace",
+                fontSize: 28,
                 fontWeight: 800,
-                boxShadow: "0 10px 30px rgba(16,185,129,0.18)",
+                color: "#10b981",
+                lineHeight: 1,
               }}
             >
               $
-            </div>
-
-            <div
+            </span>
+            {/* Spend + Smart — matching Navbar text style */}
+            <span
               style={{
-                display: "flex",
-                flexDirection: "column",
+                fontSize: 24,
+                fontWeight: 600,
+                letterSpacing: "-0.5px",
+                color: "#111827",
+                lineHeight: 1,
               }}
             >
-              <span
-                style={{
-                  fontSize: 30,
-                  fontWeight: 800,
-                  letterSpacing: "-1px",
-                  color: "#111827",
-                  lineHeight: 1,
-                }}
-              >
-                SpendSmart
-              </span>
-
-              <span
-                style={{
-                  marginTop: 4,
-                  fontSize: 14,
-                  color: "#6b7280",
-                  fontWeight: 500,
-                }}
-              >
-                Audited by SpendSmart
-              </span>
-            </div>
+              Spend
+            </span>
+            <span
+              style={{
+                fontSize: 24,
+                fontWeight: 600,
+                letterSpacing: "-0.5px",
+                color: "#10b981",
+                lineHeight: 1,
+              }}
+            >
+              Smart
+            </span>
           </div>
         </div>
 
@@ -374,15 +360,21 @@ export const OgPreview = ({
                 justifyContent: "center",
               }}
             >
-              <span
-                style={{
-                  fontSize: 22,
-                  fontWeight: 700,
-                  color: "#111827",
-                }}
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#111827"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                {toolCount}
-              </span>
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+              </svg>
             </div>
 
             <div

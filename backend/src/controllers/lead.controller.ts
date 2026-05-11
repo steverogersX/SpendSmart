@@ -9,14 +9,16 @@ import { fromZodError } from 'zod-validation-error';
 import { auditResultSchema } from '@shared/schemas/auditResults';
 
 const TEAM_SIZES = ['1-10', '11-50', '51-200', '201-500', '500+'] as const;
+const TIERS = ['high', 'mid', 'low'] as const;
 
 const leadSchema = z.object({
   email: z.string().email(),
   companyName: z.string().max(100).optional(),
   role: z.string().max(100).optional(),
   teamSize: z.enum(TEAM_SIZES).optional(),
+  tier: z.enum(TIERS).optional(),
   totalSavingsMonthly: z.number().min(0),
-  auditResults: auditResultSchema, 
+  auditResults: auditResultSchema,
   website: z.string().max(0, 'Unexpected field').optional(), // honeypot
 });
 
@@ -31,7 +33,7 @@ export default async function leadController(
       throw new ApiError(fromZodError(parsed.error).message, status.UNPROCESSABLE_ENTITY);
     }
 
-    const { website, auditResults, ...data } = parsed.data;
+    const { website, auditResults, tier, ...data } = parsed.data;
 
     if (website) {
       res.status(status.OK).json({ success: true } satisfies ApiResponse);
@@ -43,6 +45,7 @@ export default async function leadController(
 
     await createLead({
       ...data,
+      tier,
       ipHash,
       auditResults: auditResults as AuditResult,
     });
