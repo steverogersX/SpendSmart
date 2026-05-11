@@ -23,6 +23,38 @@
         "pricePerSeat": 40,
         "verifiedDate": "2026-05-09",
         "useCases": ["coding", "agentic"]
+      },
+      "enterprise": {
+        "pricePerSeat": null,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
+      }
+    }
+  },
+  "codex": {
+    "type": "subscription",
+    "name": "Codex",
+    "sourceUrl": "https://chatgpt.com/pricing/",
+    "plans": {
+      "plus": {
+        "pricePerSeat": 60,
+        "verifiedDate": "2026-05-11",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "pro": {
+        "pricePerSeat": 200,
+        "verifiedDate": "2026-05-11",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "business": {
+        "pricePerSeat": 40,
+        "verifiedDate": "2026-05-11",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
+      },
+      "enterprise": {
+        "pricePerSeat": null,
+        "verifiedDate": "2026-05-11",
+        "useCases": ["writing", "coding", "research", "agentic", "data"]
       }
     }
   },
@@ -93,34 +125,19 @@
       "go": {
         "pricePerSeat": 8,
         "verifiedDate": "2026-05-09",
-        "useCases": ["writing", "coding", "research"]
+        "useCases": ["writing"]
       },
       "plus": {
         "pricePerSeat": 20,
         "verifiedDate": "2026-05-09",
-        "useCases": ["writing", "coding", "research", "agentic", "data"]
-      },
-      "pro_100": {
-        "pricePerSeat": 100,
-        "verifiedDate": "2026-05-09",
-        "useCases": ["writing", "coding", "research", "agentic", "data"]
-      },
-      "pro_200": {
-        "pricePerSeat": 200,
-        "verifiedDate": "2026-05-09",
-        "useCases": ["writing", "coding", "research", "agentic", "data"]
-      },
-      "business": {
-        "pricePerSeat": 25,
-        "verifiedDate": "2026-05-09",
-        "useCases": ["writing", "coding", "research", "agentic", "data"]
+        "useCases": ["writing"]
       }
     }
   },
   "gemini": {
     "type": "subscription",
     "name": "Gemini (Google AI)",
-    "sourceUrl": "https://one.google.com/about/google-ai-plans/",
+    "sourceUrl": "https://gemini.google/subscriptions/",
     "plans": {
       "ai_plus": {
         "pricePerSeat": 10.99,
@@ -158,13 +175,18 @@
         "pricePerSeat": 40,
         "verifiedDate": "2026-05-09",
         "useCases": ["coding", "agentic"]
+      },
+      "enterprise": {
+        "pricePerSeat": null,
+        "verifiedDate": "2026-05-09",
+        "useCases": ["coding", "agentic"]
       }
     }
   },
   "anthropic_api": {
     "type": "api",
     "name": "Anthropic API",
-    "isChineseModel" : false,
+    "isChineseModel": false,
     "sourceUrl": "https://docs.anthropic.com/en/docs/about-claude/pricing",
     "models": {
       "claude-haiku-4-5": {
@@ -318,7 +340,7 @@
   "openai_api": {
     "type": "api",
     "name": "OpenAI API",
-    "isChineseModel" : false,
+    "isChineseModel": false,
     "models": {
       "gpt-5-5": {
         "displayName": "GPT-5.5",
@@ -455,11 +477,10 @@
     }
   },
 
-
   "kimi_api": {
     "type": "api",
     "name": "Kimi API",
-    "isChineseModel" : true,
+    "isChineseModel": true,
     "models": {
       "kimi-k-2-6": {
         "displayName": "Kimi K2.6",
@@ -577,7 +598,7 @@
   "deepseek_api": {
     "type": "api",
     "name": "DeepSeek API",
-    "isChineseModel" : true,
+    "isChineseModel": true,
     "models": {
       "deepseek-v4-pro": {
         "displayName": "DeepSeek V4 Pro",
@@ -636,10 +657,6 @@
           }
         ]
       }
-     
     }
   }
-
-
-
 }
