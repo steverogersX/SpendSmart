@@ -507,7 +507,7 @@ export function ToolEntry(): React.ReactElement {
               type="button"
               onClick={() => setType(opt.value)}
               className={cn(
-                "relative z-10 rounded-lg px-5 py-2 text-sm font-medium transition-colors duration-200",
+                "relative rounded-lg px-5 py-2 text-sm font-medium transition-colors duration-200",
                 type === opt.value
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground",

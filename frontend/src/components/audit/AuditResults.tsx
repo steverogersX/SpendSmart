@@ -1,7 +1,16 @@
 "use client";
-
-import { useState } from "react";
-import { ChevronDown, TrendingDown, CheckCircle, ExternalLink, Share2, Sparkles, Bell } from "lucide-react";
+import { useEffect, useState } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import {
+  ChevronDown,
+  TrendingDown,
+  CheckCircle,
+  ExternalLink,
+  Share2,
+  Sparkles,
+  Bell,
+  TrendingUp,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, formatCurrency } from "@/lib/utils";
 import { isApiResult } from "@/lib/api";
@@ -16,6 +25,24 @@ import { ShareModal } from "./ShareModal";
 import { LeadCaptureForm } from "./LeadCaptureForm";
 import { BenchmarkChart } from "../ui/benchmarkChart";
 
+// ─── Animated number ──────────────────────────────────────────────────────────
+
+function AnimatedCurrency({ value, className }: { value: number; className?: string }) {
+  const count = useMotionValue(0);
+  const display = useTransform(count, (v) => formatCurrency(Math.round(v)));
+
+  useEffect(() => {
+    const controls = animate(count, value, {
+      duration: 1.8,
+      ease: [0.16, 1, 0.3, 1],
+    });
+    return controls.stop;
+  }, [value]);
+
+  return <motion.span className={className}>{display}</motion.span>;
+}
+
+// ─── Status badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: "optimal" | "optimize" }) {
   return (
@@ -36,7 +63,6 @@ function StatusBadge({ status }: { status: "optimal" | "optimize" }) {
     </span>
   );
 }
-
 
 // ─── Recommendation rows ──────────────────────────────────────────────────────
 
@@ -107,51 +133,34 @@ function renderWithLinks(text: string) {
 
 // ─── Share helpers ────────────────────────────────────────────────────────────
 
-function buildOgParams(item: AuditResultItem): URLSearchParams {
-  const api = isApiResult(item);
+function buildSummaryOgParams(result: AuditResult, totalSavings: number): URLSearchParams {
+  const totalSpend = result.tools.reduce(
+    (s, t) => s + (isApiResult(t) ? t.currentAverageMonthlySpend : t.currentCost),
+    0,
+  );
+  const optimizable = result.tools.filter((t) => t.status === "optimize").length;
   const p = new URLSearchParams();
-  p.set("status", item.status);
-  p.set("tool", (api ? item.toolName : item.tool).replace(/_/g, " "));
-  p.set("spend", String(Math.round(api ? item.currentAverageMonthlySpend : item.currentCost)));
-  if (api) {
-    p.set("model", item.primaryModel.replace(/_/g, " "));
-    p.set("usecase", item.primaryUseCase);
-    if (item.currentModelScore !== null) {
-      p.set("cscore", String(item.currentModelScore));
-      p.set("stype", item.scoreType);
-      p.set("sunit", item.scoreUnit);
-      p.set("hib", item.higherIsBetter ? "1" : "0");
-    }
-  }
-  if (item.bestRecommendation) {
-    const rec = item.bestRecommendation;
-    p.set(
-      "rec",
-      api
-        ? (rec as ApiRecommendation).modelDisplayName
-        : `${(rec as SubscriptionRecommendation).toolName} ${(rec as SubscriptionRecommendation).planName}`,
-    );
-    p.set("savings", String(Math.round(rec.savings)));
-    p.set("pct", String(Math.round(rec.savingsPercent)));
-    if (api && item.currentModelScore !== null) {
-      p.set("rscore", String((rec as ApiRecommendation).score));
-    }
+  p.set("status", totalSavings > 0 ? "optimize" : "optimal");
+  p.set("tool", `${result.tools.length} AI tool${result.tools.length !== 1 ? "s" : ""} audited`);
+  p.set("spend", String(Math.round(totalSpend)));
+  if (totalSavings > 0) {
+    p.set("savings", String(Math.round(totalSavings)));
+    const pct = totalSpend > 0 ? Math.round((totalSavings / totalSpend) * 100) : 0;
+    p.set("pct", String(pct));
+    p.set("rec", `${optimizable} tool${optimizable !== 1 ? "s" : ""} to optimize`);
   }
   return p;
 }
 
-function buildShareTitle(item: AuditResultItem): string {
-  const tool = (isApiResult(item) ? item.toolName : item.tool).replace(/_/g, " ");
-  if (item.status === "optimal") return `${tool} is already cost-optimal`;
-  const savings = item.bestRecommendation?.savings ?? 0;
-  return `Save ${formatCurrency(savings)}/mo on ${tool}`;
+function buildSummaryShareTitle(totalSavings: number, toolCount: number): string {
+  if (totalSavings <= 0) return `${toolCount} AI tool${toolCount !== 1 ? "s" : ""} — already cost-optimal`;
+  return `Save ${formatCurrency(totalSavings)}/mo across ${toolCount} AI tool${toolCount !== 1 ? "s" : ""}`;
 }
 
 // ─── Result card ──────────────────────────────────────────────────────────────
 
-function ResultCard({ item }: { item: AuditResultItem }) {
+function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
   const [showOthers, setShowOthers] = useState(false);
-  const [shareOpen, setShareOpen] = useState(false);
   const api = isApiResult(item);
 
   const [selectedRec, setSelectedRec] = useState<ApiRecommendation | null>(
@@ -160,13 +169,15 @@ function ResultCard({ item }: { item: AuditResultItem }) {
 
   const toolLabel = api ? item.toolName : item.tool;
   const currentSpend = api ? item.currentAverageMonthlySpend : item.currentCost;
-  const subtitle = api
-    ? `${item.primaryModel} · ${item.primaryUseCase}`
-    : `${item.currentPlan}`;
+  const subtitle = api ? `${item.primaryModel} · ${item.primaryUseCase}` : `${item.currentPlan}`;
 
   return (
-    <>
-      <Card>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1 + index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <Card className="overflow-hidden">
         <CardContent className="pt-5 space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div>
@@ -175,17 +186,7 @@ function ResultCard({ item }: { item: AuditResultItem }) {
                 {subtitle.replace(/_/g, " ")}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShareOpen(true)}
-                className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-                title="Share this result"
-              >
-                <Share2 className="size-4" />
-              </button>
-              <StatusBadge status={item.status} />
-            </div>
+            <StatusBadge status={item.status} />
           </div>
 
           <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
@@ -208,14 +209,22 @@ function ResultCard({ item }: { item: AuditResultItem }) {
               role={api ? "button" : undefined}
               tabIndex={api ? 0 : undefined}
               onClick={api ? () => setSelectedRec(item.bestRecommendation as ApiRecommendation) : undefined}
-              onKeyDown={api ? (e) => e.key === "Enter" && setSelectedRec(item.bestRecommendation as ApiRecommendation) : undefined}
+              onKeyDown={
+                api
+                  ? (e) =>
+                      e.key === "Enter" &&
+                      setSelectedRec(item.bestRecommendation as ApiRecommendation)
+                  : undefined
+              }
               className={cn(
                 "rounded-lg border p-3",
                 api && "cursor-pointer transition-colors",
                 api && selectedRec === item.bestRecommendation
                   ? "border-emerald-400 bg-emerald-50/70 dark:border-emerald-700 dark:bg-emerald-900/20"
                   : "border-emerald-200 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-900/10",
-                api && selectedRec !== item.bestRecommendation && "hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/15",
+                api &&
+                  selectedRec !== item.bestRecommendation &&
+                  "hover:border-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/15",
               )}
             >
               <div className="flex items-center justify-between mb-2">
@@ -286,7 +295,10 @@ function ResultCard({ item }: { item: AuditResultItem }) {
                         );
                       })
                     : (item.otherOptions as SubscriptionRecommendation[]).map((rec, i) => (
-                        <div key={i} className="rounded-lg border border-border bg-muted/20 px-3 py-2.5">
+                        <div
+                          key={i}
+                          className="rounded-lg border border-border bg-muted/20 px-3 py-2.5"
+                        >
                           <SubRecommendationRow rec={rec} />
                         </div>
                       ))}
@@ -297,18 +309,13 @@ function ResultCard({ item }: { item: AuditResultItem }) {
 
           {item.status === "optimal" && (
             <p className="text-xs text-muted-foreground">
-              You&apos;re spending well here. No cheaper alternative matches your current requirements.
+              You&apos;re spending well here. No cheaper alternative matches your current
+              requirements.
             </p>
           )}
         </CardContent>
       </Card>
-      <ShareModal
-        open={shareOpen}
-        onClose={() => setShareOpen(false)}
-        ogParams={buildOgParams(item)}
-        title={buildShareTitle(item)}
-      />
-    </>
+    </motion.div>
   );
 }
 
@@ -326,7 +333,8 @@ function HighSavingsCTA({ totalSavings, result }: { totalSavings: number; result
             {formatCurrency(totalSavings)}/mo in savings identified
           </p>
           <p className="mt-0.5 text-sm text-emerald-700/80 dark:text-emerald-400/80">
-            Leave your email and a Credex advisor will follow up with a tailored migration plan — at no cost to you.
+            Leave your email and a Credex advisor will follow up with a tailored migration plan —
+            at no cost to you.
           </p>
         </div>
       </div>
@@ -338,7 +346,10 @@ function HighSavingsCTA({ totalSavings, result }: { totalSavings: number; result
       />
       <p className="text-center text-[10px] text-emerald-600/60 dark:text-emerald-500/60">
         Or{" "}
-        <a href="/consult" className="underline underline-offset-2 hover:text-emerald-700 transition-colors">
+        <a
+          href="/consult"
+          className="underline underline-offset-2 hover:text-emerald-700 transition-colors"
+        >
           book a call directly
         </a>{" "}
         · Free · 30 min · No commitment
@@ -351,9 +362,7 @@ function MidSavingsCTA({ totalSavings, result }: { totalSavings: number; result:
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-5 space-y-4">
       <div>
-        <p className="font-semibold">
-          {formatCurrency(totalSavings)}/mo in savings identified
-        </p>
+        <p className="font-semibold">{formatCurrency(totalSavings)}/mo in savings identified</p>
         <p className="mt-0.5 text-sm text-muted-foreground">
           Get the full audit report with step-by-step migration guides sent to your inbox.
         </p>
@@ -394,52 +403,181 @@ function LowSavingsCTA({ result }: { result: AuditResult }) {
 
 // ─── Savings hero ─────────────────────────────────────────────────────────────
 
-function SavingsHero({ totalSavings }: { totalSavings: number }) {
+function SavingsHero({
+  totalSavings,
+  result,
+  onShare,
+}: {
+  totalSavings: number;
+  result: AuditResult;
+  onShare: () => void;
+}) {
+  const toolCount = result.tools.length;
+  const optimizableCount = result.tools.filter((t) => t.status === "optimize").length;
+  const optimalCount = toolCount - optimizableCount;
+
   if (totalSavings <= 0) {
     return (
-      <div className="rounded-xl border border-border bg-muted/20 px-6 py-8 text-center space-y-1">
-        <div className="flex justify-center mb-3">
-          <div className="flex size-10 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-            <CheckCircle className="size-5 text-emerald-600 dark:text-emerald-400" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="relative overflow-hidden rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 via-teal-50/40 to-background dark:border-emerald-800/50 dark:from-emerald-950/50 dark:via-teal-950/20 dark:to-background px-6 py-8"
+      >
+        {/* Share button */}
+        <button
+          type="button"
+          onClick={onShare}
+          className="absolute top-4 right-4 flex items-center gap-1.5 rounded-lg border border-border bg-background/80 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors shadow-sm"
+        >
+          <Share2 className="size-3.5" />
+          Share
+        </button>
+
+        <div className="text-center space-y-3">
+          <div className="flex justify-center">
+            <div className="flex size-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
+              <CheckCircle className="size-6 text-emerald-600 dark:text-emerald-400" />
+            </div>
+          </div>
+          <div>
+            <p className="text-2xl font-bold tracking-tight">You&apos;re spending well.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Every tool in your stack is already cost-optimal.
+            </p>
+          </div>
+          <div className="flex justify-center gap-4 pt-2">
+            <div className="text-center">
+              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{toolCount}</p>
+              <p className="text-xs text-muted-foreground">tools audited</p>
+            </div>
+            <div className="w-px bg-border" />
+            <div className="text-center">
+              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{optimalCount}</p>
+              <p className="text-xs text-muted-foreground">optimal</p>
+            </div>
           </div>
         </div>
-        <p className="text-xl font-semibold tracking-tight">You&apos;re spending well.</p>
-        <p className="text-sm text-muted-foreground">
-          Every tool in your stack is already cost-optimal for your usage.
-        </p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-teal-50/60 to-background dark:border-emerald-800 dark:from-emerald-950/60 dark:via-teal-950/30 dark:to-background px-6 py-8">
-      <p className="text-xs font-medium uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-4">
-        Savings identified
-      </p>
-      <div className="flex flex-col sm:flex-row sm:items-end gap-6">
-        <div>
-          <p className="text-4xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300">
-            {formatCurrency(totalSavings)}
-            <span className="text-lg font-medium text-emerald-600/70 dark:text-emerald-400/70 ml-1">/mo</span>
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">Monthly savings</p>
-        </div>
-        <div className="sm:border-l sm:border-emerald-200 sm:dark:border-emerald-800 sm:pl-6">
-          <p className="text-2xl font-semibold tracking-tight text-foreground">
-            {formatCurrency(totalSavings * 12)}
-            <span className="text-base font-medium text-muted-foreground ml-1">/yr</span>
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">Annual savings</p>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+      className="relative overflow-hidden rounded-2xl border border-emerald-200/70 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-background dark:border-emerald-800/60 dark:from-emerald-950/70 dark:via-teal-950/30 dark:to-background px-6 py-8"
+    >
+      {/* Subtle glow orb */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-12 -right-12 size-48 rounded-full bg-emerald-300/20 dark:bg-emerald-600/10 blur-3xl"
+      />
+
+      {/* Share button */}
+      <button
+        type="button"
+        onClick={onShare}
+        className="absolute top-4 right-4 flex items-center gap-1.5 rounded-lg border border-border bg-background/80 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-background transition-colors shadow-sm z-10"
+      >
+        <Share2 className="size-3.5" />
+        Share
+      </button>
+
+      {/* Badge */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.15, duration: 0.4 }}
+        className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-100/80 dark:border-emerald-700/60 dark:bg-emerald-900/40 px-3 py-1 mb-5"
+      >
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
+          Total Savings Found
+        </span>
+      </motion.div>
+
+      {/* Main savings number */}
+      <div className="space-y-1 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="flex items-baseline gap-1.5"
+        >
+          <AnimatedCurrency
+            value={totalSavings}
+            className="text-5xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300"
+          />
+          <span className="text-xl font-medium text-emerald-600/70 dark:text-emerald-400/70">/mo</span>
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+          className="text-sm text-muted-foreground"
+        >
+          in monthly savings identified
+        </motion.p>
       </div>
-    </div>
+
+      {/* Stats row */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35, duration: 0.45 }}
+        className="flex flex-wrap gap-x-6 gap-y-3"
+      >
+        {/* Annual savings */}
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+            <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div>
+            <AnimatedCurrency
+              value={totalSavings * 12}
+              className="text-base font-semibold text-foreground"
+            />
+            <span className="text-xs text-muted-foreground ml-1">/yr</span>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Annual savings</p>
+          </div>
+        </div>
+
+        <div className="w-px bg-border/60 self-stretch hidden sm:block" />
+
+        {/* Tools audited */}
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-full bg-muted">
+            <span className="text-xs font-bold text-muted-foreground">{toolCount}</span>
+          </div>
+          <div>
+            <p className="text-base font-semibold text-foreground">{toolCount}</p>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Tools audited</p>
+          </div>
+        </div>
+
+        <div className="w-px bg-border/60 self-stretch hidden sm:block" />
+
+        {/* Optimizable */}
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+            <TrendingDown className="size-3.5 text-amber-600 dark:text-amber-400" />
+          </div>
+          <div>
+            <p className="text-base font-semibold text-foreground">{optimizableCount}</p>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Can optimize</p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
 // ─── Root export ──────────────────────────────────────────────────────────────
 
 export function AuditResults({ result }: { result: AuditResult }) {
-  console.log("result", result);
+  const [shareOpen, setShareOpen] = useState(false);
+
   const totalSavings = result.tools.reduce(
     (sum, item) => sum + (item.bestRecommendation?.savings ?? 0),
     0,
@@ -447,22 +585,51 @@ export function AuditResults({ result }: { result: AuditResult }) {
 
   return (
     <div className="space-y-4 pt-2">
-      <h2>Audit Results</h2>
+      <motion.h2
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="text-lg font-semibold tracking-tight"
+      >
+        Audit Results
+      </motion.h2>
 
-      <SavingsHero totalSavings={totalSavings} />
-      <h2 className="text-sm font-medium text-muted-foreground tracking-wide pt-2">
+      <SavingsHero totalSavings={totalSavings} result={result} onShare={() => setShareOpen(true)} />
+
+      <motion.h3
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.3 }}
+        className="text-sm font-medium text-muted-foreground tracking-wide pt-2"
+      >
         Per-tool breakdown
-      </h2>
+      </motion.h3>
+
       {result.tools.map((item, i) => (
-        <ResultCard key={i} item={item} />
+        <ResultCard key={i} item={item} index={i} />
       ))}
-      {totalSavings > 500 ? (
-        <HighSavingsCTA totalSavings={totalSavings} result={result} />
-      ) : totalSavings >= 100 ? (
-        <MidSavingsCTA totalSavings={totalSavings} result={result} />
-      ) : (
-        <LowSavingsCTA result={result} />
-      )}
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 + result.tools.length * 0.07, duration: 0.4 }}
+      >
+        {totalSavings > 500 ? (
+          <HighSavingsCTA totalSavings={totalSavings} result={result} />
+        ) : totalSavings >= 100 ? (
+          <MidSavingsCTA totalSavings={totalSavings} result={result} />
+        ) : (
+          <LowSavingsCTA result={result} />
+        )}
+      </motion.div>
+
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        ogParams={buildSummaryOgParams(result, totalSavings)}
+        title={buildSummaryShareTitle(totalSavings, result.tools.length)}
+      />
+   
     </div>
   );
 }

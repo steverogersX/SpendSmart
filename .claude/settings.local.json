@@ -18,7 +18,8 @@
       "Bash(npm install *)",
       "Bash(npm ls *)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\pavan\\\\web\\\\spendsmart\\\\frontend\" -Force)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(node -e ' *)"
     ]
   }
 }
