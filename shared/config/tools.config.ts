@@ -3,6 +3,7 @@ export const Tools = {
     GithubCopilot: 'github_copilot',
     Claude: 'claude',
     ChatGPT: 'chatgpt',
+    Codex: "codex",
     Gemini: 'gemini',
     Windsurf: 'windsurf',
     AnthropicAPI: 'anthropic_api',
@@ -25,6 +26,7 @@ export const CursorPlan = {
     ProPlus: 'pro_plus',
     Ultra: 'ultra',
     Teams: 'teams',
+    Enterprise: 'enterprise',
 } as const;
 
 export const GithubCopilotPlan = {
@@ -40,14 +42,18 @@ export const ClaudePlan = {
     Max20x: 'max_20x',
     TeamStandard: 'team_standard',
     TeamPremium: 'team_premium',
+    Enterprise: 'enterprise',
 } as const;
 
 export const ChatGPTPlan = {
     Go: 'go',
+} as const;
+
+export const CodexPlan = {
     Plus: 'plus',
-    Pro100: 'pro_100',
-    Pro200: 'pro_200',
+    Pro: 'pro',
     Business: 'business',
+    Enterprise: 'enterprise',
 } as const;
 
 export const GeminiPlan = {
@@ -60,6 +66,7 @@ export const WindsurfPlan = {
     Pro: 'pro',
     Max: 'max',
     Teams: 'teams',
+    Enterprise: 'enterprise',
 } as const;
 
 export const APIOnlyPlan = {
@@ -71,12 +78,13 @@ export const PlansByTool = {
     [Tools.GithubCopilot]: Object.values(GithubCopilotPlan),
     [Tools.Claude]: Object.values(ClaudePlan),
     [Tools.ChatGPT]: Object.values(ChatGPTPlan),
+    [Tools.Codex]: Object.values(CodexPlan),
     [Tools.Gemini]: Object.values(GeminiPlan),
     [Tools.Windsurf]: Object.values(WindsurfPlan),
     [Tools.AnthropicAPI]: Object.values(APIOnlyPlan),
     [Tools.OpenAIAPI]: Object.values(APIOnlyPlan),
-    [Tools.KimiAPI] : Object.values(APIOnlyPlan),
-    [Tools.DeepseekAPI] : Object.values(APIOnlyPlan)
+    [Tools.KimiAPI]: Object.values(APIOnlyPlan),
+    [Tools.DeepseekAPI]: Object.values(APIOnlyPlan)
 } as const;
 
 // ─── API providers ────────────────────────────────────────────────────────────

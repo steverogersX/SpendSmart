@@ -3,13 +3,12 @@ name: CI
 on:
   push:
     branches: [main]
-    
   pull_request:
     branches: [main]
 
 jobs:
   frontend:
-    name: Frontend — Lint & Test
+    name: Frontend — Lint, Build & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,11 +30,17 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://placeholder.railway.app' }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || 'https://placeholder.vercel.app' }}
+
       - name: Test
         run: npm test
 
   backend:
-    name: Backend — Lint & Test
+    name: Backend — Lint, Build & Test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -57,5 +62,41 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Build
+        run: npm run build
+
       - name: Test
         run: npm test
+
+  deploy-frontend:
+    name: Deploy Frontend → Vercel
+    needs: frontend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+  deploy-backend:
+    name: Deploy Backend → Render
+    needs: backend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Trigger Render deploy
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            "https://api.render.com/v1/services/srv-d80vlcl7vvec73ekj480/deploys" \
+            -d '{}' | jq '.id,.status'

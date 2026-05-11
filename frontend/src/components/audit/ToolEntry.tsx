@@ -24,6 +24,7 @@ const SUBSCRIPTION_TOOLS = [
   { value: Tools.GithubCopilot, label: "GitHub Copilot" },
   { value: Tools.Claude, label: "Claude" },
   { value: Tools.ChatGPT, label: "ChatGPT" },
+  { value: Tools.Codex, label: "Codex" },
   { value: Tools.Gemini, label: "Gemini" },
   { value: Tools.Windsurf, label: "Windsurf" },
 ];

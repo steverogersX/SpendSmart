@@ -46,6 +46,7 @@ const nextConfig: NextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       '@shared': path.resolve(__dirname, '../shared'),
+      'zod': path.resolve(__dirname, 'node_modules/zod'),
     };
     return config;
   },
