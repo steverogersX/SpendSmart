@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, deploy/prod]
+    branches: [main]
   pull_request:
-    branches: [main, deploy/prod]
+    branches: [main]
 
 jobs:
   frontend:
@@ -72,7 +72,7 @@ jobs:
     name: Deploy Frontend → Vercel
     needs: frontend
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/deploy/prod' && github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +90,7 @@ jobs:
     name: Deploy Backend → Render
     needs: backend
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/deploy/prod' && github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Trigger Render deploy
