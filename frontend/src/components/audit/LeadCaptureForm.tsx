@@ -35,7 +35,7 @@ const SUCCESS_COPY: Record<LeadTier, string> = {
 interface Props {
   tier: LeadTier;
   totalSavings: number;
-  auditResult?: AuditResult;
+  auditResult: AuditResult;
   submitLabel?: string;
   onSuccess?: () => void;
 }

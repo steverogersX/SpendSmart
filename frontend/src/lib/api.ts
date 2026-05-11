@@ -29,7 +29,7 @@ export interface LeadInput {
   teamSize?: string;
   tier: LeadTier;
   totalSavingsMonthly: number;
-  auditResults?: AuditResult;
+  auditResults: AuditResult;
   website?: string; // honeypot — must be empty
 }
 
