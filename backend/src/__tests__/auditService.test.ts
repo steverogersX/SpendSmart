@@ -1,13 +1,13 @@
 import auditService from '../services/audit.service';
 import { AuditResult } from '../types';
-import { AnyToolInput } from '@shared/schemas/audit';
+import { AnyToolInput } from '@shared/schemas/auditRequest';
 import apiCases from './data/api_test_cases.json';
 import subCases from './data/subscription_test_cases.json';
 
 type TestCase = {
     description: string;
     input: AnyToolInput;
-    expectedOutput: AuditResult['results'][number];
+    expectedOutput: AuditResult['tools'][number];
 };
 
 describe('auditService — API audit', () => {
@@ -15,7 +15,7 @@ describe('auditService — API audit', () => {
         describe(tc.description, () => {
             it('produces the expected audit result', () => {
                 const result = auditService({ tools: [tc.input] });
-                expect(result.results).toEqual([tc.expectedOutput]);
+                expect(result.tools).toEqual([tc.expectedOutput]);
             });
         });
     }
@@ -26,7 +26,7 @@ describe('auditService — Subscription audit', () => {
         describe(tc.description, () => {
             it('produces the expected audit result', () => {
                 const result = auditService({ tools: [tc.input] });
-                expect(result.results).toEqual([tc.expectedOutput]);
+                expect(result.tools).toEqual([tc.expectedOutput]);
             });
         });
     }

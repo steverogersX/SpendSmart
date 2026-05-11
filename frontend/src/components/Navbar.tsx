@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "@/components/ui/button";
+import Logo from "@shared/ui/Logo";
 
 export function Navbar() {
   const { theme, toggle } = useTheme();
@@ -24,6 +25,7 @@ export function Navbar() {
               </span>
             </span>
           </div>
+          {/* <Logo /> */}
         </Link>
 
         {/* Dark mode toggle */}

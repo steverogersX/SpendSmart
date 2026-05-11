@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Image from "next/image";
 import Link from "next/link";
+import { CheckCircle, TrendingDown, ArrowRight, Sparkles } from "lucide-react";
+import { ShareImageViewer } from "@/components/share/ShareImageViewer";
 
 type Props = {
   searchParams: Promise<Record<string, string>>;
@@ -50,6 +51,22 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
+function AppLogo() {
+  return (
+    <Link href="/" className="group inline-flex items-center gap-1">
+      <span className="font-mono text-2xl font-bold text-emerald-500 transition-colors group-hover:text-emerald-400">
+        $
+      </span>
+      <span className="text-[20px] font-semibold tracking-tight text-foreground">
+        Spend
+        <span className="text-emerald-500 transition-colors group-hover:text-emerald-400">
+          Smart
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export default async function SharePage({ searchParams }: Props) {
   const sp = await searchParams;
   const status = sp.status ?? "optimize";
@@ -62,56 +79,44 @@ export default async function SharePage({ searchParams }: Props) {
   const ogImageUrl = `/api/og?${params.toString()}`;
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-2xl space-y-8">
-        {/* OG image preview */}
-        <div className="rounded-2xl overflow-hidden shadow-2xl border border-border">
-          <Image
-            src={ogImageUrl}
-            alt="Audit result"
-            width={1200}
-            height={630}
-            className="w-full h-auto"
-            unoptimized
+    <main className="min-h-screen bg-background flex flex-col">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-emerald-300/20 dark:bg-emerald-600/10 blur-[100px]" />
+      </div>
+
+      <div className="relative flex flex-col items-center w-full max-w-2xl mx-auto px-6 pt-10 pb-16 flex-1">
+        {/* Card */}
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-200/70 dark:border-emerald-800/60 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-background dark:from-emerald-950/70 dark:via-teal-950/30 dark:to-background px-6 py-8 w-full">
+          {/* Glow orb inside card */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -top-12 -right-12 size-48 rounded-full bg-emerald-300/20 dark:bg-emerald-600/10 blur-3xl"
           />
+
+          {/* Logo */}
+          <div className="mb-6">
+            <AppLogo />
+          </div>
+
+        
+
+     
+
+          {/* OG image preview */}
+          <div className="w-full mb-6">
+            <ShareImageViewer
+              src={ogImageUrl}
+              alt={isOptimal ? `${tool} is cost-optimal` : `Save $${savings}/mo on ${tool}`}
+            />
+          </div>
+
+      
+
+        
         </div>
 
-        {/* Summary */}
-        <div className="text-center space-y-3">
-          {isOptimal ? (
-            <>
-              <p className="text-2xl font-bold tracking-tight">
-                {tool} is already optimal
-              </p>
-              <p className="text-muted-foreground text-sm">
-                No cheaper alternative meets your quality requirements.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-2xl font-bold tracking-tight">
-                Save ${savings}/mo on {tool}
-              </p>
-              <p className="text-muted-foreground text-sm">
-                That&apos;s a {pct}% cost reduction — discovered by SpendSmart.
-              </p>
-            </>
-          )}
-        </div>
-
-        {/* CTA */}
-        <div className="flex justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 text-sm font-semibold transition-colors"
-          >
-            Audit your AI spend →
-          </Link>
-        </div>
-
-        <p className="text-center text-xs text-muted-foreground">
-          SpendSmart · AI cost optimizer powered by real benchmark data
-        </p>
+     
       </div>
     </main>
   );

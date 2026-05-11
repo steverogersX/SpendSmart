@@ -6,16 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import dynamic from "next/dynamic";
 import { ToolEntry } from "./ToolEntry";
 
-const AuditResults = dynamic(
-  () => import("./AuditResults").then((m) => ({ default: m.AuditResults })),
-  { ssr: false },
-);
-import { apiToolSchema, toolSchema } from "@shared/schemas/audit";
+import { apiToolSchema, toolSchema } from "@shared/schemas/auditRequest";
 import { runAudit } from "@/lib/api";
 import { AuditResult } from "@shared/types/auditResult";
+import { AuditResults } from "./AuditResults";
 
 const apiEntrySchema = apiToolSchema;
 const subscriptionEntrySchema = toolSchema;
@@ -26,12 +22,15 @@ export const entrySchema = z.discriminatedUnion("type", [
 ]);
 
 const formSchema = z.object({
-  tools: z.array(entrySchema).min(1).max(8),
+  tools: z
+    .array(entrySchema)
+    .min(1, "Add at least one tool to audit")
+    .max(8, "You can audit up to 8 tools at once"),
 });
 
 export type FormValues = z.input<typeof formSchema>;
 
-export function AuditForm() {
+function AuditForm() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "error" | "success"
   >("idle");
@@ -58,7 +57,10 @@ export function AuditForm() {
   useEffect(() => {
     if (status === "success") {
       setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
       }, 50);
     }
   }, [status]);
@@ -89,11 +91,22 @@ export function AuditForm() {
             <Button
               type="submit"
               size="sm"
+              variant="outline"
               disabled={isLoading}
-              className="m-auto gap-1.5 p-1.5"
+              className="
+              mx-auto h-9 rounded-xl
+              bg-black px-4 text-sm font-medium text-white
+              shadow-sm transition-all duration-200
+              hover:bg-neutral-800 hover:shadow-md
+              active:scale-[0.98]
+              disabled:cursor-not-allowed disabled:opacity-70
+              "
             >
-              {isLoading && <Loader2 className="size-3.5 animate-spin" />}
-              {isLoading ? "Running..." : "Run Audit"}
+              <div className="flex items-center gap-2">
+                {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+
+                <span>{isLoading ? "Running Audit..." : "Run Audit"}</span>
+              </div>
             </Button>
           </div>
         </form>
@@ -113,3 +126,5 @@ export function AuditForm() {
     </div>
   );
 }
+
+export default AuditForm;

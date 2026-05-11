@@ -1,0 +1,8 @@
+services:
+  maildev:
+    image: maildev/maildev
+    container_name: spendsmart-maildev
+    ports:
+      - "1025:1025"   # SMTP — backend sends here
+      - "1080:1080"   # Web UI — open http://localhost:1080
+    restart: unless-stopped

@@ -4,7 +4,7 @@ import {
     APIToolInput,
     AnyToolInput,
     UseCase,
-} from "@shared/schemas/audit";
+} from "@shared/schemas/auditRequest";
 import {
     AuditResult,
     ApiAuditResult,
@@ -227,7 +227,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
 
 
 const auditService = (request: AuditRequest): AuditResult => ({
-    results: request.tools.map(tool =>
+    tools: request.tools.map(tool =>
         isAPIInput(tool) ? auditApiTool(tool) : auditSubscriptionTool(tool),
     ),
 });
