@@ -596,6 +596,25 @@ export function AuditResults({ result }: { result: AuditResult }) {
 
       <SavingsHero totalSavings={totalSavings} result={result} onShare={() => setShareOpen(true)} />
 
+      {result.aiSummary && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-xl border border-border bg-muted/20 px-4 py-3.5"
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles className="size-3.5 text-muted-foreground" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              AI Summary
+            </span>
+          </div>
+          <p className="text-sm leading-relaxed text-foreground/80">
+            {renderWithLinks(result.aiSummary)}
+          </p>
+        </motion.div>
+      )}
+
       <motion.h3
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

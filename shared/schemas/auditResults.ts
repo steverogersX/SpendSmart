@@ -86,5 +86,6 @@ export const auditResultItemSchema = z.union([
 
 export const auditResultSchema = z.object({
     tools: z.array(auditResultItemSchema),
+    aiSummary: z.string().optional(),
 });
 

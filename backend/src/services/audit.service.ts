@@ -13,6 +13,7 @@ import {
     SubscriptionRecommendation,
 } from "@shared/types/auditResult";
 import { pricingData, apiPricingData } from "@/data/pricingData";
+import { generateAiSummary } from "@/services/gemini.service";
 
 // API inputs carry `averageMonthlySpend`, subscription inputs carry
 // `monthlySpend` + `seats` + `plan`. no explicit `type` field on the input
@@ -226,10 +227,13 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
 };
 
 
-const auditService = (request: AuditRequest): AuditResult => ({
-    tools: request.tools.map(tool =>
+const auditService = async (request: AuditRequest): Promise<AuditResult> => {
+    const tools = request.tools.map(tool =>
         isAPIInput(tool) ? auditApiTool(tool) : auditSubscriptionTool(tool),
-    ),
-});
+    );
+    const partial: AuditResult = { tools };
+    const aiSummary = await generateAiSummary(partial);
+    return { tools, aiSummary };
+};
 
 export default auditService;

@@ -22,6 +22,9 @@ const envSchema = z.object({
   // MailDev SMTP (development)
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().default(1025),
+
+  // Gemini (AI summary)
+  GEMINI_API_KEY: z.string().optional().default(''),
 });
 
 const parsed = envSchema.safeParse(process.env);
