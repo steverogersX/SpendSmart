@@ -90,7 +90,7 @@ export type ToolInput = z.infer<typeof toolSchema>;
 
 // ─── API tool schema ──────────────────────────────────────────────────────────
 export const apiToolSchema = z.object({
-    tool: z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI], {
+    tool: z.enum([Tools.AnthropicAPI, Tools.OpenAIAPI, Tools.KimiAPI, Tools.DeepseekAPI], {
         error: "Please select an API provider",
     }),
     primaryModel: z.string().min(1, "Please select a model"),

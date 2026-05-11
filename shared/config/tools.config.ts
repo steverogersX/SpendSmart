@@ -113,7 +113,18 @@ export const ModelsByProvider = {
     [APIProviders.Google]: Object.values(GoogleModels),
 } as const;
 
+export const KimiModels = {
+    KimiK26: 'kimi-k-2-6',
+    KimiK25: 'kimi-k-2-5',
+} as const;
+
+export const DeepseekModels = {
+    DeepseekV4Pro: 'deepseek-v4-pro',
+} as const;
+
 export const ModelsByTool = {
     [Tools.AnthropicAPI]: Object.values(AnthropicModels),
     [Tools.OpenAIAPI]: Object.values(OpenAIModels),
+    [Tools.KimiAPI]: Object.values(KimiModels),
+    [Tools.DeepseekAPI]: Object.values(DeepseekModels),
 } as const;
