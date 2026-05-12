@@ -15,9 +15,6 @@ import {
 } from '@react-email/components';
 import { Tailwind } from '@react-email/tailwind';
 import { Font } from '@react-email/font';
-import { Markdown } from '@react-email/markdown';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
 import type {
   AuditResult,
   AuditResultItem,
@@ -25,18 +22,7 @@ import type {
   ApiRecommendation,
   SubscriptionRecommendation,
 } from '@shared/types/auditResult';
-
-// ─── Utility ─────────────────────────────────────────────────────────────────
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-// ─── Iconify CDN ──────────────────────────────────────────────────────────────
-
-function iconSrc(name: string, hex: string, size = 14): string {
-  return `https://api.iconify.design/${name}.svg?color=${encodeURIComponent(hex)}&width=${size}&height=${size}`;
-}
+import { BenchmarkChart } from './BenchmarkChart';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -45,297 +31,258 @@ function isApiResult(r: AuditResultItem): r is ApiAuditResult {
 }
 
 function fmt(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 2,
-  }).format(n);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(n);
 }
 
 function capitalize(s: string): string {
   return s.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-// ─── Markdown prose styles ────────────────────────────────────────────────────
-
-const proseStyles = {
-  p: { margin: '0', fontSize: '12px', lineHeight: '1.65', color: '#71717a' },
-  strong: { color: '#3f3f46', fontWeight: '600' },
-  em: { color: '#71717a', fontStyle: 'italic' },
-  code: {
-    backgroundColor: '#f4f4f5',
-    borderRadius: '4px',
-    padding: '1px 5px',
-    fontSize: '11px',
-    color: '#3f3f46',
-    fontFamily: 'monospace',
-  },
-} as const;
-
-const mutedProseStyles = {
-  p: { margin: '2px 0 0', fontSize: '11px', lineHeight: '1.55', color: '#a1a1aa' },
-  strong: { color: '#71717a', fontWeight: '600' },
-} as const;
-
-// ─── Primitives ───────────────────────────────────────────────────────────────
-
-function CardDivider({ className }: { className?: string }) {
-  return <Hr className={cn('border-zinc-100 my-4 mx-0', className)} />;
+function icon(name: string, hex: string, size = 14): string {
+  return `https://api.iconify.design/${name}.svg?color=${encodeURIComponent(hex)}&width=${size}&height=${size}`;
 }
 
-function SectionLabel({
-  icon,
-  children,
-}: {
-  icon?: string;
-  children: React.ReactNode;
-}) {
+// ─── Design tokens (matching app exactly) ─────────────────────────────────────
+const C = {
+  emerald50:  '#ecfdf5',
+  emerald100: '#d1fae5',
+  emerald200: '#a7f3d0',
+  emerald300: '#6ee7b7',
+  emerald500: '#10b981',
+  emerald600: '#059669',
+  emerald700: '#047857',
+  emerald800: '#065f46',
+  teal50:     '#f0fdfa',
+  amber100:   '#fef3c7',
+  amber200:   '#fde68a',
+  amber700:   '#b45309',
+  amber800:   '#92400e',
+  zinc100:    '#f4f4f5',
+  zinc200:    '#e4e4e7',
+  zinc400:    '#a1a1aa',
+  zinc500:    '#71717a',
+  zinc700:    '#3f3f46',
+  zinc900:    '#18181b',
+  zinc950:    '#09090b',
+  white:      '#ffffff',
+  bg:         '#f9fafb',
+};
+
+// ─── Logo — "$SpendSmart" matching app ────────────────────────────────────────
+
+function Logo() {
   return (
-    <Row className="mb-3.5">
-      {icon && (
-        <Column style={{ width: '18px', verticalAlign: 'middle' }}>
-          <Img
-            src={icon}
-            width={13}
-            height={13}
-            alt=""
-            style={{ display: 'block', marginTop: '1px' }}
-          />
-        </Column>
-      )}
-      <Column style={{ verticalAlign: 'middle' }}>
-        <Text className="m-0 text-[10px] font-semibold tracking-widest uppercase text-zinc-400">
-          {children}
-        </Text>
-      </Column>
-    </Row>
+    <Text style={{ margin: 0, lineHeight: 1, fontFamily: 'Geist, sans-serif' }}>
+      <span style={{ fontFamily: 'monospace', fontSize: '22px', fontWeight: 800, color: C.emerald500 }}>$</span>
+      <span style={{ fontSize: '20px', fontWeight: 600, color: C.zinc950, letterSpacing: '-0.02em' }}>Spend</span>
+      <span style={{ fontSize: '20px', fontWeight: 600, color: C.emerald500, letterSpacing: '-0.02em' }}>Smart</span>
+    </Text>
   );
 }
 
-function SpendRow({ label, amount }: { label: string; amount: string }) {
-  return (
-    <Section className="bg-zinc-50 border border-solid border-zinc-100 rounded-lg py-2.5 px-4">
-      <Row>
-        <Column>
-          <Text className="m-0 text-[12px] text-zinc-500">{label}</Text>
-        </Column>
-        <Column align="right">
-          <Text className="m-0 text-[13px] font-semibold text-zinc-900">{amount}</Text>
-        </Column>
-      </Row>
-    </Section>
-  );
-}
+// ─── Status badge — matches app exactly ──────────────────────────────────────
 
-// ─── Status pill ──────────────────────────────────────────────────────────────
-
-function StatusPill({ status }: { status: 'optimal' | 'optimize' }) {
+function StatusBadge({ status }: { status: 'optimal' | 'optimize' }) {
   const isOptimal = status === 'optimal';
-
-  const pillStyle: React.CSSProperties = {
-    display: 'inline-block',
-    backgroundColor: isOptimal ? '#ecfdf5' : '#fffbeb',
-    border: `1px solid ${isOptimal ? '#a7f3d0' : '#fde68a'}`,
-    borderRadius: '9999px',
-    padding: '3px 10px 3px 7px',
-    whiteSpace: 'nowrap',
-  };
-
   return (
-    <span style={pillStyle}>
+    <span style={{
+      display: 'inline-block',
+      backgroundColor: isOptimal ? C.emerald100 : C.amber100,
+      borderRadius: '9999px',
+      padding: '3px 10px 3px 7px',
+      whiteSpace: 'nowrap',
+    }}>
       <Img
-        src={iconSrc(
-          isOptimal ? 'lucide:check-circle-2' : 'lucide:trending-down',
-          isOptimal ? '#059669' : '#b45309',
-          11,
-        )}
-        width={11}
-        height={11}
-        alt=""
+        src={icon(isOptimal ? 'lucide:check-circle' : 'lucide:trending-down', isOptimal ? C.emerald700 : C.amber700, 11)}
+        width={11} height={11} alt=""
         style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}
       />
-      <span
-        style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          color: isOptimal ? '#047857' : '#92400e',
-          verticalAlign: 'middle',
-        }}
-      >
+      <span style={{ fontSize: '11px', fontWeight: 600, color: isOptimal ? C.emerald700 : C.amber700, verticalAlign: 'middle' }}>
         {isOptimal ? 'Optimal' : 'Can Optimize'}
       </span>
     </span>
   );
 }
 
-// ─── Logo ─────────────────────────────────────────────────────────────────────
+// ─── Savings hero — matches app hero exactly ──────────────────────────────────
 
-function Logo() {
-  return (
-    <Row>
-      <Column style={{ width: '28px', verticalAlign: 'middle' }}>
-        <Img
-          src={iconSrc('lucide:sparkles', '#10b981', 20)}
-          width={20}
-          height={20}
-          alt=""
-          style={{ display: 'block' }}
-        />
-      </Column>
-      <Column style={{ verticalAlign: 'middle' }}>
-        <Text className="m-0 text-[19px] font-bold leading-none tracking-tight font-geist">
-          <span style={{ color: '#09090b' }}>Spend</span>
-          <span style={{ color: '#10b981' }}>Smart</span>
-        </Text>
-      </Column>
-    </Row>
-  );
-}
+function SavingsHero({ auditResult, totalSavings }: { auditResult: AuditResult; totalSavings: number }) {
+  const toolCount = auditResult.tools.length;
+  const optimizableCount = auditResult.tools.filter(t => t.status === 'optimize').length;
+  const optimalCount = toolCount - optimizableCount;
 
-// ─── Savings hero ─────────────────────────────────────────────────────────────
-
-function SavingsHero({ totalSavings }: { totalSavings: number }) {
   if (totalSavings <= 0) {
     return (
-      <Section className="bg-emerald-50 border border-solid border-emerald-200 rounded-xl py-8 px-6 mb-5 text-center">
-        <Row className="mb-4">
+      <Section style={{
+        background: `linear-gradient(135deg, ${C.emerald50} 0%, rgba(240,253,250,0.6) 60%, #ffffff 100%)`,
+        border: `1px solid ${C.emerald200}`,
+        borderRadius: '16px',
+        padding: '32px 24px',
+        marginBottom: '20px',
+        textAlign: 'center',
+      }}>
+        {/* Icon */}
+        <Row style={{ marginBottom: '16px' }}>
           <Column align="center">
-            <Img
-              src={iconSrc('lucide:shield-check', '#059669', 32)}
-              width={32}
-              height={32}
-              alt=""
-              style={{ display: 'block', margin: '0 auto' }}
-            />
+            <div style={{ display: 'inline-block', backgroundColor: C.emerald100, borderRadius: '9999px', padding: '12px', margin: '0 auto' }}>
+              <Img src={icon('lucide:check-circle', C.emerald600, 24)} width={24} height={24} alt="" style={{ display: 'block' }} />
+            </div>
           </Column>
         </Row>
-        <Text className="m-0 mb-1.5 text-[20px] font-bold text-zinc-900">
+        {/* Headline */}
+        <Text style={{ margin: '0 0 4px', fontSize: '24px', fontWeight: 700, color: C.zinc950, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
           You're spending well.
         </Text>
-        <Text className="m-0 text-[13px] text-zinc-500 leading-relaxed">
-          Every tool in your stack is already cost-optimal for your usage.
+        <Text style={{ margin: '0 0 20px', fontSize: '13px', color: C.zinc500, lineHeight: 1.65 }}>
+          Every tool in your stack is already cost-optimal.
         </Text>
+        {/* Stats */}
+        <Row>
+          <Column align="right" style={{ paddingRight: '20px', borderRight: `1px solid ${C.zinc200}` }}>
+            <Text style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: C.emerald600 }}>{toolCount}</Text>
+            <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>tools audited</Text>
+          </Column>
+          <Column align="left" style={{ paddingLeft: '20px' }}>
+            <Text style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: C.emerald600 }}>{optimalCount}</Text>
+            <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>optimal</Text>
+          </Column>
+        </Row>
       </Section>
     );
   }
 
   return (
-    <Section className="bg-emerald-50 border border-solid border-emerald-200 rounded-xl py-6 px-6 mb-5">
-      <SectionLabel icon={iconSrc('lucide:trending-down', '#059669', 13)}>
-        Savings identified
-      </SectionLabel>
+    <Section style={{
+      background: `linear-gradient(135deg, ${C.emerald50} 0%, rgba(240,253,250,0.5) 60%, #ffffff 100%)`,
+      border: `1px solid ${C.emerald200}`,
+      borderRadius: '16px',
+      padding: '28px 24px',
+      marginBottom: '20px',
+    }}>
+      {/* Badge — "TOTAL SAVINGS FOUND" matching app */}
+      <Row style={{ marginBottom: '20px' }}>
+        <Column>
+          <span style={{
+            display: 'inline-block',
+            backgroundColor: 'rgba(209,250,229,0.8)',
+            border: `1px solid rgba(110,231,183,0.6)`,
+            borderRadius: '9999px',
+            padding: '4px 12px',
+          }}>
+            <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.emerald700 }}>
+              Total Savings Found
+            </span>
+          </span>
+        </Column>
+      </Row>
 
-      <Row>
-        <Column
-          className="pr-6"
-          style={{ borderRight: '1px solid #a7f3d0', verticalAlign: 'middle' }}
-        >
-          <Text className="m-0 text-[38px] font-bold leading-none" style={{ color: '#065f46' }}>
+      {/* Big number */}
+      <Row style={{ marginBottom: '6px' }}>
+        <Column>
+          <Text style={{ margin: 0, fontSize: '48px', fontWeight: 700, lineHeight: 1, color: C.emerald700, letterSpacing: '-0.04em' }}>
             {fmt(totalSavings)}
           </Text>
-          <Text className="m-0 mt-1 text-[12px] font-medium text-emerald-600">
-            per month
-          </Text>
         </Column>
-        <Column className="pl-6" style={{ verticalAlign: 'middle' }}>
-          <Text className="m-0 text-[26px] font-semibold text-zinc-900 leading-none">
-            {fmt(totalSavings * 12)}
-          </Text>
-          <Text className="m-0 mt-1 text-[12px] text-zinc-500">per year</Text>
+        <Column style={{ verticalAlign: 'bottom', paddingBottom: '4px' }}>
+          <Text style={{ margin: 0, fontSize: '18px', fontWeight: 500, color: 'rgba(5,150,105,0.7)' }}>/mo</Text>
+        </Column>
+      </Row>
+      <Text style={{ margin: '0 0 24px', fontSize: '13px', color: C.zinc500 }}>
+        in monthly savings identified
+      </Text>
+
+      {/* Stats row — TrendingUp (annual) / tools audited / TrendingDown (optimizable) */}
+      <Row>
+        {/* Annual savings */}
+        <Column style={{ verticalAlign: 'middle' }}>
+          <Row>
+            <Column style={{ width: '28px', verticalAlign: 'middle' }}>
+              <div style={{ display: 'inline-block', backgroundColor: C.emerald100, borderRadius: '9999px', padding: '5px' }}>
+                <Img src={icon('lucide:trending-up', C.emerald600, 14)} width={14} height={14} alt="" style={{ display: 'block' }} />
+              </div>
+            </Column>
+            <Column style={{ paddingLeft: '8px', verticalAlign: 'middle' }}>
+              <Text style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: C.zinc950 }}>{fmt(totalSavings * 12)}<span style={{ fontSize: '11px', fontWeight: 400, color: C.zinc500, marginLeft: '3px' }}>/yr</span></Text>
+              <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>Annual savings</Text>
+            </Column>
+          </Row>
+        </Column>
+
+        {/* Tools audited */}
+        <Column style={{ verticalAlign: 'middle', paddingLeft: '16px', borderLeft: `1px solid ${C.zinc200}` }}>
+          <Row>
+            <Column style={{ width: '28px', verticalAlign: 'middle' }}>
+              <div style={{ display: 'inline-block', backgroundColor: C.zinc100, borderRadius: '9999px', width: '28px', height: '28px', textAlign: 'center', lineHeight: '28px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: C.zinc500 }}>{toolCount}</span>
+              </div>
+            </Column>
+            <Column style={{ paddingLeft: '8px', verticalAlign: 'middle' }}>
+              <Text style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: C.zinc950 }}>{toolCount}</Text>
+              <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>Tools audited</Text>
+            </Column>
+          </Row>
+        </Column>
+
+        {/* Optimizable */}
+        <Column style={{ verticalAlign: 'middle', paddingLeft: '16px', borderLeft: `1px solid ${C.zinc200}` }}>
+          <Row>
+            <Column style={{ width: '28px', verticalAlign: 'middle' }}>
+              <div style={{ display: 'inline-block', backgroundColor: C.amber100, borderRadius: '9999px', padding: '5px' }}>
+                <Img src={icon('lucide:trending-down', C.amber700, 14)} width={14} height={14} alt="" style={{ display: 'block' }} />
+              </div>
+            </Column>
+            <Column style={{ paddingLeft: '8px', verticalAlign: 'middle' }}>
+              <Text style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: C.zinc950 }}>{optimizableCount}</Text>
+              <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>Can optimize</Text>
+            </Column>
+          </Row>
         </Column>
       </Row>
     </Section>
   );
 }
 
-// ─── Best option card ─────────────────────────────────────────────────────────
+// ─── AI Summary section — matches app ────────────────────────────────────────
 
-interface BestOptionCardProps {
-  title: string;
-  reason?: string;
-  savings: number;
-  savingsPercent: number;
-  pricingUrl?: string | null;
-}
-
-function BestOptionCard({
-  title,
-  reason,
-  savings,
-  savingsPercent,
-  pricingUrl,
-}: BestOptionCardProps) {
+function AiSummarySection({ summary }: { summary: string }) {
   return (
-    <Section className="bg-emerald-50 border border-solid border-emerald-200 rounded-xl py-4 px-4">
-      {/* Label */}
-      <Row className="mb-3">
+    <Section style={{
+      border: `1px solid ${C.zinc200}`,
+      backgroundColor: 'rgba(244,244,245,0.2)',
+      borderRadius: '12px',
+      padding: '14px 16px',
+      marginBottom: '20px',
+    }}>
+      <Row style={{ marginBottom: '8px' }}>
         <Column style={{ width: '18px', verticalAlign: 'middle' }}>
-          <Img
-            src={iconSrc('lucide:sparkles', '#059669', 12)}
-            width={12}
-            height={12}
-            alt=""
-            style={{ display: 'block', marginTop: '1px' }}
-          />
+          <Img src={icon('lucide:sparkles', C.zinc400, 13)} width={13} height={13} alt="" style={{ display: 'block' }} />
         </Column>
         <Column style={{ verticalAlign: 'middle' }}>
-          <Text className="m-0 text-[10px] font-semibold tracking-widest uppercase text-emerald-600">
-            Best option
+          <Text style={{ margin: 0, fontSize: '11px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: C.zinc400 }}>
+            AI Summary
           </Text>
         </Column>
       </Row>
-
-      {/* Title + savings */}
-      <Row>
-        <Column>
-          <Text className="m-0 text-[13px] font-semibold text-zinc-900">{title}</Text>
-          {reason && (
-            <Markdown markdownCustomStyles={mutedProseStyles}>{reason}</Markdown>
-          )}
-          {pricingUrl && (
-            <Link href={pricingUrl} className="text-[11px] text-emerald-600 mt-1.5 block">
-              View pricing →
-            </Link>
-          )}
-        </Column>
-        <Column align="right" style={{ verticalAlign: 'top' }}>
-          <Text className="m-0 text-[13px] font-bold text-emerald-600 whitespace-nowrap">
-            Save {fmt(savings)}/mo
-          </Text>
-          <Text className="m-0 mt-0.5 text-[11px] text-zinc-400 text-right">
-            ({savingsPercent.toFixed(0)}% less)
-          </Text>
-        </Column>
-      </Row>
+      <Text style={{ margin: 0, fontSize: '13px', lineHeight: 1.65, color: 'rgba(9,9,11,0.8)' }}>
+        {summary}
+      </Text>
     </Section>
   );
 }
 
-// ─── Other option row ─────────────────────────────────────────────────────────
+// ─── Current spend row — matches "bg-muted/40 px-3 py-2" ─────────────────────
 
-interface OtherOptionProps {
-  title: string;
-  reason?: string;
-  savings: number;
-  isLast: boolean;
-}
-
-function OtherOption({ title, reason, savings, isLast }: OtherOptionProps) {
+function SpendRow({ amount }: { amount: string }) {
   return (
-    <Row className={cn(!isLast && 'mb-2')}>
+    <Row style={{ marginBottom: '12px' }}>
       <Column>
-        <Section className="bg-zinc-50 border border-solid border-zinc-200 rounded-lg py-2.5 px-3.5">
+        <Section style={{ backgroundColor: 'rgba(244,244,245,0.4)', borderRadius: '8px', padding: '8px 12px' }}>
           <Row>
             <Column>
-              <Text className="m-0 text-[12px] font-semibold text-zinc-700">{title}</Text>
-              {reason && (
-                <Markdown markdownCustomStyles={mutedProseStyles}>{reason}</Markdown>
-              )}
+              <Text style={{ margin: 0, fontSize: '11px', color: C.zinc500 }}>Current monthly spend</Text>
             </Column>
-            <Column align="right" style={{ verticalAlign: 'top' }}>
-              <Text className="m-0 text-[12px] font-semibold text-emerald-600 whitespace-nowrap">
-                −{fmt(savings)}/mo
-              </Text>
+            <Column align="right">
+              <Text style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: C.zinc950 }}>{amount}</Text>
             </Column>
           </Row>
         </Section>
@@ -344,219 +291,334 @@ function OtherOption({ title, reason, savings, isLast }: OtherOptionProps) {
   );
 }
 
-// ─── Score benchmark ──────────────────────────────────────────────────────────
+// ─── Best option box — matches "rounded-lg border p-3 border-emerald-400 bg-emerald-50/70" ──
 
-function ScoreBenchmark({
-  item,
-  best,
+function BestOptionBox({
+  title,
+  reason,
+  savings,
+  savingsPercent,
+  pricingUrl,
 }: {
-  item: ApiAuditResult;
-  best: ApiRecommendation;
+  title: string;
+  reason?: string;
+  savings: number;
+  savingsPercent: number;
+  pricingUrl?: string | null;
 }) {
   return (
-    <Section className="bg-white border border-solid border-emerald-100 rounded-lg py-3 px-3.5 mt-3">
-      <Text className="m-0 mb-2.5 text-[10px] text-zinc-400 font-semibold uppercase tracking-wide">
-        {item.benchmarkName} benchmark
-      </Text>
-      <Row className="mb-1.5">
+    <Section style={{
+      border: `1px solid ${C.emerald300}`,
+      backgroundColor: 'rgba(236,253,245,0.7)',
+      borderRadius: '8px',
+      padding: '12px',
+      marginBottom: '8px',
+    }}>
+      <Row style={{ marginBottom: '8px' }}>
         <Column>
-          <Text className="m-0 text-[12px] text-zinc-600">{capitalize(item.primaryModel)}</Text>
-        </Column>
-        <Column align="right">
-          <Text className="m-0 text-[12px] font-semibold text-zinc-600">
-            {item.scoreUnit === 'percentage'
-              ? `${item.currentModelScore!.toFixed(1)}%`
-              : `${Math.round(item.currentModelScore!)} Elo`}
+          <Text style={{ margin: 0, fontSize: '11px', fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', color: C.emerald700 }}>
+            Best option
           </Text>
         </Column>
       </Row>
       <Row>
         <Column>
-          <Text className="m-0 text-[12px] text-emerald-600">{best.modelDisplayName}</Text>
+          <Text style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: C.zinc950 }}>{title}</Text>
+          {reason && (
+            <Text style={{ margin: '2px 0 0', fontSize: '11px', color: C.zinc400, lineHeight: 1.55 }}>{reason}</Text>
+          )}
+          {pricingUrl && (
+            <Link href={pricingUrl} style={{ fontSize: '11px', color: C.emerald700, display: 'block', marginTop: '4px' }}>
+              pricing →
+            </Link>
+          )}
         </Column>
-        <Column align="right">
-          <Text className="m-0 text-[12px] font-semibold text-emerald-600">
-            {best.scoreUnit === 'percentage'
-              ? `${best.score.toFixed(1)}%`
-              : `${Math.round(best.score)} Elo`}
+        <Column align="right" style={{ verticalAlign: 'top' }}>
+          <Text style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: C.emerald600, whiteSpace: 'nowrap' }}>
+            Save {fmt(savings)}/mo
+          </Text>
+          <Text style={{ margin: '2px 0 0', fontSize: '11px', color: C.zinc400, textAlign: 'right' }}>
+            ({savingsPercent.toFixed(0)}%)
           </Text>
         </Column>
       </Row>
-      <Text className="m-0 mt-2 text-[10px] text-zinc-400">
-        {item.higherIsBetter ? 'Higher is better' : 'Lower is better'} · Capacity
-        floor: −{item.dropCapacityBy}%
-      </Text>
     </Section>
   );
 }
 
-// ─── API tool card ────────────────────────────────────────────────────────────
+// ─── Other option row — matches "border-border bg-muted/20 px-3 py-2.5" ──────
 
-function ApiToolCard({ item }: { item: ApiAuditResult }) {
-  const best = item.bestRecommendation as ApiRecommendation | null;
+function OtherOptionRow({ title, reason, savings, isLast }: { title: string; reason?: string; savings: number; isLast: boolean }) {
+  return (
+    <Section style={{
+      border: `1px solid ${C.zinc200}`,
+      backgroundColor: 'rgba(244,244,245,0.2)',
+      borderRadius: '8px',
+      padding: '10px 12px',
+      marginBottom: isLast ? 0 : '6px',
+    }}>
+      <Row>
+        <Column>
+          <Text style={{ margin: 0, fontSize: '13px', fontWeight: 500, color: C.zinc950 }}>{title}</Text>
+          {reason && (
+            <Text style={{ margin: '2px 0 0', fontSize: '11px', color: C.zinc400, lineHeight: 1.55 }}>{reason}</Text>
+          )}
+        </Column>
+        <Column align="right" style={{ verticalAlign: 'top' }}>
+          <Text style={{ margin: 0, fontSize: '11px', fontWeight: 600, color: C.emerald600, whiteSpace: 'nowrap' }}>
+            −{fmt(savings)}/mo
+          </Text>
+        </Column>
+      </Row>
+    </Section>
+  );
+}
+
+// ─── Result card — matches ResultCard exactly ─────────────────────────────────
+
+function ResultCard({ item }: { item: AuditResultItem }) {
+  const api = isApiResult(item);
+  const toolLabel = api ? item.toolName : item.tool;
+  const currentSpend = api ? item.currentAverageMonthlySpend : item.currentCost;
+  const subtitle = api ? `${item.primaryModel} · ${item.primaryUseCase}` : item.currentPlan;
+  const best = item.bestRecommendation;
   const hasOthers = item.otherOptions.length > 0;
 
   return (
-    <Section className="bg-white border border-solid border-zinc-200 rounded-xl mb-4 overflow-hidden">
-      {/* Card header */}
-      <Section className="py-4 px-5 border-b border-solid border-zinc-100">
-        <Row>
+    <Section style={{
+      backgroundColor: C.white,
+      border: `1px solid ${C.zinc200}`,
+      borderRadius: '16px',
+      marginBottom: '12px',
+      overflow: 'hidden',
+    }}>
+      <Section style={{ padding: '20px 20px 16px' }}>
+        {/* Header: tool name + status badge */}
+        <Row style={{ marginBottom: '12px' }}>
           <Column>
-            <Text className="m-0 text-[14px] font-semibold text-zinc-900">
-              {capitalize(item.toolName)}
+            <Text style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: C.zinc950, textTransform: 'capitalize' }}>
+              {toolLabel.replace(/_/g, ' ')}
             </Text>
-            <Text className="m-0 mt-0.5 text-[12px] text-zinc-400">
-              {capitalize(item.primaryModel)} · {capitalize(item.primaryUseCase)}
+            <Text style={{ margin: '2px 0 0', fontSize: '11px', color: C.zinc500, textTransform: 'capitalize' }}>
+              {subtitle.replace(/_/g, ' ')}
             </Text>
           </Column>
           <Column align="right" style={{ verticalAlign: 'middle' }}>
-            <StatusPill status={item.status} />
+            <StatusBadge status={item.status} />
           </Column>
         </Row>
-      </Section>
 
-      {/* Card body */}
-      <Section className="py-4 px-5">
-        <SpendRow
-          label="Current monthly spend"
-          amount={fmt(item.currentAverageMonthlySpend)}
-        />
+        {/* Current spend — bg-muted/40 */}
+        <SpendRow amount={fmt(currentSpend)} />
 
-        {item.summary && (
-          <>
-            <CardDivider />
-            <Markdown markdownCustomStyles={proseStyles}>{item.summary}</Markdown>
-          </>
+        {/* Summary */}
+        {api && item.summary && (
+          <Text style={{ margin: '0 0 12px', fontSize: '11px', lineHeight: 1.65, color: C.zinc500 }}>
+            {item.summary}
+          </Text>
         )}
 
+        {/* Benchmark chart — shown when score data is available */}
+        {api && item.currentModelScore !== null && best && (
+          <BenchmarkChart item={item} rec={best as ApiRecommendation} />
+        )}
+
+        {/* Best option box */}
         {item.status === 'optimize' && best && (
           <>
-            <CardDivider />
-            <BestOptionCard
-              title={best.modelDisplayName}
-              reason={best.reason}
-              savings={best.savings}
-              savingsPercent={best.savingsPercent}
-              pricingUrl={best.pricingUrl}
-            />
-            {item.currentModelScore !== null && (
-              <ScoreBenchmark item={item} best={best} />
+            {api ? (
+              <BestOptionBox
+                title={(best as ApiRecommendation).modelDisplayName}
+                reason={(best as ApiRecommendation).reason}
+                savings={best.savings}
+                savingsPercent={best.savingsPercent}
+                pricingUrl={(best as ApiRecommendation).pricingUrl}
+              />
+            ) : (
+              <BestOptionBox
+                title={`${(best as SubscriptionRecommendation).toolName} · ${(best as SubscriptionRecommendation).planName}`}
+                reason={(best as SubscriptionRecommendation).reason}
+                savings={best.savings}
+                savingsPercent={best.savingsPercent}
+              />
             )}
           </>
         )}
 
+        {/* Other options */}
         {hasOthers && (
           <>
-            <CardDivider />
-            <Text className="m-0 mb-2.5 text-[11px] text-zinc-400 font-medium">
+            <Text style={{ margin: '4px 0 8px', fontSize: '11px', color: C.zinc400, fontWeight: 500 }}>
               Other options
             </Text>
-            {(item.otherOptions as ApiRecommendation[]).map((rec, i) => (
-              <OtherOption
-                key={i}
-                title={rec.modelDisplayName}
-                reason={rec.reason}
-                savings={rec.savings}
-                isLast={i === item.otherOptions.length - 1}
-              />
-            ))}
+            {api
+              ? (item.otherOptions as ApiRecommendation[]).map((rec, i) => (
+                  <OtherOptionRow
+                    key={i}
+                    title={rec.modelDisplayName}
+                    reason={rec.reason}
+                    savings={rec.savings}
+                    isLast={i === item.otherOptions.length - 1}
+                  />
+                ))
+              : (item.otherOptions as SubscriptionRecommendation[]).map((rec, i) => (
+                  <OtherOptionRow
+                    key={i}
+                    title={`${rec.toolName} · ${rec.planName}`}
+                    reason={rec.reason}
+                    savings={rec.savings}
+                    isLast={i === item.otherOptions.length - 1}
+                  />
+                ))}
           </>
         )}
 
+        {/* Optimal message */}
         {item.status === 'optimal' && (
-          <>
-            <CardDivider />
-            <Text className="m-0 text-[12px] text-zinc-500">
-              No cheaper alternative matches your current requirements.
-            </Text>
-          </>
+          <Text style={{ margin: '4px 0 0', fontSize: '11px', color: C.zinc500 }}>
+            You're spending well here. No cheaper alternative matches your current requirements.
+          </Text>
         )}
       </Section>
     </Section>
   );
 }
 
-// ─── Subscription tool card ───────────────────────────────────────────────────
+// ─── CTAs — match HighSavingsCTA / MidSavingsCTA / LowSavingsCTA ─────────────
 
-function SubToolCard({ item }: { item: Exclude<AuditResultItem, ApiAuditResult> }) {
-  const sub = item as {
-    tool: string;
-    currentPlan: string;
-    currentCost: number;
-    status: 'optimal' | 'optimize';
-    bestRecommendation: SubscriptionRecommendation | null;
-    otherOptions: SubscriptionRecommendation[];
-  };
-  const best = sub.bestRecommendation;
-  const hasOthers = sub.otherOptions.length > 0;
-
+function HighSavingsCTA({ totalSavings }: { totalSavings: number }) {
   return (
-    <Section className="bg-white border border-solid border-zinc-200 rounded-xl mb-4 overflow-hidden">
-      {/* Card header */}
-      <Section className="py-4 px-5 border-b border-solid border-zinc-100">
-        <Row>
-          <Column>
-            <Text className="m-0 text-[14px] font-semibold text-zinc-900">
-              {capitalize(sub.tool)}
-            </Text>
-            <Text className="m-0 mt-0.5 text-[12px] text-zinc-400">
-              {capitalize(sub.currentPlan)}
-            </Text>
-          </Column>
-          <Column align="right" style={{ verticalAlign: 'middle' }}>
-            <StatusPill status={sub.status} />
-          </Column>
-        </Row>
-      </Section>
-
-      {/* Card body */}
-      <Section className="py-4 px-5">
-        <SpendRow label="Current monthly spend" amount={fmt(sub.currentCost)} />
-
-        {sub.status === 'optimize' && best && (
-          <>
-            <CardDivider />
-            <BestOptionCard
-              title={`${best.toolName} · ${best.planName}`}
-              reason={best.reason}
-              savings={best.savings}
-              savingsPercent={best.savingsPercent}
-            />
-          </>
-        )}
-
-        {hasOthers && (
-          <>
-            <CardDivider />
-            <Text className="m-0 mb-2.5 text-[11px] text-zinc-400 font-medium">
-              Other options
-            </Text>
-            {sub.otherOptions.map((rec, i) => (
-              <OtherOption
-                key={i}
-                title={`${rec.toolName} · ${rec.planName}`}
-                reason={rec.reason}
-                savings={rec.savings}
-                isLast={i === sub.otherOptions.length - 1}
-              />
-            ))}
-          </>
-        )}
-
-        {sub.status === 'optimal' && (
-          <>
-            <CardDivider />
-            <Text className="m-0 text-[12px] text-zinc-500">
-              No cheaper plan matches your current requirements.
-            </Text>
-          </>
-        )}
-      </Section>
+    <Section style={{
+      background: `linear-gradient(135deg, ${C.emerald50} 0%, ${C.teal50} 100%)`,
+      border: `1px solid ${C.emerald200}`,
+      borderRadius: '12px',
+      padding: '20px',
+    }}>
+      <Row style={{ marginBottom: '12px' }}>
+        <Column style={{ width: '36px', verticalAlign: 'top' }}>
+          <div style={{ display: 'inline-block', backgroundColor: C.emerald100, borderRadius: '9999px', padding: '7px' }}>
+            <Img src={icon('lucide:sparkles', C.emerald600, 16)} width={16} height={16} alt="" style={{ display: 'block' }} />
+          </div>
+        </Column>
+        <Column style={{ verticalAlign: 'top', paddingLeft: '8px' }}>
+          <Text style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 600, color: '#052e16' }}>
+            {fmt(totalSavings)}/mo in savings identified
+          </Text>
+          <Text style={{ margin: 0, fontSize: '12px', color: C.emerald800, lineHeight: 1.65 }}>
+            A Credex advisor will follow up with a tailored migration plan — at no cost to you.
+          </Text>
+        </Column>
+      </Row>
+      <Row style={{ marginBottom: '12px' }}>
+        <Column>
+          <Text style={{ margin: 0, fontSize: '11px', color: C.emerald700, lineHeight: 1.6 }}>
+            Cursor · Claude · ChatGPT Enterprise — sourced at cost from companies that overforecast.
+          </Text>
+        </Column>
+      </Row>
+      <Row>
+        <Column>
+          <Link
+            href="https://spendsmart-mocha.vercel.app"
+            style={{
+              display: 'inline-block',
+              backgroundColor: C.emerald500,
+              color: '#ffffff',
+              padding: '10px 24px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              letterSpacing: '0.01em',
+            }}
+          >
+            Get personalized plan →
+          </Link>
+        </Column>
+      </Row>
     </Section>
   );
 }
 
-// ─── Root export ──────────────────────────────────────────────────────────────
+function MidSavingsCTA({ totalSavings }: { totalSavings: number }) {
+  return (
+    <Section style={{
+      border: `1px solid ${C.zinc200}`,
+      backgroundColor: 'rgba(244,244,245,0.3)',
+      borderRadius: '12px',
+      padding: '20px',
+    }}>
+      <Text style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 600, color: C.zinc950 }}>
+        {fmt(totalSavings)}/mo in savings identified
+      </Text>
+      <Text style={{ margin: '0 0 16px', fontSize: '13px', color: C.zinc500, lineHeight: 1.65 }}>
+        Get the full audit report with step-by-step migration guides sent to your inbox.
+      </Text>
+      <Link
+        href="https://spendsmart-mocha.vercel.app"
+        style={{
+          display: 'inline-block',
+          backgroundColor: C.emerald500,
+          color: '#ffffff',
+          padding: '10px 24px',
+          borderRadius: '8px',
+          fontSize: '13px',
+          fontWeight: 600,
+          textDecoration: 'none',
+          letterSpacing: '0.01em',
+        }}
+      >
+        Go to SpendSmart →
+      </Link>
+    </Section>
+  );
+}
+
+function LowSavingsCTA() {
+  return (
+    <Section style={{
+      border: `1px solid ${C.zinc200}`,
+      backgroundColor: 'rgba(244,244,245,0.2)',
+      borderRadius: '12px',
+      padding: '20px',
+    }}>
+      <Row style={{ marginBottom: '12px' }}>
+        <Column style={{ width: '36px', verticalAlign: 'top' }}>
+          <div style={{ display: 'inline-block', backgroundColor: C.zinc100, borderRadius: '9999px', padding: '7px' }}>
+            <Img src={icon('lucide:bell', C.zinc500, 16)} width={16} height={16} alt="" style={{ display: 'block' }} />
+          </div>
+        </Column>
+        <Column style={{ verticalAlign: 'top', paddingLeft: '8px' }}>
+          <Text style={{ margin: '0 0 2px', fontSize: '13px', fontWeight: 500, color: C.zinc950 }}>
+            You're spending well.
+          </Text>
+          <Text style={{ margin: 0, fontSize: '12px', color: C.zinc500, lineHeight: 1.65 }}>
+            AI prices shift fast. We'll notify you when a better option matches your stack.
+          </Text>
+        </Column>
+      </Row>
+      <Link
+        href="https://spendsmart-mocha.vercel.app"
+        style={{
+          display: 'inline-block',
+          backgroundColor: C.white,
+          color: C.zinc700,
+          padding: '10px 24px',
+          borderRadius: '8px',
+          fontSize: '13px',
+          fontWeight: 600,
+          textDecoration: 'none',
+          border: `1px solid ${C.zinc200}`,
+          letterSpacing: '0.01em',
+        }}
+      >
+        Run another audit →
+      </Link>
+    </Section>
+  );
+}
+
+// ─── Root ─────────────────────────────────────────────────────────────────────
 
 interface FullAuditReportProps {
   auditResult: AuditResult;
@@ -568,211 +630,124 @@ const FullAuditReport: React.FC<FullAuditReportProps> = ({ auditResult }) => {
     0,
   );
 
-  const previewText =
-    totalSavings > 0
-      ? `You can save ${fmt(totalSavings)}/mo on your AI stack — here's your full audit report.`
-      : `Your AI stack is fully optimized — here's your SpendSmart audit report.`;
+  const previewText = totalSavings > 0
+    ? `You can save ${fmt(totalSavings)}/mo on your AI stack — here's your full audit report.`
+    : `Your AI stack is fully optimized — here's your SpendSmart audit report.`;
 
   return (
     <Html lang="en">
       <Head>
-        {/* Geist — 400 */}
-        <Font
-          fontFamily="Geist"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2',
-            format: 'woff2',
-          }}
-          fontWeight={400}
-          fontStyle="normal"
-        />
-        {/* Geist — 500 */}
-        <Font
-          fontFamily="Geist"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2',
-            format: 'woff2',
-          }}
-          fontWeight={500}
-          fontStyle="normal"
-        />
-        {/* Geist — 600 */}
-        <Font
-          fontFamily="Geist"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-600-normal.woff2',
-            format: 'woff2',
-          }}
-          fontWeight={600}
-          fontStyle="normal"
-        />
-        {/* Geist — 700 */}
-        <Font
-          fontFamily="Geist"
-          fallbackFontFamily="sans-serif"
-          webFont={{
-            url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-700-normal.woff2',
-            format: 'woff2',
-          }}
-          fontWeight={700}
-          fontStyle="normal"
-        />
+        <Font fontFamily="Geist" fallbackFontFamily="sans-serif"
+          webFont={{ url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2', format: 'woff2' }}
+          fontWeight={400} fontStyle="normal" />
+        <Font fontFamily="Geist" fallbackFontFamily="sans-serif"
+          webFont={{ url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2', format: 'woff2' }}
+          fontWeight={500} fontStyle="normal" />
+        <Font fontFamily="Geist" fallbackFontFamily="sans-serif"
+          webFont={{ url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-600-normal.woff2', format: 'woff2' }}
+          fontWeight={600} fontStyle="normal" />
+        <Font fontFamily="Geist" fallbackFontFamily="sans-serif"
+          webFont={{ url: 'https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-700-normal.woff2', format: 'woff2' }}
+          fontWeight={700} fontStyle="normal" />
       </Head>
 
       <Preview>{previewText}</Preview>
 
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              fontFamily: {
-                geist: ['Geist', 'sans-serif'],
-              },
-            },
-          },
-        }}
-      >
-        <Body
-          className="bg-zinc-50 m-0 p-0 font-geist"
-          style={{ fontFamily: 'Geist, sans-serif' }}
-        >
-          <Container className="max-w-[640px] mx-auto py-8 px-4">
+      <Tailwind>
+        <Body style={{ backgroundColor: C.bg, margin: 0, padding: 0, fontFamily: 'Geist, sans-serif' }}>
+          <Container style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 16px 32px' }}>
 
-            {/* ── Header ─────────────────────────────────────────────────── */}
-            <Section className="bg-white border border-solid border-zinc-200 rounded-t-xl py-4 px-6 mb-[1px]">
+            {/* ── Header ──────────────────────────────────────────────── */}
+            <Section style={{
+              backgroundColor: C.white,
+              border: `1px solid ${C.zinc200}`,
+              borderBottom: 'none',
+              borderRadius: '16px 16px 0 0',
+              padding: '16px 24px',
+            }}>
               <Row>
                 <Column style={{ verticalAlign: 'middle' }}>
                   <Logo />
                 </Column>
                 <Column align="right" style={{ verticalAlign: 'middle' }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      backgroundColor: '#f4f4f5',
-                      border: '1px solid #e4e4e7',
-                      borderRadius: '9999px',
-                      padding: '3px 11px',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      color: '#71717a',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
+                  <span style={{
+                    display: 'inline-block',
+                    backgroundColor: C.emerald50,
+                    border: `1px solid ${C.emerald200}`,
+                    borderRadius: '9999px',
+                    padding: '3px 12px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: C.emerald700,
+                    whiteSpace: 'nowrap',
+                  }}>
                     AI Cost Audit
                   </span>
                 </Column>
               </Row>
             </Section>
 
-            {/* ── Body card ───────────────────────────────────────────────── */}
-            <Section className="bg-white border border-solid border-zinc-200 rounded-b-xl">
-
+            {/* ── Body ────────────────────────────────────────────────── */}
+            <Section style={{
+              backgroundColor: C.white,
+              border: `1px solid ${C.zinc200}`,
+              borderTop: 'none',
+              borderRadius: '0 0 16px 16px',
+            }}>
               {/* Intro */}
-              <Section className="py-7 px-6 border-b border-solid border-zinc-100">
-                <Text className="m-0 mb-1.5 text-[22px] font-bold text-zinc-950 tracking-tight">
+              <Section style={{ padding: '28px 24px 20px', borderBottom: `1px solid ${C.zinc100}` }}>
+                <Text style={{ margin: '0 0 6px', fontSize: '22px', fontWeight: 700, color: C.zinc950, letterSpacing: '-0.03em', lineHeight: 1.2 }}>
                   Your Full Audit Report
                 </Text>
-                <Text className="m-0 text-[14px] text-zinc-500 leading-relaxed">
-                  A complete breakdown of your AI tool spending and the best opportunities
-                  to optimize it.
+                <Text style={{ margin: 0, fontSize: '13px', color: C.zinc500, lineHeight: 1.65 }}>
+                  A complete breakdown of your AI tool spending and the best opportunities to optimize it.
                 </Text>
               </Section>
 
               {/* Main content */}
-              <Section className="py-6 px-6">
+              <Section style={{ padding: '24px' }}>
 
                 {/* Savings hero */}
-                <SavingsHero totalSavings={totalSavings} />
+                <SavingsHero auditResult={auditResult} totalSavings={totalSavings} />
 
-                {/* Per-tool breakdown */}
-                <SectionLabel icon={iconSrc('lucide:layout-list', '#a1a1aa', 13)}>
-                  Per-tool breakdown
-                </SectionLabel>
-
-                {auditResult.tools.map((item, i) =>
-                  isApiResult(item) ? (
-                    <ApiToolCard key={i} item={item} />
-                  ) : (
-                    <SubToolCard key={i} item={item} />
-                  ),
+                {/* AI Summary */}
+                {auditResult.aiSummary && (
+                  <AiSummarySection summary={auditResult.aiSummary} />
                 )}
 
-                <Hr className="border-zinc-100 my-6 mx-0" />
+                {/* Per-tool breakdown label */}
+                <Text style={{ margin: '0 0 12px', fontSize: '13px', fontWeight: 500, color: C.zinc500, letterSpacing: '0.02em' }}>
+                  Per-tool breakdown
+                </Text>
+
+                {/* Tool cards */}
+                {auditResult.tools.map((item, i) => (
+                  <ResultCard key={i} item={item} />
+                ))}
+
+                <Hr style={{ borderColor: C.zinc100, margin: '20px 0' }} />
 
                 {/* CTA */}
-                {totalSavings > 0 ? (
-                  <Section className="bg-emerald-50 border border-solid border-emerald-200 rounded-xl py-7 px-6 text-center">
-                    <Row className="mb-4">
-                      <Column align="center">
-                        <Img
-                          src={iconSrc('lucide:zap', '#059669', 28)}
-                          width={28}
-                          height={28}
-                          alt=""
-                          style={{ display: 'block', margin: '0 auto' }}
-                        />
-                      </Column>
-                    </Row>
-                    <Text className="m-0 mb-1.5 text-[16px] font-bold text-emerald-800">
-                      Ready to start saving?
-                    </Text>
-                    <Text className="m-0 mb-5 text-[13px] text-emerald-700 leading-relaxed">
-                      Run a new audit anytime as your stack or pricing changes.
-                    </Text>
-                    <Link
-                      href="https://spendsmart.dev"
-                      style={{
-                        display: 'inline-block',
-                        backgroundColor: '#10b981',
-                        color: '#ffffff',
-                        padding: '10px 28px',
-                        borderRadius: '8px',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        textDecoration: 'none',
-                        letterSpacing: '0.01em',
-                      }}
-                    >
-                      Go to SpendSmart →
-                    </Link>
-                  </Section>
+                {totalSavings > 500 ? (
+                  <HighSavingsCTA totalSavings={totalSavings} />
+                ) : totalSavings >= 100 ? (
+                  <MidSavingsCTA totalSavings={totalSavings} />
                 ) : (
-                  <Section className="border border-solid border-zinc-200 rounded-xl py-7 px-6 text-center">
-                    <Text className="m-0 mb-5 text-[13px] text-zinc-500 leading-relaxed">
-                      AI prices shift fast. We'll notify you when a better option
-                      matches your stack.
-                    </Text>
-                    <Link
-                      href="https://spendsmart.dev"
-                      style={{
-                        display: 'inline-block',
-                        backgroundColor: '#fafafa',
-                        color: '#3f3f46',
-                        padding: '10px 28px',
-                        borderRadius: '8px',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        textDecoration: 'none',
-                        border: '1px solid #e4e4e7',
-                        letterSpacing: '0.01em',
-                      }}
-                    >
-                      Run another audit →
-                    </Link>
-                  </Section>
+                  <LowSavingsCTA />
                 )}
+
               </Section>
             </Section>
 
-            {/* ── Footer ──────────────────────────────────────────────────── */}
-            <Section className="text-center pt-6 pb-2">
-              <Text className="m-0 mb-1 text-[12px] text-zinc-400">
-                SpendSmart · AI Cost Intelligence
+            {/* ── Footer ──────────────────────────────────────────────── */}
+            <Section style={{ textAlign: 'center', paddingTop: '24px', paddingBottom: '8px' }}>
+              <Text style={{ margin: '0 0 3px', fontSize: '14px', fontFamily: 'Geist, sans-serif' }}>
+                <span style={{ fontFamily: 'monospace', fontWeight: 800, color: C.emerald500 }}>$</span>
+                <span style={{ fontWeight: 600, color: C.zinc950 }}>Spend</span>
+                <span style={{ fontWeight: 600, color: C.emerald500 }}>Smart</span>
               </Text>
-              <Text className="m-0 text-[11px] text-zinc-300">
+              <Text style={{ margin: '0 0 3px', fontSize: '11px', color: C.zinc400 }}>AI Cost Intelligence</Text>
+              <Text style={{ margin: 0, fontSize: '11px', color: C.zinc200 }}>
                 You received this because you requested a full audit report.
               </Text>
             </Section>

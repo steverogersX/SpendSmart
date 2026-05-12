@@ -251,3 +251,35 @@ None. Only thing not finished is the OG preview image but that's a polish issue,
 - Implement the mail system.
 - Add more cheap/Chinese models to the API options — need better coverage for cost-effective recommendations.
 - If there's time, work on the Entrepreneurial assessment files.
+
+---
+
+# Day 5 — 2026-05-11
+
+**Hours worked:** 8
+
+## What I did
+
+Lead capture and storage. End to end.
+
+Built the `LeadCaptureForm` with optional fields beyond email — company name, role, and team size. Optional because not everyone wants to fill those in, and a barrier at capture is worse than an incomplete record.
+
+Chose Supabase for storage. Simple to set up, Postgres underneath, and free tier is more than enough for now. Backend runs on Render. Resend handles transactional email — the confirmation goes out immediately on submit, and the copy notes that Credex will follow up on high-savings cases. That framing matters: it's not just a receipt, it's a reason to open it.
+
+For abuse protection went with rate limiting. One submission per IP per hour. Simple, no friction for real users, stops automated spam. Documented the choice in the code — didn't want to add hCaptcha friction at this stage and honeypots felt like false confidence without a real rate limit underneath anyway.
+
+Then deployed. Frontend on Vercel, backend on Render. Both live.
+
+## What I learned
+
+Nothing surprising today. Supabase + Render + Resend is a well-worn stack and it behaved exactly as expected. Rate limiting at the edge is fast enough that it doesn't need its own service — middleware on the Render backend is fine at this scale.
+
+One thing worth noting — keeping the optional fields truly optional (not just visually) meant being careful in the DB schema too. Made them nullable columns, not empty-string defaults. Better for querying later.
+
+## Blockers
+
+None.
+
+## Plan for tomorrow
+
+Application is almost done. Main thing left is going back through the audit engine and stress-testing it against edge cases — unusual pricing structures, API users with extreme token ratios, subscription entries with mixed use cases. Want to make sure the logic holds before calling it finished.
