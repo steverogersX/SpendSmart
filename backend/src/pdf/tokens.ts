@@ -1,0 +1,32 @@
+export const C = {
+  // Emerald (Primary / Savings)
+  emerald50:  '#ecfdf5',
+  emerald100: '#d1fae5',
+  emerald200: '#a7f3d0',
+  emerald300: '#6ee7b7',
+  emerald400: '#34d399',
+  emerald500: '#10b981',
+  emerald600: '#059669',
+  emerald700: '#047857',
+  emerald800: '#065f46',
+  emerald900: '#064e3b',
+  // Amber (Warnings / Optimize)
+  amber50:  '#fffbeb',
+  amber100: '#fef3c7',
+  amber200: '#fde68a',
+  amber400: '#fbbf24',
+  amber600: '#d97706',
+  amber700: '#b45309',
+  // Slate (Neutrals / Typography)
+  slate50:  '#f8fafc',
+  slate100: '#f1f5f9',
+  slate200: '#e2e8f0',
+  slate300: '#cbd5e1',
+  slate400: '#94a3b8',
+  slate500: '#64748b',
+  slate600: '#475569',
+  slate700: '#334155',
+  slate800: '#1e293b',
+  slate900: '#0f172a',
+  white:    '#ffffff',
+} as const;

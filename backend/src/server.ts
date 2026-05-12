@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/error.middleware';
 import { ApiError, ApiResponse } from './types';
 import auditController from './controllers/audit.controller';
 import leadController from './controllers/lead.controller';
+import pdfController from './controllers/pdf.controller';
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.get(`${PREFIX}/health`, (_req: Request, res: Response) => {
 });
 
 app.post(`${PREFIX}/audit`, auditLimiter, auditController);
+app.post(`${PREFIX}/audit/export-pdf`, auditLimiter, pdfController);
 app.post(`${PREFIX}/leads`, leadsLimiter, leadController);
 
 app.use((_req: Request, _res: Response, next: NextFunction) => {

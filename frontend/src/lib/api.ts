@@ -33,6 +33,19 @@ export interface LeadInput {
   website?: string; // honeypot — must be empty
 }
 
+export async function exportPdf(
+  result: AuditResult,
+  meta: { date: string; shareUrl?: string },
+): Promise<Blob> {
+  const res = await fetch('/api/v1/audit/export-pdf', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ result, meta }),
+  });
+  if (!res.ok) throw new Error('PDF export failed');
+  return res.blob();
+}
+
 export async function submitLead(input: LeadInput): Promise<void> {
   const res = await fetch('/api/v1/leads', {
     method: 'POST',

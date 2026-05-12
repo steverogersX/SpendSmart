@@ -211,7 +211,7 @@
           {
             "useCase": "agentic",
             "benchmarkName": "Epoch WeirdML (v2) Agentic Benchmark",
-            "benchmarkUrl": "https://epoch.ai/models/claude-haiku-4-6",
+            "benchmarkUrl": "https://epoch.ai/models/claude-haiku-4-5",
             "score": 45.4,
             "scoreFormat": "Percentage of real GitHub issues resolved end-to-end using mini-SWE-agent v2 harness; higher is better",
             "scoreUnit": "percentage",
