@@ -283,3 +283,41 @@ None.
 ## Plan for tomorrow
 
 Application is almost done. Main thing left is going back through the audit engine and stress-testing it against edge cases — unusual pricing structures, API users with extreme token ratios, subscription entries with mixed use cases. Want to make sure the logic holds before calling it finished.
+
+---
+
+# Day 6 — 2026-05-13
+
+**Hours worked:** 5
+
+## What I did
+
+Polish and hardening day. No new architecture — just making what exists more correct and more complete.
+
+First thing: the email report was sending a flat text summary with no visual structure. Added `BenchmarkChart.tsx` as a proper email component — a threshold-marker bar chart that renders inline in the email. The idea is that when someone forwards their audit report internally or re-reads it a week later, the numbers should be as clear as they were on screen. Also refactored `FullAuditReport` to use it and cleaned out the `clsx` and Iconify imports that were no longer doing anything.
+
+Then fixed a real bug in the Resend mailer. It was swallowing errors silently — if the send failed for any reason, the controller never knew, the user never knew, and the lead was stored in the DB as if everything worked. Changed it to surface errors properly and log the Resend message ID on success. Should've caught this earlier.
+
+Database hardening: increased the connection pool timeout from the default to 10 seconds and enabled TCP keepAlive. The backend runs on Render's free tier which spins down after inactivity. On cold start the first DB call was timing out before the connection could establish. The longer timeout gives the pool enough time to recover. TCP keepAlive stops the cloud provider from silently dropping idle connections mid-session.
+
+Updated `ARCHITECTURE.md` with a full system diagram and proper module-level documentation. The diagram was there before but incomplete — it wasn't covering the email pipeline or the PDF service. Also documented what each module owns and why, so anyone reading it can follow the data flow without digging into the code.
+
+Added the PDF generation service and controller using Puppeteer. This gives users a downloadable copy of their audit report — the full breakdown, AI summary, and benchmark comparisons in one file. Added `ReportPreviewModal` on the frontend so users can see what the PDF looks like before downloading. It's the bonus feature from the spec. Shipped it last because the MVP had to work first.
+
+Added `USER_INTERVIEWS.md` with notes from three developer conversations. These informed a few decisions that are already in the product — particularly why the context window field exists as a constraint and why the audit reframes capability, not just cost, for API users.
+
+Updated vendor pricing data and removed a stale Render services JSON artifact that was accidentally committed.
+
+## What I learned
+
+The Resend silent-failure bug was a reminder that error handling around third-party APIs needs to be explicit from the start, not patched in later. Swallowed errors are worse than noisy errors — you think the system works and it doesn't.
+
+The TCP keepAlive + timeout change on the DB pool also taught me something practical: managed hosting on free tiers has real constraints that don't show up in local dev. The connection drop happens only in production after a cold start, and only under timing conditions you won't hit locally. Worth documenting the fix and the reason for the next person.
+
+## Blockers / what I'm stuck on
+
+None. Everything is live and working end to end. The OG preview image is still rougher than I'd like — it renders correctly but the visual design isn't as polished as the rest of the results page. Not a blocker, but it affects the shareable URL's first impression.
+
+## Plan for tomorrow
+
+Final pass: TESTS.md and PRICING_DATA.md need to be written out properly — they're the two documentation gaps that are still empty. After that, take screenshots of the full flow for README.md. Then the submission is complete.

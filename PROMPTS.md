@@ -1,9 +1,4 @@
 # Prompts
-
-All LLM calls in this project go through Gemini. There is one prompt. Everything else is deterministic template code.
-
----
-
 ## 1. AI Audit Summary
 
 **File:** `backend/src/services/gemini.service.ts` → `buildPrompt()`  

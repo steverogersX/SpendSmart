@@ -52,12 +52,13 @@ const auditSubscriptionTool = (input: ToolInput): MonthlySubscriptionAuditResult
             if (alternativeCost >= currentTotalCost) continue;
 
             const savings = currentTotalCost - alternativeCost;
+            const formattedPlanName = planName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
             candidates.push({
-                toolName: toolKey,
-                planName,
+                toolName: vendor.name,
+                planName: formattedPlanName,
                 savings,
                 savingsPercent: (savings / currentTotalCost) * 100,
-                reason: `${vendor.name} ${planName} at $${plan.pricePerSeat}/seat`,
+                reason: `${vendor.name} ${formattedPlanName} at $${plan.pricePerSeat}/seat`,
             });
         }
     }

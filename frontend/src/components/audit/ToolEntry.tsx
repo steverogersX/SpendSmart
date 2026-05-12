@@ -14,6 +14,7 @@ import {
   PlansByTool,
   ModelsByTool,
   UseCases,
+  SubscriptionPlanPrices,
 } from "@shared/config/tools.config";
 import { cn } from "@/lib/utils";
 import type { FormValues } from "./AuditForm";
@@ -83,6 +84,23 @@ function ToolItem({
     value: plan,
     label: formatLabel(plan),
   }));
+
+  const selectedPlan = watch(`tools.${index}.plan`);
+  const seats = watch(`tools.${index}.seats`);
+
+  // Auto-fill monthly spend from pricePerSeat × seats
+  useEffect(() => {
+    if (type !== "subscription" || !selectedTool || !selectedPlan) return;
+    const pricePerSeat = SubscriptionPlanPrices[selectedTool]?.[selectedPlan];
+    if (pricePerSeat != null) {
+      setValue(`tools.${index}.monthlySpend`, pricePerSeat * Math.max(seats || 1, 1));
+    }
+  }, [selectedTool, selectedPlan, seats, type, index, setValue]);
+
+  const pricePerSeat =
+    type === "subscription" && selectedTool && selectedPlan
+      ? (SubscriptionPlanPrices[selectedTool]?.[selectedPlan] ?? null)
+      : null;
 
   const apiModels =
     selectedTool && type === "api"
@@ -180,6 +198,16 @@ function ToolItem({
                         </SelectField>
                       )}
                     />
+                    {pricePerSeat != null && (
+                      <p className="text-xs text-muted-foreground">
+                        ${pricePerSeat}/seat/mo
+                      </p>
+                    )}
+                    {selectedPlan && pricePerSeat === null && (
+                      <p className="text-xs text-muted-foreground">
+                        Custom pricing — enter spend manually
+                      </p>
+                    )}
                     {entryErrors?.plan?.message && (
                       <p className="text-xs text-destructive">
                         {entryErrors.plan.message}
@@ -207,7 +235,14 @@ function ToolItem({
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label>Monthly Spend</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label>Monthly Spend</Label>
+                      {pricePerSeat != null && (
+                        <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                          auto-filled
+                        </span>
+                      )}
+                    </div>
                     <div className="relative">
                       <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                         $

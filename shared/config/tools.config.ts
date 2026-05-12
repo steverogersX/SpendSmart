@@ -87,6 +87,52 @@ export const PlansByTool = {
     [Tools.DeepseekAPI]: Object.values(APIOnlyPlan)
 } as const;
 
+// ─── Subscription plan prices ($/seat/month, null = custom/contact sales) ────
+
+export const SubscriptionPlanPrices: Record<string, Record<string, number | null>> = {
+    [Tools.Cursor]: {
+        [CursorPlan.Pro]:        20,
+        [CursorPlan.ProPlus]:    60,
+        [CursorPlan.Ultra]:      200,
+        [CursorPlan.Teams]:      40,
+        [CursorPlan.Enterprise]: null,
+    },
+    [Tools.GithubCopilot]: {
+        [GithubCopilotPlan.Pro]:        10,
+        [GithubCopilotPlan.ProPlus]:    39,
+        [GithubCopilotPlan.Business]:   19,
+        [GithubCopilotPlan.Enterprise]: 39,
+    },
+    [Tools.Claude]: {
+        [ClaudePlan.Pro]:          20,
+        [ClaudePlan.Max5x]:        100,
+        [ClaudePlan.Max20x]:       200,
+        [ClaudePlan.TeamStandard]: 25,
+        [ClaudePlan.TeamPremium]:  125,
+        [ClaudePlan.Enterprise]:   null,
+    },
+    [Tools.ChatGPT]: {
+        [ChatGPTPlan.Go]: 8,
+    },
+    [Tools.Codex]: {
+        [CodexPlan.Plus]:       60,
+        [CodexPlan.Pro]:        200,
+        [CodexPlan.Business]:   40,
+        [CodexPlan.Enterprise]: null,
+    },
+    [Tools.Gemini]: {
+        [GeminiPlan.AIPlus]:  10.99,
+        [GeminiPlan.AIPro]:   26.99,
+        [GeminiPlan.AIUltra]: 339.99,
+    },
+    [Tools.Windsurf]: {
+        [WindsurfPlan.Pro]:        20,
+        [WindsurfPlan.Max]:        200,
+        [WindsurfPlan.Teams]:      40,
+        [WindsurfPlan.Enterprise]: null,
+    },
+};
+
 // ─── API providers ────────────────────────────────────────────────────────────
 
 export const APIProviders = {

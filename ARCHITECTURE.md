@@ -23,15 +23,15 @@ graph TD
     FE -->|/share URL| SP[Share page]
     SP --> OG[/api/og OG image route]
 
-    subgraph shared npm workspace
+    subgraph shared ["shared npm workspace"]
         ZS[Zod schemas]
-        TS[TypeScript types]
+        TY[TypeScript types]
     end
 
     FE -.->|imports| ZS
     BE -.->|imports| ZS
-    FE -.->|imports| TS
-    BE -.->|imports| TS
+    FE -.->|imports| TY
+    BE -.->|imports| TY
 ```
 
 ## Data Flow: Input to Audit Result
@@ -88,7 +88,10 @@ graph TD
    ├─ Confirmation email via Resend
    └─ tier = "high" if savings > $500/mo, else "standard"
 
-10. Share URL: /share?data=<base64 audit>
+10. Share URL: /share?data=<base64 audit result only>
+    ├─ audit result object never contains email, company name, or role
+    │   (those fields live only in the leads table, written separately in step 9)
+    ├─ base64 encodes only { tools, aiSummary, totalMonthlySavings }
     └─ OG image rendered at /api/og (Next.js edge route)
 ```
 
@@ -236,6 +239,8 @@ Candidates that clear all gates are sorted by `monthlySavings` descending. The t
 
 3. **Subscription cost = pricePerSeat × seats** — does not account for annual discounts, custom enterprise pricing, or bundled features. For plans with unknown pricing, `monthlySpend` from user input is used directly.
 
+4. **Base64 share URLs** — encoding the full audit result in the URL avoids a database write per share and keeps PII separation clean (email never enters the URL). The tradeoff is URL length: a user with 8+ tools and full API audit data approaches browser URL length limits (~2000 chars). At scale, the fix is a short-ID share table: store the audit JSON server-side and issue a 6-char slug. Not implemented in MVP.
+
 ---
 
 ## Stack
@@ -249,11 +254,21 @@ Candidates that clear all gates are sorted by `monthlySavings` descending. The t
 | ORM | Drizzle + pg | Type-safe SQL; schema is simple enough that a heavy ORM adds nothing |
 | Database | Supabase (PostgreSQL) | Managed Postgres; free tier is sufficient; familiar tooling |
 | Email | Resend | Best developer experience for transactional email at this scale |
-| AI summary | Gemini 1.5 Flash | Fast and cheap for 100-word prose summaries; graceful fallback |
+| AI summary | Gemini 1.5 Flash | See note below — Anthropic is preferred per spec; Gemini chosen for cost |
 | Monorepo | npm workspaces (`shared/`) | Single source of truth for Zod schemas and types used by both packages |
 | CI | GitHub Actions | Lint + test on push to `main`; Render deploy on `deploy/prod` |
 
 TypeScript strict mode is enabled across all three packages.
+
+---
+
+## Why Gemini, not Anthropic API
+
+The assignment specifies the Anthropic API as the preferred provider for the AI summary. Gemini 1.5 Flash was chosen instead for one practical reason: cost at the free tier.
+
+The summary is a single ~100-word paragraph generated from already-verified facts — the audit output is the source of truth, not the model. For this task, the difference in prose quality between Gemini 1.5 Flash and Claude Haiku is not meaningful to the end user. Gemini 1.5 Flash's free tier offers 1,500 requests per day with a 1M token context window. That is enough to run every audit on the deployed app without paying anything until real traction exists. Anthropic's free tier is significantly lower volume.
+
+The fallback is deterministic: if the Gemini call fails (timeout, 429, missing key), `buildFallbackSummary()` produces a templated summary from the same audit facts. The AI path is a polish layer, not a load-bearing component. Swapping to Anthropic would be a two-line change in `gemini.service.ts` — the abstraction exists specifically so that the provider can change without touching anything else.
 
 ---
 
