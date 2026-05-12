@@ -15,117 +15,117 @@
       "currentCost": 200,
       "status": "optimize",
       "bestRecommendation": {
-        "toolName": "github_copilot",
-        "planName": "pro",
+        "toolName": "GitHub Copilot",
+        "planName": "Pro",
         "savings": 190,
         "savingsPercent": 95,
-        "reason": "GitHub Copilot pro at $10/seat"
+        "reason": "GitHub Copilot Pro at $10/seat"
       },
       "otherOptions": [
         {
-          "toolName": "github_copilot",
-          "planName": "business",
+          "toolName": "GitHub Copilot",
+          "planName": "Business",
           "savings": 181,
           "savingsPercent": 90.5,
-          "reason": "GitHub Copilot business at $19/seat"
+          "reason": "GitHub Copilot Business at $19/seat"
         },
         {
-          "toolName": "cursor",
-          "planName": "pro",
+          "toolName": "Cursor",
+          "planName": "Pro",
           "savings": 180,
           "savingsPercent": 90,
-          "reason": "Cursor pro at $20/seat"
+          "reason": "Cursor Pro at $20/seat"
         },
         {
-          "toolName": "claude",
-          "planName": "pro",
+          "toolName": "Claude (claude.ai)",
+          "planName": "Pro",
           "savings": 180,
           "savingsPercent": 90,
-          "reason": "Claude (claude.ai) pro at $20/seat"
+          "reason": "Claude (claude.ai) Pro at $20/seat"
         },
         {
-          "toolName": "windsurf",
-          "planName": "pro",
+          "toolName": "Windsurf",
+          "planName": "Pro",
           "savings": 180,
           "savingsPercent": 90,
-          "reason": "Windsurf pro at $20/seat"
+          "reason": "Windsurf Pro at $20/seat"
         },
         {
-          "toolName": "claude",
-          "planName": "team_standard",
+          "toolName": "Claude (claude.ai)",
+          "planName": "Team Standard",
           "savings": 175,
           "savingsPercent": 87.5,
-          "reason": "Claude (claude.ai) team_standard at $25/seat"
+          "reason": "Claude (claude.ai) Team Standard at $25/seat"
         },
         {
-          "toolName": "gemini",
-          "planName": "ai_pro",
+          "toolName": "Gemini (Google AI)",
+          "planName": "Ai Pro",
           "savings": 173.01,
           "savingsPercent": 86.505,
-          "reason": "Gemini (Google AI) ai_pro at $26.99/seat"
+          "reason": "Gemini (Google AI) Ai Pro at $26.99/seat"
         },
         {
-          "toolName": "github_copilot",
-          "planName": "pro_plus",
+          "toolName": "GitHub Copilot",
+          "planName": "Pro Plus",
           "savings": 161,
           "savingsPercent": 80.5,
-          "reason": "GitHub Copilot pro_plus at $39/seat"
+          "reason": "GitHub Copilot Pro Plus at $39/seat"
         },
         {
-          "toolName": "github_copilot",
-          "planName": "enterprise",
+          "toolName": "GitHub Copilot",
+          "planName": "Enterprise",
           "savings": 161,
           "savingsPercent": 80.5,
-          "reason": "GitHub Copilot enterprise at $39/seat"
+          "reason": "GitHub Copilot Enterprise at $39/seat"
         },
         {
-          "toolName": "cursor",
-          "planName": "teams",
+          "toolName": "Cursor",
+          "planName": "Teams",
           "savings": 160,
           "savingsPercent": 80,
-          "reason": "Cursor teams at $40/seat"
+          "reason": "Cursor Teams at $40/seat"
         },
         {
-          "toolName": "codex",
-          "planName": "business",
+          "toolName": "Codex",
+          "planName": "Business",
           "savings": 160,
           "savingsPercent": 80,
-          "reason": "Codex business at $40/seat"
+          "reason": "Codex Business at $40/seat"
         },
         {
-          "toolName": "windsurf",
-          "planName": "teams",
+          "toolName": "Windsurf",
+          "planName": "Teams",
           "savings": 160,
           "savingsPercent": 80,
-          "reason": "Windsurf teams at $40/seat"
+          "reason": "Windsurf Teams at $40/seat"
         },
         {
-          "toolName": "cursor",
-          "planName": "pro_plus",
+          "toolName": "Cursor",
+          "planName": "Pro Plus",
           "savings": 140,
           "savingsPercent": 70,
-          "reason": "Cursor pro_plus at $60/seat"
+          "reason": "Cursor Pro Plus at $60/seat"
         },
         {
-          "toolName": "codex",
-          "planName": "plus",
+          "toolName": "Codex",
+          "planName": "Plus",
           "savings": 140,
           "savingsPercent": 70,
-          "reason": "Codex plus at $60/seat"
+          "reason": "Codex Plus at $60/seat"
         },
         {
-          "toolName": "claude",
-          "planName": "max_5x",
+          "toolName": "Claude (claude.ai)",
+          "planName": "Max 5x",
           "savings": 100,
           "savingsPercent": 50,
-          "reason": "Claude (claude.ai) max_5x at $100/seat"
+          "reason": "Claude (claude.ai) Max 5x at $100/seat"
         },
         {
-          "toolName": "claude",
-          "planName": "team_premium",
+          "toolName": "Claude (claude.ai)",
+          "planName": "Team Premium",
           "savings": 75,
           "savingsPercent": 37.5,
-          "reason": "Claude (claude.ai) team_premium at $125/seat"
+          "reason": "Claude (claude.ai) Team Premium at $125/seat"
         }
       ]
     }
