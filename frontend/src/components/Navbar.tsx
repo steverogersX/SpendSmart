@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Logo from "@shared/ui/Logo";
 
 export function Navbar() {
-  const { theme, toggle } = useTheme();
+  const { theme, toggle, mounted } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -36,7 +36,7 @@ export function Navbar() {
           aria-label="Toggle theme"
           className="size-8 rounded-md text-muted-foreground hover:text-foreground"
         >
-          {theme === "dark" ? (
+          {mounted && theme === "dark" ? (
             <Sun className="size-4" />
           ) : (
             <Moon className="size-4" />

@@ -40,12 +40,13 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
     });
     logger.info({ messageId: info.messageId, to: opts.to }, 'dev email → MailDev');
   } else {
-    await getResend().emails.send({
+    const { data, error } = await getResend().emails.send({
       from: config.RESEND_FROM,
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
     });
-    logger.info({ to: opts.to }, 'email sent via Resend');
+    if (error) throw new Error(`Resend error: ${error.message}`);
+    logger.info({ id: data?.id, to: opts.to }, 'email sent via Resend');
   }
 }

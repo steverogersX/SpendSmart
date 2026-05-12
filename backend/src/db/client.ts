@@ -10,10 +10,12 @@ const pool = new Pool({
   database: config.DB_NAME,
   user: config.DB_USER,
   password: config.DB_PASSWORD,
-  ssl: { rejectUnauthorized: false }, // required by Supabase
+  ssl: { rejectUnauthorized: false },
   max: 10,
   idleTimeoutMillis: 30_000,
-  connectionTimeoutMillis: 5_000,
+  connectionTimeoutMillis: 10_000,
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10_000,
 });
 
 pool.on('error', (err) => {
