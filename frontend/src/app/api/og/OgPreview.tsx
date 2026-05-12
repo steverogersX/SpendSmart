@@ -10,8 +10,6 @@ export const OgPreview = ({
   const savings = Number(p.get("savings") ?? 0);
   const toolCount = Number(p.get("toolCount") ?? 0);
   const optimizableCount = Number(p.get("optimizableCount") ?? 0);
-  const optimalCount = toolCount - optimizableCount;
-
   const isOptimal = savings <= 0;
 
   const fmt = (n: number) => {

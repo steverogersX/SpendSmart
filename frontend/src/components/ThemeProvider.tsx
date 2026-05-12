@@ -24,6 +24,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       ? "dark"
       : "light";
     const resolved = stored ?? preferred;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(resolved);
     setMounted(true);
   }, []);

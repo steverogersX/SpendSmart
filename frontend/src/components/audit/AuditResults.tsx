@@ -16,7 +16,6 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { isApiResult } from "@/lib/api";
 import {
   ApiRecommendation,
-  ApiAuditResult,
   AuditResult,
   AuditResultItem,
   SubscriptionRecommendation,
@@ -37,7 +36,7 @@ function AnimatedCurrency({ value, className }: { value: number; className?: str
       ease: [0.16, 1, 0.3, 1],
     });
     return controls.stop;
-  }, [value]);
+  }, [count, value]);
 
   return <motion.span className={className}>{display}</motion.span>;
 }
