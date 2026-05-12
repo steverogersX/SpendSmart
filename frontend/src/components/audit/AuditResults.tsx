@@ -10,6 +10,7 @@ import {
   Sparkles,
   Bell,
   TrendingUp,
+  Download,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -21,6 +22,7 @@ import {
   SubscriptionRecommendation,
 } from "@shared/types/auditResult";
 import { ShareModal } from "./ShareModal";
+import { ReportPreviewModal } from "./ReportPreviewModal";
 import { LeadCaptureForm } from "./LeadCaptureForm";
 import { BenchmarkChart } from "../ui/benchmarkChart";
 
@@ -576,22 +578,35 @@ function SavingsHero({
 
 export function AuditResults({ result }: { result: AuditResult }) {
   const [shareOpen, setShareOpen] = useState(false);
+  const [reportPreviewOpen, setReportPreviewOpen] = useState(false);
 
   const totalSavings = result.tools.reduce(
     (sum, item) => sum + (item.bestRecommendation?.savings ?? 0),
     0,
   );
 
+  const shareUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/share?${buildSummaryOgParams(result, totalSavings).toString()}`
+    : "";
+
   return (
     <div className="space-y-4 pt-2">
-      <motion.h2
+      <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="text-lg font-semibold tracking-tight"
+        className="flex items-center justify-between"
       >
-        Audit Results
-      </motion.h2>
+        <h2 className="text-lg font-semibold tracking-tight">Audit Results</h2>
+        <button
+          type="button"
+          onClick={() => setReportPreviewOpen(true)}
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-sm"
+        >
+          <Download className="size-3.5" />
+          Download Report
+        </button>
+      </motion.div>
 
       <SavingsHero totalSavings={totalSavings} result={result} onShare={() => setShareOpen(true)} />
 
@@ -647,7 +662,14 @@ export function AuditResults({ result }: { result: AuditResult }) {
         ogParams={buildSummaryOgParams(result, totalSavings)}
         title={buildSummaryShareTitle(totalSavings, result.tools.length)}
       />
-   
+
+      <ReportPreviewModal
+        open={reportPreviewOpen}
+        onClose={() => setReportPreviewOpen(false)}
+        result={result}
+        totalSavings={totalSavings}
+        shareUrl={shareUrl}
+      />
     </div>
   );
 }
