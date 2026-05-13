@@ -116,27 +116,25 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             // Gate 0 — skip self
             if (vendorKey === input.tool && modelKey === input.primaryModel) continue;
 
-            // Gate Newly added one
-            // if user don't want chinese modals, we skip them
+            // Gate 1 — skip Chinese models if user opted out
             if (!input.okayWithChineseModals && vendor.isChineseModel) continue;
 
-
-            // Gate 1 — use case support
+            // Gate 2 — use case support
             const candidateUCEntry = model.useCases.find(uc => uc.useCase === input.useCase);
             if (!candidateUCEntry) continue;
 
-            // Gate 2 — quality floor
+            // Gate 3 — quality floor
             // candidate score must be within the user's acceptable tolerance
             if (minAcceptableScore !== null && candidateUCEntry.score < minAcceptableScore) continue;
 
-            // Gate 3 — must be cheaper (weighted price)
+            // Gate 4 — must be cheaper (weighted price)
             // candidate_weighted = (0.7 × inPrice) + (0.3 × outPrice)
             const candidateWeighted =
                 INPUT_RATIO * model.inputPricePer1MTokens +
                 OUTPUT_RATIO * model.outputPricePer1MTokens;
             if (candidateWeighted >= currentWeighted) continue;
 
-            // Gate 4 — minimum savings threshold
+            // Gate 5 — minimum savings threshold
             // estimated_new_spend = (tokens / 1_000_000) × candidateWeighted
             // savings_pct         = (monthlySavings / averageMonthlySpend) × 100
             const estimatedNewSpend = (estimatedMonthlyTokens / 1_000_000) * candidateWeighted;
@@ -144,7 +142,7 @@ const auditApiTool = (input: APIToolInput): ApiAuditResult => {
             const savingsPct = (monthlySavings / input.averageMonthlySpend) * 100;
             if (savingsPct < SAVINGS_THRESHOLD_PCT) continue;
 
-            // Gate 5 — context window (only checked when caller specifies a requirement)
+            // Gate 6 — context window (only checked when caller specifies a requirement)
             if (input.contextWindow && model.contextWindow < input.contextWindow) continue;
 
             candidates.push({
