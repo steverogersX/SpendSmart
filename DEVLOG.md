@@ -334,3 +334,33 @@ None. Everything is live and working end to end. The OG preview image is still r
 ## Plan for tomorrow
 
 Final pass: TESTS.md and PRICING_DATA.md need to be written out properly — they're the two documentation gaps that are still empty. After that, take screenshots of the full flow for README.md. Then the submission is complete.
+
+---
+
+# Day 7 — 2026-05-14
+
+**Hours worked:** 4
+
+## What I did
+
+Documentation audit and bug fixes. Went through every `.md` file and checked every claim against the actual code.
+
+Found one real user-facing bug: every `research` use case entry in `vendor-pricing.json` had `benchmarkName: "EQ-Bench Creative Writing"` paired with a MMLU-Pro URL. The benchmark URL was correct; the name was wrong — it was copy-pasted from the `writing` entries and never updated. This meant the results page and the email report were both labelling a research benchmark as "EQ-Bench Creative Writing", which is factually wrong and would undermine trust. Fixed across all seven affected models in `vendor-pricing.json`, and updated the test fixture and its hardcoded `summary` strings to match. All 8 tests pass.
+
+Also fixed the gate comment numbering in `audit.service.ts`. The Chinese-model gate was added after the initial implementation and labeled `// Gate Newly added one` instead of being slotted into the sequence. That left downstream gates numbered 1–5 in the code while `ARCHITECTURE.md` documented them as 2–6. Renumbered the comments 1–6 to match the architecture doc, and updated `TESTS.md` gate references and `ARCHITECTURE.md`'s "6-gate filter" claim (it lists 7 gates, 0–6) to say "7-gate filter".
+
+Other doc fixes: `ARCHITECTURE.md` stack table said Render deploys on `deploy/prod` — the actual CI triggers on `main`. Fixed. The system diagram was also missing the `POST /api/v1/audit/export-pdf` route and PDF service node despite those being live since Day 6. Added them.
+
+Fixed the email sending bug in production. Emails were failing on the live deployment and the error was being swallowed silently, so leads were stored in the DB but no confirmation email was sent. Tracked it down and fixed.
+
+## What I learned
+
+The `research` benchmark name bug had been in the data since the models were added and the tests were still passing — because the tests were asserting the wrong name too. The bug only surfaces when you check the name against what the benchmark actually is. Test fixtures that are copied from broken code just preserve the bug. The fix here was to audit the data against external truth (the ARCHITECTURE.md claim that `research → MMLU-Pro`), not just verify internal consistency.
+
+## Blockers / what I'm stuck on
+
+None.
+
+## Plan for tomorrow
+
+Project is complete and submitted.
