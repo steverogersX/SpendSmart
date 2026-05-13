@@ -52,7 +52,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\pavan\\\\web\\\\spendsmart\\\\frontend\\\\src\\\\components\\\\ui\" -File)",
       "Bash(echo \"exit: $?\")",
       "Bash(Get-ChildItem C:\\\\Users\\\\pavan\\\\web\\\\spendsmart\\\\frontend\\\\app -Recurse -Name)",
-      "Bash(Select-Object -First 60)"
+      "Bash(Select-Object -First 60)",
+      "Bash(xargs grep -l \"error\\\\|catch\\\\|try\")"
     ]
   }
 }

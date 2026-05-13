@@ -29,6 +29,7 @@ export function ReportPreviewModal({
   shareUrl,
 }: ReportPreviewModalProps) {
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -53,6 +54,7 @@ export function ReportPreviewModal({
   async function handleDownload() {
     if (downloading) return;
     setDownloading(true);
+    setDownloadError(null);
     try {
       const blob = await exportPdf(result, {
         date: new Date().toISOString(),
@@ -67,7 +69,7 @@ export function ReportPreviewModal({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch {
-      // silent — user can retry
+      setDownloadError("PDF generation failed. Please try again.");
     } finally {
       setDownloading(false);
     }
@@ -200,7 +202,10 @@ export function ReportPreviewModal({
         </div>
 
         {/* Actions */}
-        <div className="px-5 pt-3 pb-5">
+        <div className="px-5 pt-3 pb-5 space-y-2">
+          {downloadError && (
+            <p className="text-xs text-destructive text-center">{downloadError}</p>
+          )}
           <button
             type="button"
             onClick={handleDownload}

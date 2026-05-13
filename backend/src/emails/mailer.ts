@@ -39,7 +39,8 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
       html: opts.html,
     });
     logger.info({ messageId: info.messageId, to: opts.to }, 'dev email → MailDev');
-  } else {
+  } else 
+    {
     const { data, error } = await getResend().emails.send({
       from: config.RESEND_FROM,
       to: opts.to,

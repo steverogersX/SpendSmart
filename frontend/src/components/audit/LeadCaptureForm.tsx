@@ -43,13 +43,14 @@ interface Props {
 export function LeadCaptureForm({ tier, totalSavings, auditResult, submitLabel = 'Send report', onSuccess }: Props) {
   const [showOptional, setShowOptional] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const {
     register,
     handleSubmit,
     setValue,
     control,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   const teamSizeValue = useWatch({ control, name: 'teamSize' });
@@ -67,13 +68,14 @@ export function LeadCaptureForm({ tier, totalSavings, auditResult, submitLabel =
         auditResults: auditResult,
         website: values.website,
       });
+      setSubmitted(true);
       onSuccess?.();
     } catch (err) {
       setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   }
 
-  if (isSubmitSuccessful) {
+  if (submitted) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 4 }}
