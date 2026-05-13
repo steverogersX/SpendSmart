@@ -28,7 +28,13 @@ import { BenchmarkChart } from "../ui/benchmarkChart";
 
 // ─── Animated number ──────────────────────────────────────────────────────────
 
-function AnimatedCurrency({ value, className }: { value: number; className?: string }) {
+function AnimatedCurrency({
+  value,
+  className,
+}: {
+  value: number;
+  className?: string;
+}) {
   const count = useMotionValue(0);
   const display = useTransform(count, (v) => formatCurrency(Math.round(v)));
 
@@ -73,7 +79,8 @@ function ApiRecommendationRow({ rec }: { rec: ApiRecommendation }) {
       <div className="flex items-center justify-between">
         <span className="font-medium text-sm">{rec.modelDisplayName}</span>
         <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-          Save {formatCurrency(rec.savings)}/mo ({rec.savingsPercent.toFixed(0)}%)
+          Save {formatCurrency(rec.savings)}/mo ({rec.savingsPercent.toFixed(0)}
+          %)
         </span>
       </div>
       <div className="flex items-center gap-1.5 flex-wrap">
@@ -102,7 +109,8 @@ function SubRecommendationRow({ rec }: { rec: SubscriptionRecommendation }) {
           {rec.toolName} · {rec.planName}
         </span>
         <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-          Save {formatCurrency(rec.savings)}/mo ({rec.savingsPercent.toFixed(0)}%)
+          Save {formatCurrency(rec.savings)}/mo ({rec.savingsPercent.toFixed(0)}
+          %)
         </span>
       </div>
       <p className="text-xs text-muted-foreground">{rec.reason}</p>
@@ -134,27 +142,46 @@ function renderWithLinks(text: string) {
 
 // ─── Share helpers ────────────────────────────────────────────────────────────
 
-function buildSummaryOgParams(result: AuditResult, totalSavings: number): URLSearchParams {
+function buildSummaryOgParams(
+  result: AuditResult,
+  totalSavings: number,
+): URLSearchParams {
   const totalSpend = result.tools.reduce(
-    (s, t) => s + (isApiResult(t) ? t.currentAverageMonthlySpend : t.currentCost),
+    (s, t) =>
+      s + (isApiResult(t) ? t.currentAverageMonthlySpend : t.currentCost),
     0,
   );
-  const optimizable = result.tools.filter((t) => t.status === "optimize").length;
+  const optimizable = result.tools.filter(
+    (t) => t.status === "optimize",
+  ).length;
   const p = new URLSearchParams();
   p.set("status", totalSavings > 0 ? "optimize" : "optimal");
-  p.set("tool", `${result.tools.length} AI tool${result.tools.length !== 1 ? "s" : ""} audited`);
+  p.set(
+    "tool",
+    `${result.tools.length} AI tool${result.tools.length !== 1 ? "s" : ""} audited`,
+  );
   p.set("spend", String(Math.round(totalSpend)));
+  p.set("toolCount", String(result.tools.length));
+  p.set("optimizableCount", String(optimizable));
   if (totalSavings > 0) {
     p.set("savings", String(Math.round(totalSavings)));
-    const pct = totalSpend > 0 ? Math.round((totalSavings / totalSpend) * 100) : 0;
+    const pct =
+      totalSpend > 0 ? Math.round((totalSavings / totalSpend) * 100) : 0;
     p.set("pct", String(pct));
-    p.set("rec", `${optimizable} tool${optimizable !== 1 ? "s" : ""} to optimize`);
+    p.set(
+      "rec",
+      `${optimizable} tool${optimizable !== 1 ? "s" : ""} to optimize`,
+    );
   }
   return p;
 }
 
-function buildSummaryShareTitle(totalSavings: number, toolCount: number): string {
-  if (totalSavings <= 0) return `${toolCount} AI tool${toolCount !== 1 ? "s" : ""} — already cost-optimal`;
+function buildSummaryShareTitle(
+  totalSavings: number,
+  toolCount: number,
+): string {
+  if (totalSavings <= 0)
+    return `${toolCount} AI tool${toolCount !== 1 ? "s" : ""} — already cost-optimal`;
   return `Save ${formatCurrency(totalSavings)}/mo across ${toolCount} AI tool${toolCount !== 1 ? "s" : ""}`;
 }
 
@@ -170,19 +197,27 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
 
   const toolLabel = api ? item.toolName : item.tool;
   const currentSpend = api ? item.currentAverageMonthlySpend : item.currentCost;
-  const subtitle = api ? `${item.primaryModel} · ${item.primaryUseCase}` : `${item.currentPlan}`;
+  const subtitle = api
+    ? `${item.primaryModel} · ${item.primaryUseCase}`
+    : `${item.currentPlan}`;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 + index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+      transition={{
+        duration: 0.4,
+        delay: 0.1 + index * 0.07,
+        ease: [0.16, 1, 0.3, 1],
+      }}
     >
       <Card className="overflow-hidden">
         <CardContent className="pt-5 space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="font-semibold capitalize">{toolLabel.replace(/_/g, " ")}</p>
+              <p className="font-semibold capitalize">
+                {toolLabel.replace(/_/g, " ")}
+              </p>
               <p className="text-xs text-muted-foreground capitalize">
                 {subtitle.replace(/_/g, " ")}
               </p>
@@ -191,8 +226,12 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
           </div>
 
           <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
-            <span className="text-xs text-muted-foreground">Current monthly spend</span>
-            <span className="text-sm font-medium">{formatCurrency(currentSpend)}</span>
+            <span className="text-xs text-muted-foreground">
+              Current monthly spend
+            </span>
+            <span className="text-sm font-medium">
+              {formatCurrency(currentSpend)}
+            </span>
           </div>
 
           {api && selectedRec && (
@@ -209,12 +248,21 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
             <div
               role={api ? "button" : undefined}
               tabIndex={api ? 0 : undefined}
-              onClick={api ? () => setSelectedRec(item.bestRecommendation as ApiRecommendation) : undefined}
+              onClick={
+                api
+                  ? () =>
+                      setSelectedRec(
+                        item.bestRecommendation as ApiRecommendation,
+                      )
+                  : undefined
+              }
               onKeyDown={
                 api
                   ? (e) =>
                       e.key === "Enter" &&
-                      setSelectedRec(item.bestRecommendation as ApiRecommendation)
+                      setSelectedRec(
+                        item.bestRecommendation as ApiRecommendation,
+                      )
                   : undefined
               }
               className={cn(
@@ -239,9 +287,13 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
                 )}
               </div>
               {api ? (
-                <ApiRecommendationRow rec={item.bestRecommendation as ApiRecommendation} />
+                <ApiRecommendationRow
+                  rec={item.bestRecommendation as ApiRecommendation}
+                />
               ) : (
-                <SubRecommendationRow rec={item.bestRecommendation as SubscriptionRecommendation} />
+                <SubRecommendationRow
+                  rec={item.bestRecommendation as SubscriptionRecommendation}
+                />
               )}
             </div>
           )}
@@ -259,50 +311,59 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
                     showOthers && "rotate-180",
                   )}
                 />
-                {showOthers ? "Hide" : "Show"} {item.otherOptions.length} other option
+                {showOthers ? "Hide" : "Show"} {item.otherOptions.length} other
+                option
                 {item.otherOptions.length > 1 ? "s" : ""}
               </button>
 
               {showOthers && (
                 <div className="mt-2 space-y-1.5">
                   {api
-                    ? (item.otherOptions as ApiRecommendation[]).map((rec, i) => {
-                        const isSelected = selectedRec === rec;
-                        return (
-                          <button
-                            key={i}
-                            type="button"
-                            onClick={() => setSelectedRec(rec)}
-                            className={cn(
-                              "w-full rounded-lg border px-3 py-2.5 text-left transition-colors",
-                              isSelected
-                                ? "border-blue-400/60 bg-blue-50/60 dark:bg-blue-900/10"
-                                : "border-border bg-muted/20 hover:bg-muted/50",
-                            )}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium">{rec.modelDisplayName}</span>
-                              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                −{formatCurrency(rec.savings)}/mo
-                              </span>
-                            </div>
-                            <p className="mt-0.5 text-xs text-muted-foreground">{rec.reason}</p>
-                            {isSelected && (
-                              <p className="mt-1 text-[10px] text-blue-500 dark:text-blue-400">
-                                Showing benchmark comparison above
+                    ? (item.otherOptions as ApiRecommendation[]).map(
+                        (rec, i) => {
+                          const isSelected = selectedRec === rec;
+                          return (
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => setSelectedRec(rec)}
+                              className={cn(
+                                "w-full rounded-lg border px-3 py-2.5 text-left transition-colors",
+                                isSelected
+                                  ? "border-blue-400/60 bg-blue-50/60 dark:bg-blue-900/10"
+                                  : "border-border bg-muted/20 hover:bg-muted/50",
+                              )}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium">
+                                  {rec.modelDisplayName}
+                                </span>
+                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                  −{formatCurrency(rec.savings)}/mo
+                                </span>
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                {rec.reason}
                               </p>
-                            )}
-                          </button>
-                        );
-                      })
-                    : (item.otherOptions as SubscriptionRecommendation[]).map((rec, i) => (
-                        <div
-                          key={i}
-                          className="rounded-lg border border-border bg-muted/20 px-3 py-2.5"
-                        >
-                          <SubRecommendationRow rec={rec} />
-                        </div>
-                      ))}
+                              {isSelected && (
+                                <p className="mt-1 text-[10px] text-blue-500 dark:text-blue-400">
+                                  Showing benchmark comparison above
+                                </p>
+                              )}
+                            </button>
+                          );
+                        },
+                      )
+                    : (item.otherOptions as SubscriptionRecommendation[]).map(
+                        (rec, i) => (
+                          <div
+                            key={i}
+                            className="rounded-lg border border-border bg-muted/20 px-3 py-2.5"
+                          >
+                            <SubRecommendationRow rec={rec} />
+                          </div>
+                        ),
+                      )}
                 </div>
               )}
             </div>
@@ -310,8 +371,8 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
 
           {item.status === "optimal" && (
             <p className="text-xs text-muted-foreground">
-              You&apos;re spending well here. No cheaper alternative matches your current
-              requirements.
+              You&apos;re spending well here. No cheaper alternative matches
+              your current requirements.
             </p>
           )}
         </CardContent>
@@ -322,7 +383,13 @@ function ResultCard({ item, index }: { item: AuditResultItem; index: number }) {
 
 // ─── CTAs ─────────────────────────────────────────────────────────────────────
 
-function HighSavingsCTA({ totalSavings, result }: { totalSavings: number; result: AuditResult }) {
+function HighSavingsCTA({
+  totalSavings,
+  result,
+}: {
+  totalSavings: number;
+  result: AuditResult;
+}) {
   return (
     <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 dark:border-emerald-800 dark:from-emerald-950/50 dark:to-teal-950/40 p-5 space-y-4">
       <div className="flex items-start gap-3">
@@ -334,8 +401,8 @@ function HighSavingsCTA({ totalSavings, result }: { totalSavings: number; result
             {formatCurrency(totalSavings)}/mo in savings identified
           </p>
           <p className="mt-0.5 text-sm text-emerald-700/80 dark:text-emerald-400/80">
-            Leave your email and a Credex advisor will follow up with a tailored migration plan —
-            at no cost to you.
+            Leave your email and a Credex advisor will follow up with a tailored
+            migration plan — at no cost to you.
           </p>
         </div>
       </div>
@@ -359,13 +426,21 @@ function HighSavingsCTA({ totalSavings, result }: { totalSavings: number; result
   );
 }
 
-function MidSavingsCTA({ totalSavings, result }: { totalSavings: number; result: AuditResult }) {
+function MidSavingsCTA({
+  totalSavings,
+  result,
+}: {
+  totalSavings: number;
+  result: AuditResult;
+}) {
   return (
     <div className="rounded-xl border border-border bg-muted/30 p-5 space-y-4">
       <div>
-        <p className="font-semibold">{formatCurrency(totalSavings)}/mo in savings identified</p>
+        <p className="font-semibold">
+          {formatCurrency(totalSavings)}/mo in savings identified
+        </p>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Get the full audit report with step-by-step migration guides sent to your inbox.
+          Get the full audit report of audit results sent to your inbox.
         </p>
       </div>
       <LeadCaptureForm
@@ -388,7 +463,8 @@ function LowSavingsCTA({ result }: { result: AuditResult }) {
         <div>
           <p className="font-medium text-sm">You&apos;re spending well.</p>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            AI prices shift fast. We&apos;ll notify you when a better option matches your stack.
+            AI prices shift fast. We&apos;ll notify you when a better option
+            matches your stack.
           </p>
         </div>
       </div>
@@ -414,7 +490,9 @@ function SavingsHero({
   onShare: () => void;
 }) {
   const toolCount = result.tools.length;
-  const optimizableCount = result.tools.filter((t) => t.status === "optimize").length;
+  const optimizableCount = result.tools.filter(
+    (t) => t.status === "optimize",
+  ).length;
   const optimalCount = toolCount - optimizableCount;
 
   if (totalSavings <= 0) {
@@ -442,19 +520,25 @@ function SavingsHero({
             </div>
           </div>
           <div>
-            <p className="text-2xl font-bold tracking-tight">You&apos;re spending well.</p>
+            <p className="text-2xl font-bold tracking-tight">
+              You&apos;re spending well.
+            </p>
             <p className="text-sm text-muted-foreground mt-1">
               Every tool in your stack is already cost-optimal.
             </p>
           </div>
           <div className="flex justify-center gap-4 pt-2">
             <div className="text-center">
-              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{toolCount}</p>
+              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                {toolCount}
+              </p>
               <p className="text-xs text-muted-foreground">tools audited</p>
             </div>
             <div className="w-px bg-border" />
             <div className="text-center">
-              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{optimalCount}</p>
+              <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                {optimalCount}
+              </p>
               <p className="text-xs text-muted-foreground">optimal</p>
             </div>
           </div>
@@ -510,7 +594,9 @@ function SavingsHero({
             value={totalSavings}
             className="text-5xl font-bold tracking-tight text-emerald-700 dark:text-emerald-300"
           />
-          <span className="text-xl font-medium text-emerald-600/70 dark:text-emerald-400/70">/mo</span>
+          <span className="text-xl font-medium text-emerald-600/70 dark:text-emerald-400/70">
+            /mo
+          </span>
         </motion.div>
         <motion.p
           initial={{ opacity: 0 }}
@@ -540,7 +626,9 @@ function SavingsHero({
               className="text-base font-semibold text-foreground"
             />
             <span className="text-xs text-muted-foreground ml-1">/yr</span>
-            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Annual savings</p>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">
+              Annual savings
+            </p>
           </div>
         </div>
 
@@ -549,11 +637,17 @@ function SavingsHero({
         {/* Tools audited */}
         <div className="flex items-center gap-2">
           <div className="flex size-7 items-center justify-center rounded-full bg-muted">
-            <span className="text-xs font-bold text-muted-foreground">{toolCount}</span>
+            <span className="text-xs font-bold text-muted-foreground">
+              {toolCount}
+            </span>
           </div>
           <div>
-            <p className="text-base font-semibold text-foreground">{toolCount}</p>
-            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Tools audited</p>
+            <p className="text-base font-semibold text-foreground">
+              {toolCount}
+            </p>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">
+              Tools audited
+            </p>
           </div>
         </div>
 
@@ -565,8 +659,12 @@ function SavingsHero({
             <TrendingDown className="size-3.5 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <p className="text-base font-semibold text-foreground">{optimizableCount}</p>
-            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">Can optimize</p>
+            <p className="text-base font-semibold text-foreground">
+              {optimizableCount}
+            </p>
+            <p className="text-[11px] text-muted-foreground leading-none mt-0.5">
+              Can optimize
+            </p>
           </div>
         </div>
       </motion.div>
@@ -585,9 +683,10 @@ export function AuditResults({ result }: { result: AuditResult }) {
     0,
   );
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/share?${buildSummaryOgParams(result, totalSavings).toString()}`
-    : "";
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/share?${buildSummaryOgParams(result, totalSavings).toString()}`
+      : "";
 
   return (
     <div className="space-y-4 pt-2">
@@ -608,7 +707,11 @@ export function AuditResults({ result }: { result: AuditResult }) {
         </button>
       </motion.div>
 
-      <SavingsHero totalSavings={totalSavings} result={result} onShare={() => setShareOpen(true)} />
+      <SavingsHero
+        totalSavings={totalSavings}
+        result={result}
+        onShare={() => setShareOpen(true)}
+      />
 
       {result.aiSummary && (
         <motion.div
@@ -652,7 +755,7 @@ export function AuditResults({ result }: { result: AuditResult }) {
         ) : totalSavings >= 100 ? (
           <MidSavingsCTA totalSavings={totalSavings} result={result} />
         ) : (
-          <LowSavingsCTA result={result} />
+          <></>
         )}
       </motion.div>
 

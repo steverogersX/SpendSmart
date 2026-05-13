@@ -12,14 +12,13 @@ export const OgPreview = ({
   const optimizableCount = Number(p.get("optimizableCount") ?? 0);
   const isOptimal = savings <= 0;
 
-  const fmt = (n: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const fmt = (n: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(n);
-  };
 
   return (
     <div
@@ -27,12 +26,9 @@ export const OgPreview = ({
         width: 1200,
         height: 630,
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#ffffff",
-        padding: 32,
         fontFamily:
           'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        background: "#f0fdf8",
       }}
     >
       <div
@@ -43,139 +39,185 @@ export const OgPreview = ({
           flexDirection: "column",
           position: "relative",
           overflow: "hidden",
-          borderRadius: 32,
-          border: "1px solid rgba(16,185,129,0.12)",
           background:
-            "linear-gradient(135deg, #ecfdf5 0%, rgba(240,253,250,0.7) 35%, #ffffff 100%)",
-          padding: "48px 56px",
+            "linear-gradient(145deg, #f0fdf8 0%, #ecfdf5 40%, #f8fafc 100%)",
+          padding: "52px 64px 48px",
         }}
       >
-        {/* subtle glow */}
+        {/* Background decorative blobs */}
         <div
           style={{
             position: "absolute",
-            top: -120,
-            right: -120,
-            width: 320,
-            height: 320,
+            top: -80,
+            right: -80,
+            width: 400,
+            height: 400,
             borderRadius: 9999,
-            background: "rgba(16,185,129,0.08)",
+            background: "rgba(16,185,129,0.10)",
+            filter: "blur(100px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: -60,
+            left: -60,
+            width: 300,
+            height: 300,
+            borderRadius: 9999,
+            background: "rgba(16,185,129,0.07)",
             filter: "blur(80px)",
           }}
         />
 
-        {/* Header */}
+        {/* Top border accent */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 4,
+            background: "linear-gradient(90deg, #10b981 0%, #34d399 50%, #6ee7b7 100%)",
+          }}
+        />
+
+        {/* Brand */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            marginBottom: 42,
+            gap: 6,
+            marginBottom: 48,
             zIndex: 2,
           }}
         >
-          <div
+          <span
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
+              fontFamily: "monospace",
+              fontSize: 26,
+              fontWeight: 800,
+              color: "#10b981",
+              lineHeight: 1,
             }}
           >
-            {/* $ — font-mono bold emerald, matching Navbar */}
+            $
+          </span>
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              color: "#111827",
+              lineHeight: 1,
+            }}
+          >
+            Spend
+          </span>
+          <span
+            style={{
+              fontSize: 22,
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              color: "#10b981",
+              lineHeight: 1,
+            }}
+          >
+            Smart
+          </span>
+
+          <div
+            style={{
+              marginLeft: 14,
+              padding: "4px 12px",
+              borderRadius: 9999,
+              background: "rgba(16,185,129,0.10)",
+              border: "1px solid rgba(16,185,129,0.18)",
+            }}
+          >
             <span
               style={{
-                fontFamily: "monospace",
-                fontSize: 28,
-                fontWeight: 800,
-                color: "#10b981",
-                lineHeight: 1,
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: 1.5,
+                textTransform: "uppercase",
+                color: "#059669",
               }}
             >
-              $
-            </span>
-            {/* Spend + Smart — matching Navbar text style */}
-            <span
-              style={{
-                fontSize: 24,
-                fontWeight: 600,
-                letterSpacing: "-0.5px",
-                color: "#111827",
-                lineHeight: 1,
-              }}
-            >
-              Spend
-            </span>
-            <span
-              style={{
-                fontSize: 24,
-                fontWeight: 600,
-                letterSpacing: "-0.5px",
-                color: "#10b981",
-                lineHeight: 1,
-              }}
-            >
-              Smart
+              AI Spend Audit
             </span>
           </div>
         </div>
 
+        {/* Content */}
         {isOptimal ? (
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
               flex: 1,
               zIndex: 2,
             }}
           >
+            {/* Check badge */}
             <div
               style={{
-                width: 82,
-                height: 82,
-                borderRadius: 9999,
-                background: "rgba(16,185,129,0.1)",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 24,
+                gap: 14,
+                marginBottom: 28,
               }}
             >
-              <svg
-                width="40"
-                height="40"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#059669"
-                strokeWidth="2.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <div
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: 9999,
+                  background: "rgba(16,185,129,0.12)",
+                  border: "2px solid rgba(16,185,129,0.20)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
-              </svg>
+                <svg
+                  width="36"
+                  height="36"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#059669"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
             </div>
 
             <span
               style={{
-                fontSize: 68,
+                fontSize: 72,
                 fontWeight: 800,
-                letterSpacing: "-3px",
+                letterSpacing: "-3.5px",
                 color: "#111827",
                 lineHeight: 1,
+                marginBottom: 16,
               }}
             >
-              You&apos;re spending well.
+              Already optimized.
             </span>
 
             <span
               style={{
-                marginTop: 14,
                 fontSize: 28,
+                fontWeight: 400,
                 color: "#6b7280",
                 lineHeight: 1.4,
               }}
             >
-              Every tool in your stack is already cost-optimal.
+              Every tool in the stack is on the best plan for current usage.
             </span>
           </div>
         ) : (
@@ -187,57 +229,44 @@ export const OgPreview = ({
               zIndex: 2,
             }}
           >
-            {/* Badge */}
-            <div
+            <span
               style={{
-                display: "flex",
-                alignItems: "center",
-                alignSelf: "flex-start",
-                padding: "8px 18px",
-                borderRadius: 9999,
-                border: "1px solid rgba(16,185,129,0.16)",
-                background: "rgba(16,185,129,0.08)",
-                marginBottom: 28,
+                fontSize: 22,
+                fontWeight: 500,
+                color: "#6b7280",
+                marginBottom: 12,
+                letterSpacing: "-0.2px",
               }}
             >
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  letterSpacing: 2,
-                  textTransform: "uppercase",
-                  color: "#047857",
-                }}
-              >
-                Total Savings Found
-              </span>
-            </div>
+              Found potential savings of
+            </span>
 
-            {/* Main amount */}
+            {/* Savings hero */}
             <div
               style={{
                 display: "flex",
                 alignItems: "baseline",
-                gap: 10,
+                gap: 8,
+                marginBottom: 10,
               }}
             >
               <span
                 style={{
-                  fontSize: 118,
+                  fontSize: 124,
                   fontWeight: 800,
                   letterSpacing: "-7px",
                   color: "#047857",
-                  lineHeight: 0.95,
+                  lineHeight: 0.92,
                 }}
               >
                 {fmt(savings)}
               </span>
-
               <span
                 style={{
-                  fontSize: 42,
+                  fontSize: 44,
                   fontWeight: 600,
-                  color: "rgba(4,120,87,0.55)",
+                  color: "rgba(4,120,87,0.45)",
+                  letterSpacing: "-1px",
                 }}
               >
                 /mo
@@ -246,225 +275,217 @@ export const OgPreview = ({
 
             <span
               style={{
-                marginTop: 12,
-                fontSize: 30,
-                color: "#6b7280",
+                fontSize: 24,
+                color: "#9ca3af",
+                fontWeight: 400,
+                letterSpacing: "-0.2px",
               }}
             >
-              in monthly savings identified
+              {fmt(savings * 12)} saved annually · audited by SpendSmart
             </span>
           </div>
         )}
 
-        {/* Stats */}
+        {/* Stats bar */}
         <div
           style={{
             display: "flex",
-            gap: 56,
-            marginTop: "auto",
-            paddingTop: 34,
-            borderTop: "1px solid rgba(0,0,0,0.06)",
+            alignItems: "center",
+            gap: 0,
+            paddingTop: 28,
+            borderTop: "1px solid rgba(16,185,129,0.12)",
             zIndex: 2,
           }}
         >
-          {/* Annual */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 16,
-            }}
-          >
-            <div
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 9999,
-                background: "rgba(16,185,129,0.1)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#059669"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: "#111827",
-                }}
-              >
-                {fmt(savings * 12)}
-                <span
-                  style={{
-                    fontSize: 16,
-                    color: "#6b7280",
-                    marginLeft: 4,
-                  }}
-                >
-                  /yr
-                </span>
-              </span>
-
-              <span
-                style={{
-                  marginTop: 2,
-                  fontSize: 13,
-                  color: "#6b7280",
-                  fontWeight: 600,
-                }}
-              >
-                Annual savings
-              </span>
-            </div>
-          </div>
-
           {/* Tools audited */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 16,
+              gap: 14,
+              flex: 1,
             }}
           >
             <div
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: 9999,
-                background: "rgba(15,23,42,0.06)",
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: "rgba(16,185,129,0.10)",
+                border: "1px solid rgba(16,185,129,0.15)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <svg
-                width="24"
-                height="24"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#111827"
+                stroke="#059669"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: "#111827",
-                }}
-              >
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <span style={{ fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: "-1px", lineHeight: 1 }}>
                 {toolCount}
               </span>
-
-              <span
-                style={{
-                  marginTop: 2,
-                  fontSize: 13,
-                  color: "#6b7280",
-                  fontWeight: 600,
-                }}
-              >
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.2px" }}>
                 Tools audited
               </span>
             </div>
           </div>
 
+          {/* Divider */}
+          <div
+            style={{
+              width: 1,
+              height: 44,
+              background: "rgba(0,0,0,0.07)",
+              marginRight: 48,
+            }}
+          />
+
           {/* Can optimize */}
+          {!isOptimal && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  flex: 1,
+                }}
+              >
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 14,
+                    background: "rgba(245,158,11,0.10)",
+                    border: "1px solid rgba(245,158,11,0.18)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#d97706"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <span style={{ fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: "-1px", lineHeight: 1 }}>
+                    {optimizableCount}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.2px" }}>
+                    Can be optimized
+                  </span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div
+                style={{
+                  width: 1,
+                  height: 44,
+                  background: "rgba(0,0,0,0.07)",
+                  marginRight: 48,
+                }}
+              />
+            </>
+          )}
+
+          {/* Annual savings (or optimal stat) */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 16,
+              gap: 14,
+              flex: 1,
             }}
           >
             <div
               style={{
-                width: 56,
-                height: 56,
-                borderRadius: 9999,
-                background: "rgba(245,158,11,0.12)",
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                background: isOptimal ? "rgba(16,185,129,0.10)" : "rgba(16,185,129,0.10)",
+                border: "1px solid rgba(16,185,129,0.15)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
               <svg
-                width="24"
-                height="24"
+                width="22"
+                height="22"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#d97706"
-                strokeWidth="2.5"
+                stroke="#059669"
+                strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-                <polyline points="17 18 23 18 23 12" />
+                {isOptimal ? (
+                  <>
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 1 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                  </>
+                ) : (
+                  <>
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </>
+                )}
               </svg>
             </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 28,
-                  fontWeight: 700,
-                  color: "#111827",
-                }}
-              >
-                {optimizableCount}
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <span style={{ fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: "-1px", lineHeight: 1 }}>
+                {isOptimal ? "0 wasted" : fmt(savings * 12)}
               </span>
-
-              <span
-                style={{
-                  marginTop: 2,
-                  fontSize: 13,
-                  color: "#6b7280",
-                  fontWeight: 600,
-                }}
-              >
-                Can optimize
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.2px" }}>
+                {isOptimal ? "Zero overspend" : "Potential annual savings"}
               </span>
             </div>
+          </div>
+
+          {/* spendsmart.app watermark */}
+          <div
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "#d1d5db",
+                letterSpacing: "0.2px",
+              }}
+            >
+              spendsmart.app
+            </span>
           </div>
         </div>
       </div>
