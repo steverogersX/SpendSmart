@@ -2,7 +2,7 @@
 
 SpendSmart is a free web app that audits what startup founders and engineering managers are paying for AI tools — surfacing overspend, recommending cheaper alternatives, and quantifying total monthly and annual savings. It's a lead-generation asset for Credex: users who discover significant savings are directed to Credex's discounted AI credits.
 
-**Live:** [https://spendsmart.vercel.app](https://spendsmart.vercel.app) <!-- update with your actual Vercel URL -->
+**Live:** [https://spendsmart-mocha.vercel.app/](https://spendsmart-mocha.vercel.app/) <!-- update with your actual Vercel URL -->
 
 ---
 
@@ -11,6 +11,7 @@ SpendSmart is a free web app that audits what startup founders and engineering m
 > Add 3+ screenshots or a [30-second Loom/YouTube recording](https://loom.com) here before submitting.
 >
 > Suggested shots:
+>
 > 1. Audit form filled out with a multi-tool stack
 > 2. Audit results page showing the savings hero + per-tool breakdown
 > 3. Lead capture form / shareable URL preview card
@@ -67,9 +68,9 @@ cd frontend && npx vercel --prod
 
 Set these environment variables in Vercel:
 
-| Key | Value |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Your Render backend URL |
+| Key                    | Value                      |
+| ---------------------- | -------------------------- |
+| `NEXT_PUBLIC_API_URL`  | Your Render backend URL    |
 | `NEXT_PUBLIC_BASE_URL` | Your Vercel deployment URL |
 
 **Backend → Render**
@@ -83,14 +84,14 @@ git push origin main
 
 Set these environment variables in Render:
 
-| Key | Description |
-|---|---|
-| `DB_HOST` | Supabase Postgres host |
-| `DB_PASSWORD` | Supabase Postgres password |
-| `RESEND_API_KEY` | Resend API key |
-| `RESEND_FROM` | Sender address (e.g. `SpendSmart <hello@yourdomain.com>`) |
-| `GEMINI_API_KEY` | Google Gemini API key |
-| `CORS_ORIGIN` | Your Vercel URL |
+| Key              | Description                                               |
+| ---------------- | --------------------------------------------------------- |
+| `DB_HOST`        | Supabase Postgres host                                    |
+| `DB_PASSWORD`    | Supabase Postgres password                                |
+| `RESEND_API_KEY` | Resend API key                                            |
+| `RESEND_FROM`    | Sender address (e.g. `SpendSmart <hello@yourdomain.com>`) |
+| `GEMINI_API_KEY` | Google Gemini API key                                     |
+| `CORS_ORIGIN`    | Your Vercel URL                                           |
 
 **Database migrations**
 
