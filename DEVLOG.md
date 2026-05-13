@@ -238,9 +238,22 @@ Also added open graph preview for shared audit URLs — so when someone shares a
 
 ## What I learned
 
-Honestly nothing today. Most of it was just executing on what I already had planned. Didn't hit anything unexpected. Felt more like placing lego pieces than solving problems.
+One thing came up while implementing the scoring logic — I realized the normalization step I designed on Day 3 is unnecessary.
 
-Not a bad thing though — when implementation goes this smoothly it usually means the thinking before it was solid.
+The reason I thought I needed it: benchmarks use different scales. SWE-bench is a percentage, EQ-Bench is Elo. You can't compare them directly. So I planned to normalize everything to 0–1 before comparing.
+
+But when I actually wrote the gate logic, I noticed the comparison never crosses benchmarks. The `useCase → benchmark` mapping is 1:1 — if the user's use case is coding, both the current model and every candidate are scored on SWE-bench. If the use case is writing, everything uses EQ-Bench. You're always comparing a number against another number on the same scale. Elo against Elo. Percentage against percentage. The incompatibility problem I was solving doesn't actually exist in this design.
+
+The quality floor calculation confirms it:
+
+```
+minAcceptableScore = currentScore × (1 − dropCapacityBy / 100)
+candidateScore >= minAcceptableScore
+```
+
+Both sides are raw scores on the same benchmark. No normalization needed. Removed it.
+
+The rest of it was just executing on what I already had planned. When implementation goes this smoothly it usually means the thinking before it was solid.
 
 ## Blockers
 

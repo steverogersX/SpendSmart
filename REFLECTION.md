@@ -87,7 +87,7 @@ The shared types architecture and Zod schemas are clean and the audit logic is w
 I used Google Stitch AI to think through the UI before touching code which showed intentionality, but I admitted myself that the OG preview card came out rough and needs more work — the most shareable surface in the product isn't polished yet.
 
 **Problem solving: 8/10**
-The duplicate tool entry bug and the useCases schema decision were both caught through concrete thinking rather than just running tests, and the normalization approach for cross-benchmark comparison is a genuinely non-obvious solution to a real problem.
+The duplicate tool entry bug and the useCases schema decision were both caught through concrete thinking rather than just running tests. A third example: I designed a full cross-benchmark normalization step on Day 3, then realised on Day 4 it was unnecessary — the `useCase → benchmark` 1:1 mapping means scores are always compared within the same scale. Designing something, understanding it deeply enough to know it isn't needed, and removing it is also problem solving.
 
 **Entrepreneurial thinking: 8/10**
 I understood from day one that the audit logic has to be defensible to a finance person — not just technically correct but trustworthy to a non-technical decision maker — which is a product and business insight, not just an engineering one.
