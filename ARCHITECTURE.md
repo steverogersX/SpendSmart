@@ -21,7 +21,7 @@ graph TD
     LS --> EM[Resend Email]
 
     FE -->|/share URL| SP[Share page]
-    SP --> OG[/api/og OG image route]
+    SP --> OG["/api/og OG image route"]
 
     subgraph shared ["shared npm workspace"]
         ZS[Zod schemas]
