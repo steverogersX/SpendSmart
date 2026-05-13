@@ -113,7 +113,7 @@ If a user adds Claude Pro three times — once for writing, once for coding, onc
 
 ### 3. API recommendations are capability-constrained, not just cheapest
 
-For API users, finding the cheapest model ignores whether it can do the job. A user on Claude Opus 4.7 for coding is there because they need that capability. Recommending a $5/month model that fails on their actual work isn't a recommendation — it's noise. The engine scores each model using benchmark data (SWE-bench for coding, EQ-Bench for writing, MMLU-Pro for research), normalizes to a 0–1 scale, and only surfaces alternatives that are within 5% of the current model's capability score. Then it picks the cheapest one that clears that floor.
+For API users, finding the cheapest model ignores whether it can do the job. A user on Claude Opus 4.7 for coding is there because they need that capability. Recommending a $5/month model that fails on their actual work isn't a recommendation — it's noise. The engine scores each model using benchmark data (SWE-bench for coding, EQ-Bench for writing, MMLU-Pro for research) and only surfaces alternatives that are within the user's acceptable quality drop of the current model's score. Because `useCase → benchmark` is a 1:1 mapping, scores are always compared within the same benchmark — Elo against Elo, percentage against percentage — so no cross-scale normalization is needed. The cheapest candidate that clears the quality floor is surfaced as the recommendation.
 
 ### 4. Rate limiting over hCaptcha for abuse protection
 

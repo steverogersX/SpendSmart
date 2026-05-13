@@ -13,6 +13,7 @@ graph TD
     BE --> LS[Lead Service]
 
     AE --> PD[(vendor-pricing.json)]
+    AE --> APD[(api-pricing data)]
     AE -->|builds prose from verified facts| GS[Gemini Service]
     GS -->|gemini-1.5-flash| GA[Google Gemini API]
     GS -->|on error or no key| FB[Static fallback summary]
@@ -36,63 +37,50 @@ graph TD
 
 ## Data Flow: Input to Audit Result
 
-```
-1. User fills form (AuditForm.tsx)
-   └─ React Hook Form + Zod validates against shared auditRequest schema
+```mermaid
+flowchart TD
+    A(["User fills AuditForm.tsx<br/>React Hook Form + Zod"]) -->|"POST /api/v1/audit"| B["audit.controller.ts<br/>re-validate with shared Zod schema"]
+    B --> C["auditService<br/>dispatch each tool entry"]
 
-2. Frontend POSTs to /api/v1/audit
-   └─ Body: { tools: [ ...subscription inputs | api inputs ] }
+    C -->|isAPIInput == false| SUB
+    C -->|isAPIInput == true| API
 
-3. Express receives request (audit.controller.ts)
-   └─ Re-validates with shared Zod schema
-   └─ Calls auditService()
+    subgraph SUB [auditSubscriptionTool]
+        S1["Read vendor-pricing.json<br/>currentTotalCost = pricePerSeat x seats"] --> S2["Filter: useCases match<br/>Filter: alternativeCost &lt; currentTotalCost"]
+        S2 --> S3["Sort by savings descending<br/>bestRecommendation + otherOptions<br/>status: optimal or optimize"]
+    end
 
-4. auditService() dispatches each tool entry (audit.service.ts)
-   ├─ isAPIInput(tool) == true  → auditApiTool()
-   └─ isAPIInput(tool) == false → auditSubscriptionTool()
+    subgraph API [auditApiTool]
+        A1["Weighted price per 1M tokens<br/>0.7 x input + 0.3 x output"] --> A2["Back-solve token volume<br/>from averageMonthlySpend"]
+        A2 --> A3["Benchmark score for useCase<br/>SWE-bench / EQ-Bench / MMLU-Pro"]
+        A3 --> A4["Quality floor<br/>currentScore x (1 - dropCapacityBy%)"]
+        A4 --> A5["6-gate filter<br/>self / Chinese model / useCase / quality / price / savings >= 30%"]
+        A5 --> A6["Sort by savings<br/>bestRecommendation + otherOptions"]
+    end
 
-5a. auditSubscriptionTool()
-    ├─ Reads vendor-pricing.json for current plan's pricePerSeat
-    ├─ currentTotalCost = pricePerSeat × seats (or monthlySpend if price unknown)
-    ├─ Iterates every plan across all vendors
-    ├─ Filters: plan.useCases must include the user's useCase
-    ├─ Filters: alternativeCost = plan.pricePerSeat × seats < currentTotalCost
-    ├─ Sorts by savings descending → returns bestRecommendation + otherOptions
-    └─ status: "optimal" if no candidates, else "optimize"
+    S3 --> G["generateAiSummary<br/>gemini.service.ts"]
+    A6 --> G
 
-5b. auditApiTool()  [see full reasoning below]
-    ├─ Computes weighted price per 1M tokens
-    ├─ Back-solves estimated monthly token volume
-    ├─ Reads current model benchmark score
-    ├─ Sets quality floor from user's dropCapacityBy input
-    ├─ Runs 5-gate candidate filter
-    └─ Returns best recommendation with benchmark citations
+    G -->|"Gemini 1.5 Flash, temp 0.2, timeout 8s"| GD{Success?}
+    GD -->|yes| P[prose paragraph]
+    GD -->|"timeout / 429 / no key"| F["buildFallbackSummary<br/>templated from audit facts"]
 
-6. generateAiSummary() (gemini.service.ts)
-   ├─ Builds per-tool fact sentences from audit output
-   ├─ Calls Gemini 1.5 Flash: temperature 0.2, max 300 tokens, timeout 8s
-   ├─ On success → prose paragraph
-   └─ On failure (timeout, 429, missing key) → buildFallbackSummary()
+    P --> R["Response: tools + aiSummary"]
+    F --> R
 
-7. Response: { success: true, data: { tools, aiSummary } }
+    R --> UI[AuditResults.tsx]
+    UI --> UI1["Hero: monthly + annual savings"]
+    UI --> UI2[Per-tool breakdown cards]
+    UI --> UI3["Benchmark chart - API tools"]
+    UI --> UI4["Credex CTA if savings > $500/mo"]
+    UI --> UI5[LeadCaptureForm.tsx]
 
-8. Frontend renders AuditResults.tsx
-   ├─ Hero: total monthly + annual savings
-   ├─ Per-tool breakdown cards
-   ├─ Benchmark comparison chart (API tools)
-   ├─ Credex CTA when savings > $500/mo
-   └─ LeadCaptureForm.tsx
+    UI5 -->|"POST /api/v1/leads"| LS[Lead Service]
+    LS --> DB[(Supabase leads table)]
+    LS --> EM["Resend email<br/>tier: high if savings > $500/mo"]
 
-9. Lead submitted → POST /api/v1/leads
-   ├─ Stored in Supabase leads table
-   ├─ Confirmation email via Resend
-   └─ tier = "high" if savings > $500/mo, else "standard"
-
-10. Share URL: /share?data=<base64 audit result only>
-    ├─ audit result object never contains email, company name, or role
-    │   (those fields live only in the leads table, written separately in step 9)
-    ├─ base64 encodes only { tools, aiSummary, totalMonthlySavings }
-    └─ OG image rendered at /api/og (Next.js edge route)
+    UI -->|Share button| SH["/share?data=base64<br/>tools + aiSummary + totalMonthlySavings<br/>no PII"]
+    SH --> OG["/api/og - OG image<br/>Next.js edge route"]
 ```
 
 ## Audit Engine — Full Reasoning
@@ -170,23 +158,7 @@ The 70/30 ratio is a practical default. It is directionally correct for most wor
 
 ---
 
-#### Benchmark normalization
-
-Benchmarks publish scores on incompatible scales. SWE-bench gives a percentage (0–100). EQ-Bench gives an Elo rating with no ceiling. `82.4%` and `2045 Elo` cannot be placed on the same axis.
-
-Every score is normalized to [0, 1]:
-
-**For percentage-based benchmarks (SWE-bench, MMLU-Pro):**
-
-$$s_{\text{normalized}} = \frac{s}{100}$$
-
-So `82%` becomes `0.82`.
-
-**For Elo-based benchmarks (EQ-Bench):**
-
-$$s_{\text{normalized}} = \frac{s - s_{\min}}{s_{\max} - s_{\min}}$$
-
-where $s_{\min}$ and $s_{\max}$ are the lowest and highest scores in the tracked model set. This maps the full range to [0, 1] regardless of absolute Elo values.
+#### Benchmark scoring
 
 The use case determines which benchmark is used:
 
@@ -198,7 +170,7 @@ $$\text{useCase} \rightarrow \text{benchmark} \rightarrow \text{score}$$
 | writing | EQ-Bench |
 | research, data | MMLU-Pro |
 
-Using the wrong benchmark for a use case gives garbage scores. A model optimized for creative writing would look weak on SWE-bench and strong on EQ-Bench. The mapping must be explicit.
+Scores are compared in raw units within the same benchmark. Because `useCase → benchmark` is a 1:1 mapping, a candidate is always evaluated against the current model on the same scale — an Elo score is never placed next to a percentage. No cross-scale normalization is needed or performed.
 
 ---
 
@@ -212,20 +184,21 @@ A candidate must satisfy `candidateScore >= minAcceptableScore` to pass the qual
 
 ---
 
-#### The 5-gate filter
+#### The 6-gate filter
 
-Each candidate model passes through five gates in order:
+Each candidate model passes through six gates in order:
 
 | Gate | Check |
 |---|---|
 | 0 | Skip self (same vendor + same model) |
-| 1 | Candidate supports the use case |
-| 2 | Candidate score ≥ quality floor |
-| 3 | Candidate weighted price < current weighted price |
-| 4 | `savingsPct = (monthlySavings / averageMonthlySpend) × 100` ≥ 30% |
-| 5 | Candidate context window ≥ required (only checked when caller specifies) |
+| 1 | Skip Chinese models if `okayWithChineseModals == false` |
+| 2 | Candidate supports the use case |
+| 3 | Candidate score ≥ quality floor |
+| 4 | Candidate weighted price < current weighted price |
+| 5 | `savingsPct = (monthlySavings / averageMonthlySpend) × 100` ≥ 30% |
+| 6 | Candidate context window ≥ required (only checked when caller specifies) |
 
-Gate 4 exists because a 5% cost saving surfaces as a recommendation but gives the user almost no ROI. The 30% threshold filters marginal candidates and keeps the output actionable. Gate 5 is optional — most audits do not specify a context window requirement.
+Gate 5 exists because a marginal cost saving surfaces as a recommendation but gives the user almost no ROI. The 30% threshold filters those out and keeps the output actionable. Gate 6 is optional — most audits do not specify a context window requirement.
 
 Candidates that clear all gates are sorted by `monthlySavings` descending. The top result is `bestRecommendation`. The rest are `otherOptions`.
 
@@ -235,7 +208,7 @@ Candidates that clear all gates are sorted by `monthlySavings` descending. The t
 
 1. **70/30 token ratio** — a static assumption. Wrong for output-heavy (agentic) or input-heavy (RAG) workloads, and incorrect for reasoning models with hidden tokens. Accepted because token counts are not available at audit time.
 
-2. **Min-max Elo normalization** — depends on the set of tracked models. If the model set is small or poorly distributed, the normalized scores cluster and lose resolution. Percentile normalization would be more robust; min-max was chosen for simplicity and transparency.
+2. **Same-benchmark-only comparison** — scores are only compared within the same benchmark. If a future use case required recommending across benchmarks (e.g., ranking a coding model against a writing model), raw scores would be incomparable and normalization would be required. The current `useCase → benchmark` 1:1 mapping avoids this entirely, but it also means the engine cannot surface cross-domain tradeoffs.
 
 3. **Subscription cost = pricePerSeat × seats** — does not account for annual discounts, custom enterprise pricing, or bundled features. For plans with unknown pricing, `monthlySpend` from user input is used directly.
 
