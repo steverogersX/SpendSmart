@@ -8,13 +8,22 @@ SpendSmart is a free web app that audits what startup founders and engineering m
 
 ## Screenshots
 
-> Add 3+ screenshots or a [30-second Loom/YouTube recording](https://loom.com) here before submitting.
->
-> Suggested shots:
->
-> 1. Audit form filled out with a multi-tool stack
-> 2. Audit results page showing the savings hero + per-tool breakdown
-> 3. Lead capture form / shareable URL preview card
+### Subscription Audit
+
+![Audit Form](assets/sub01.png)
+
+![Audit Results](assets/sub02.png)
+
+![Lead Capture](assets/sub03.png)
+
+### API Cost Analysis
+
+![API Analysis 2](assets/api%20(2).png)
+
+![API Analysis 3](assets/api%20(3).png)
+
+![API Analysis 1](assets/api%20(1).png)
+
 
 ---
 
