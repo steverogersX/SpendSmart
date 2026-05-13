@@ -22,39 +22,40 @@ export async function createLead(input: CreateLeadInput): Promise<void> {
   const { email, companyName, role, teamSize, tier, totalSavingsMonthly, ipHash, auditResults } = input;
 
   if (config.NODE_ENV === 'production') {
-    await db
-      .insert(leads)
-      .values({
-        email,
-        companyName: companyName ?? null,
-        role: role ?? null,
-        teamSize: teamSize ?? null,
-        tier: tier ?? null,
-        totalSavingsMonthly: String(totalSavingsMonthly),
-        ipHash,
-      })
-      .onConflictDoUpdate({
-        target: leads.email,
-        set: {
-          companyName: sql`COALESCE(EXCLUDED.company_name, ${leads.companyName})`,
-          role: sql`COALESCE(EXCLUDED.role, ${leads.role})`,
-          teamSize: sql`COALESCE(EXCLUDED.team_size, ${leads.teamSize})`,
-          tier: sql`COALESCE(EXCLUDED.tier, ${leads.tier})`,
+    try {
+      await db
+        .insert(leads)
+        .values({
+          email,
+          companyName: companyName ?? null,
+          role: role ?? null,
+          teamSize: teamSize ?? null,
+          tier: tier ?? null,
           totalSavingsMonthly: String(totalSavingsMonthly),
-          updatedAt: new Date(),
-        },
-      });
+          ipHash,
+        })
+        .onConflictDoUpdate({
+          target: leads.email,
+          set: {
+            companyName: sql`COALESCE(EXCLUDED.company_name, ${leads.companyName})`,
+            role: sql`COALESCE(EXCLUDED.role, ${leads.role})`,
+            teamSize: sql`COALESCE(EXCLUDED.team_size, ${leads.teamSize})`,
+            tier: sql`COALESCE(EXCLUDED.tier, ${leads.tier})`,
+            totalSavingsMonthly: String(totalSavingsMonthly),
+            updatedAt: new Date(),
+          },
+        });
+      logger.info({ email, totalSavingsMonthly }, 'lead stored');
+    } catch (err) {
+      logger.error({ err, email, totalSavingsMonthly }, 'lead db insert failed');
+    }
   }
 
-  logger.info({ email, totalSavingsMonthly }, 'lead stored');
-
   try {
-    const [html] = await Promise.all([
-      buildEmailHtml(auditResults),
-    ]);
+    const html = await buildEmailHtml(auditResults);
     await sendEmail({ to: email, subject: "Cost Saving Detected", html });
     logger.info({ email }, 'confirmation email sent');
   } catch (err) {
-    logger.warn({ err, email }, 'confirmation email failed — lead stored anyway');
+    logger.warn({ err, email }, 'confirmation email failed');
   }
 }

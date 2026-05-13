@@ -7,10 +7,12 @@ graph TD
     User([User]) -->|fills audit form| FE[Next.js Frontend on Vercel]
 
     FE -->|POST /api/v1/audit| BE[Express Backend on Render]
+    FE -->|POST /api/v1/audit/export-pdf| BE
     FE -->|POST /api/v1/leads| BE
 
     BE --> AE[Audit Engine]
     BE --> LS[Lead Service]
+    BE --> PS[PDF Service]
 
     AE --> PD[(vendor-pricing.json)]
     AE --> APD[(api-pricing data)]
@@ -184,9 +186,9 @@ A candidate must satisfy `candidateScore >= minAcceptableScore` to pass the qual
 
 ---
 
-#### The 6-gate filter
+#### The 7-gate filter
 
-Each candidate model passes through six gates in order:
+Each candidate model passes through seven gates in order:
 
 | Gate | Check |
 |---|---|
@@ -229,7 +231,7 @@ Candidates that clear all gates are sorted by `monthlySavings` descending. The t
 | Email | Resend | Best developer experience for transactional email at this scale |
 | AI summary | Gemini 1.5 Flash | See note below — Anthropic is preferred per spec; Gemini chosen for cost |
 | Monorepo | npm workspaces (`shared/`) | Single source of truth for Zod schemas and types used by both packages |
-| CI | GitHub Actions | Lint + test on push to `main`; Render deploy on `deploy/prod` |
+| CI | GitHub Actions | Lint + test on push to `main`; Render deploy on `main` |
 
 TypeScript strict mode is enabled across all three packages.
 

@@ -279,7 +279,7 @@ Built the `LeadCaptureForm` with optional fields beyond email — company name, 
 
 Chose Supabase for storage. Simple to set up, Postgres underneath, and free tier is more than enough for now. Backend runs on Render. Resend handles transactional email — the confirmation goes out immediately on submit, and the copy notes that Credex will follow up on high-savings cases. That framing matters: it's not just a receipt, it's a reason to open it.
 
-For abuse protection went with rate limiting. One submission per IP per hour. Simple, no friction for real users, stops automated spam. Documented the choice in the code — didn't want to add hCaptcha friction at this stage and honeypots felt like false confidence without a real rate limit underneath anyway.
+For abuse protection went with rate limiting. 5 lead submissions per IP per 15 minutes (audit endpoint allows 30). Simple, no friction for real users, stops automated spam. Documented the choice in the code — didn't want to add hCaptcha friction at this stage and honeypots felt like false confidence without a real rate limit underneath anyway.
 
 Then deployed. Frontend on Vercel, backend on Render. Both live.
 

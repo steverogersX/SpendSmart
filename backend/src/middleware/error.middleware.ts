@@ -17,9 +17,13 @@ export function errorHandler(
     logger.warn({ err }, err.message);
   }
 
+  // Only expose name + message — never spread internal error fields (SQL queries, params, stack traces)
+  const clientMessage =
+    statusCode < 500 ? err.message : 'Something went wrong. Please try again.';
+
   const response: ApiResponse<never> = {
     success: false,
-    error: { ...err, message: err.message },
+    error: { name: err.name, message: clientMessage },
   };
 
   res.status(statusCode).json(response);

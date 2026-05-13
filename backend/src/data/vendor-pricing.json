@@ -255,7 +255,7 @@
 
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 87.3,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -312,7 +312,7 @@
 
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 87.3,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -388,7 +388,7 @@
 
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 87.1,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -442,7 +442,7 @@
           },
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 87.5,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -528,7 +528,7 @@
 
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 81.1,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -582,7 +582,7 @@
           },
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 87.5,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
@@ -646,7 +646,7 @@
 
           {
             "useCase": "research",
-            "benchmarkName": "EQ-Bench Creative Writing",
+            "benchmarkName": "MMLU-Pro",
             "benchmarkUrl": "https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro",
             "score": 81.1,
             "scoreFormat": "Percentage of correct answers on the MMLU-Pro benchmark; higher is better",
